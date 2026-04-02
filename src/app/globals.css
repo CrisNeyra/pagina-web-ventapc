@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+:root {
+  --background: #12081f;
+  --foreground: #f1f5f9;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* ── Paleta base: púrpura oscuro + neon ── */
+
+  /* Azul eléctrico (aura Sayayin) */
+  --color-azul-50:  #ecfeff;
+  --color-azul-100: #cffafe;
+  --color-azul-200: #a5f3fc;
+  --color-azul-300: #67e8f9;
+  --color-azul-400: #22d3ee;
+  --color-azul-500: #06b6d4;
+  --color-azul-600: #0891b2;
+  --color-azul-700: #0e7490;
+
+  /* Dorado / Oro (aura Sayayin) */
+  --color-oro-100:  #fef9c3;
+  --color-oro-200:  #fef08a;
+  --color-oro-300:  #fde047;
+  --color-oro-400:  #facc15;
+  --color-oro-500:  #eab308;
+  --color-oro-600:  #ca8a04;
+  --color-oro-700:  #a16207;
+
+  /* Fondos púrpura oscuro (sin negro puro) */
+  --color-oscuro-700: #2a1740;
+  --color-oscuro-800: #1d1030;
+  --color-oscuro-900: #160b26;
+  --color-oscuro-950: #12081f;
+
+  /* Acentos ciberpunk fluo */
+  --color-cyber-purple-300: #c084fc;
+  --color-cyber-purple-400: #a855f7;
+  --color-cyber-purple-500: #9333ea;
+  --color-cyber-purple-600: #7e22ce;
+
+  --color-cyber-pink-400: #f472b6;
+  --color-cyber-pink-500: #ec4899;
+
+  --color-cyber-cyan-100: #cffafe;
+  --color-cyber-cyan-200: #a5f3fc;
+  --color-cyber-cyan-300: #67e8f9;
+  --color-cyber-cyan-400: #22d3ee;
+  --color-cyber-cyan-500: #06b6d4;
+
+  --color-cyber-lime-400: #a3e635;
+  --color-cyber-yellow-400: #facc15;
+}
+
+body {
+  background:
+    radial-gradient(circle at 20% 15%, rgba(168, 85, 247, 0.22), transparent 42%),
+    radial-gradient(circle at 80% 20%, rgba(34, 211, 238, 0.18), transparent 38%),
+    var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Ocultar scrollbar en carruseles */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
