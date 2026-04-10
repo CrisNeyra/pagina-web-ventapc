@@ -37,6 +37,20 @@ function calcularTotales(items: CartItem[]) {
   );
 }
 
+function normalizarItems(items: CartItem[]): CartItem[] {
+  return items
+    .filter(
+      (item) =>
+        Boolean(item?.producto?.id) &&
+        Boolean(item?.producto?.nombre) &&
+        Number.isFinite(item?.producto?.precio)
+    )
+    .map((item) => ({
+      ...item,
+      cantidad: Math.max(1, Number.isFinite(item.cantidad) ? item.cantidad : 1),
+    }));
+}
+
 export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
@@ -44,7 +58,7 @@ export const useCartStore = create<CartState>()(
       totalItems: 0,
       subtotal: 0,
       addItem: (producto, cantidad = 1) => {
-        const prevItems = get().items;
+        const prevItems = normalizarItems(get().items);
         const existente = prevItems.find((item) => item.producto.id === producto.id);
 
         const items = existente
@@ -59,13 +73,15 @@ export const useCartStore = create<CartState>()(
         set({ items, totalItems, subtotal });
       },
       removeItem: (productId) => {
-        const items = get().items.filter((item) => item.producto.id !== productId);
+        const items = normalizarItems(get().items).filter(
+          (item) => item.producto.id !== productId
+        );
         const { totalItems, subtotal } = calcularTotales(items);
         set({ items, totalItems, subtotal });
       },
       updateQuantity: (productId, cantidad) => {
         const fixedQty = Math.max(1, cantidad);
-        const items = get().items.map((item) =>
+        const items = normalizarItems(get().items).map((item) =>
           item.producto.id === productId ? { ...item, cantidad: fixedQty } : item
         );
         const { totalItems, subtotal } = calcularTotales(items);
@@ -76,6 +92,18 @@ export const useCartStore = create<CartState>()(
     {
       name: "venta-pc-cart",
       storage: createJSONStorage(() => localStorage),
+      merge: (persistido, actual) => {
+        const estadoPersistido = persistido as Partial<CartState>;
+        const itemsNormalizados = normalizarItems(estadoPersistido.items ?? []);
+        const { totalItems, subtotal } = calcularTotales(itemsNormalizados);
+        return {
+          ...actual,
+          ...estadoPersistido,
+          items: itemsNormalizados,
+          totalItems,
+          subtotal,
+        };
+      },
     }
   )
 );

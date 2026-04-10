@@ -10,12 +10,12 @@ import { SiTwitch, SiTiktok } from "react-icons/si";
 import { FiLinkedin } from "react-icons/fi";
 
 const logosPagos = [
-  { nombre: "Visa", src: "/assets/tarjetas/visa.svg" },
-  { nombre: "Mastercard", src: "/assets/tarjetas/mastercard.svg" },
-  { nombre: "American Express", src: "/assets/tarjetas/amex.svg" },
-  { nombre: "Cabal", src: "/assets/tarjetas/cabal.svg" },
-  { nombre: "Naranja", src: "/assets/tarjetas/naranja.svg" },
-  { nombre: "Mercado Pago", src: "/assets/tarjetas/mercado-pago.svg" },
+  { nombre: "Visa", src: "/assets/visa.svg" },
+  { nombre: "Mastercard", src: "/assets/mastercard.svg" },
+  { nombre: "American Express", src: "/assets/amex.svg" },
+  { nombre: "Cabal", src: "/assets/cabal.svg" },
+  { nombre: "Naranja", src: "/marcas/naranja.svg" },
+  { nombre: "Mercado Pago", src: "/marcas/mercado-pago.svg" },
 ];
 
 export default function Footer() {

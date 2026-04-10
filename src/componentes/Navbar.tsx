@@ -15,21 +15,20 @@ import AuthModal from "@/componentes/AuthModal";
 import CartDrawer from "@/componentes/CartDrawer";
 import { useAuth } from "@/context/AuthContext";
 import { useCartStore } from "@/store/cartStore";
+import { useBusquedaStore } from "@/store/busquedaStore";
 import { toast } from "sonner";
 
 export default function Navbar() {
   const [menuAbierto, setMenuAbierto] = useState(false);
-  const [busqueda, setBusqueda] = useState("");
   const [authModalAbierto, setAuthModalAbierto] = useState(false);
   const [drawerAbierto, setDrawerAbierto] = useState(false);
   const { user, signOut } = useAuth();
   const totalItems = useCartStore((state) => state.totalItems);
+  const terminoBusqueda = useBusquedaStore((state) => state.termino);
+  const setTerminoBusqueda = useBusquedaStore((state) => state.setTermino);
 
   const manejarBusqueda = (e: React.FormEvent) => {
     e.preventDefault();
-    if (busqueda.trim()) {
-      console.log("Buscando:", busqueda);
-    }
   };
 
   const cerrarSesion = async () => {
@@ -72,8 +71,8 @@ export default function Navbar() {
               <div className="relative w-full">
                 <input
                   type="search"
-                  value={busqueda}
-                  onChange={(e) => setBusqueda(e.target.value)}
+                  value={terminoBusqueda}
+                  onChange={(e) => setTerminoBusqueda(e.target.value)}
                   placeholder="Buscar productos"
                   aria-label="Buscar productos"
                   className="w-full rounded-md bg-oscuro-900/95 text-cyber-cyan-100
@@ -150,8 +149,8 @@ export default function Navbar() {
           <form onSubmit={manejarBusqueda} className="relative" role="search">
             <input
               type="search"
-              value={busqueda}
-              onChange={(e) => setBusqueda(e.target.value)}
+              value={terminoBusqueda}
+              onChange={(e) => setTerminoBusqueda(e.target.value)}
               placeholder="Buscar productos"
               aria-label="Buscar productos"
               className="w-full rounded-md bg-oscuro-900/95 text-cyber-cyan-100

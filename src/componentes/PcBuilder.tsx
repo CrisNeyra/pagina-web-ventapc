@@ -8,6 +8,7 @@ import { builderCategories, builderProducts } from "@/datos/pcBuilder";
 import { formatearPrecio } from "@/utils/formato";
 import { obtenerClienteSupabase } from "@/configuracion/supabase";
 import { calcularSubtotalBuilder, useBuilderStore } from "@/store/builderStore";
+import { guardarBuildConReintentos } from "@/servicios/buildsPcServicio";
 
 export default function PcBuilder() {
   const {
@@ -66,21 +67,13 @@ export default function PcBuilder() {
     }
 
     setGuardando(true);
-    const { error } = await supabase.from("pc_builds").insert({
+    const resultado = await guardarBuildConReintentos(supabase, {
       user_id: usuario.id,
       subtotal,
       items: itemsSeleccionados,
     });
     setGuardando(false);
-
-    if (error) {
-      setFeedback(
-        "No se pudo guardar la build. Verificá que exista la tabla pc_builds en Supabase."
-      );
-      return;
-    }
-
-    setFeedback("Configuración guardada en la base de datos.");
+    setFeedback(resultado.mensaje);
   };
 
   return (

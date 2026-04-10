@@ -23,7 +23,7 @@ export default function ProductCard({ producto }: ProductCardProps) {
       id: producto.id,
       nombre: producto.nombre,
       precio: producto.precio,
-      imagen: producto.imagen,
+      imagen: producto.imagenes[0] ?? "/placeholder-producto.svg",
       enStock: producto.enStock,
     });
     toast.success(`✅ ${producto.nombre} agregado al carrito`);
@@ -34,7 +34,7 @@ export default function ProductCard({ producto }: ProductCardProps) {
       <Link href={`/producto/${producto.id}`} className="block">
         <div className="relative mb-4 h-44 w-full overflow-hidden rounded-xl bg-oscuro-800">
           <Image
-            src={producto.imagen}
+            src={producto.imagenes[0] ?? "/placeholder-producto.svg"}
             alt={producto.nombre}
             fill
             sizes="(max-width: 768px) 100vw, 25vw"

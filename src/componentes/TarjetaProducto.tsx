@@ -33,7 +33,7 @@ export default function TarjetaProducto({ producto }: TarjetaProductoProps) {
       {/* Imagen */}
       <div className="relative w-24 h-24 md:w-28 md:h-28 flex-shrink-0 bg-oscuro-800">
         <Image
-          src={producto.imagen}
+          src={producto.imagenes[0] ?? "/placeholder-producto.svg"}
           alt={producto.nombre}
           fill
           className="object-contain p-1 group-hover:scale-105 transition-transform duration-300"

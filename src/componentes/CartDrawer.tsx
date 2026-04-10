@@ -25,7 +25,7 @@ export default function CartDrawer({ abierto, onCerrar }: CartDrawerProps) {
         aria-hidden="true"
       />
       <aside
-        className={`fixed right-0 top-0 z-[80] flex h-screen w-full max-w-md flex-col border-l border-cyber-purple-500/35 bg-oscuro-900 shadow-[-10px_0_30px_rgba(0,0,0,0.45)] transition-transform ${
+        className={`fixed right-0 top-0 z-[80] flex h-screen w-full md:max-w-md flex-col border-l border-cyber-purple-500/35 bg-oscuro-900 shadow-[-10px_0_30px_rgba(0,0,0,0.45)] transition-transform ${
           abierto ? "translate-x-0" : "translate-x-full"
         }`}
         aria-label="Carrito de compras"
@@ -122,7 +122,7 @@ export default function CartDrawer({ abierto, onCerrar }: CartDrawerProps) {
             <span className="text-sm text-cyber-cyan-200">Subtotal</span>
             <strong className="text-xl text-cyber-cyan-300">{formatearPrecio(subtotal)}</strong>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row">
             <button
               type="button"
               onClick={clearCart}

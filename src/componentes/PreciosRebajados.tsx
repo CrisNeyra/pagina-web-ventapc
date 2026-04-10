@@ -88,7 +88,7 @@ export default function PreciosRebajados({ productos }: PreciosRebajadosProps) {
                 {/* Imagen */}
                 <div className="relative h-44 bg-oscuro-800">
                   <Image
-                    src={producto.imagen}
+                    src={producto.imagenes[0] ?? "/placeholder-producto.svg"}
                     alt={producto.nombre}
                     fill
                     className="object-contain p-4 group-hover:scale-105 transition-transform duration-300"

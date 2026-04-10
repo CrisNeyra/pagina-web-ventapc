@@ -1,14 +1,25 @@
-import ProductCard from "@/componentes/ProductCard";
-import { productosDestacados, productosRebajados } from "@/datos/productos";
+"use client";
 
-const notebooks = [...productosDestacados, ...productosRebajados].filter(
-  (item) =>
-    item.categoria.toLowerCase().includes("notebook") ||
-    item.nombre.toLowerCase().includes("notebook") ||
-    item.nombre.toLowerCase().includes("vivobook")
+import ProductCard from "@/componentes/ProductCard";
+import { useBusquedaStore } from "@/store/busquedaStore";
+import { productosDestacados, productosRebajados } from "@/datos/productos";
+import { useMemo } from "react";
+
+const notebooksBase = [...productosDestacados, ...productosRebajados].filter(
+  (item) => item.categoria.toLowerCase().includes("notebook")
 );
 
 export default function NotebooksPage() {
+  const terminoBusqueda = useBusquedaStore((state) => state.termino);
+  const terminoNormalizado = terminoBusqueda.trim().toLowerCase();
+
+  const notebooks = useMemo(() => {
+    if (!terminoNormalizado) return notebooksBase;
+    return notebooksBase.filter((producto) =>
+      producto.nombre.toLowerCase().includes(terminoNormalizado)
+    );
+  }, [terminoNormalizado]);
+
   return (
     <main className="min-h-screen bg-oscuro-950">
       <section className="mx-auto max-w-7xl px-4 py-8">
@@ -21,7 +32,7 @@ export default function NotebooksPage() {
           </div>
         ) : (
           <p className="rounded-xl border border-cyber-purple-500/30 bg-oscuro-900/70 p-4 text-cyber-cyan-200/80">
-            Estamos cargando nuevas notebooks al catálogo.
+            No se encontraron productos.
           </p>
         )}
       </section>

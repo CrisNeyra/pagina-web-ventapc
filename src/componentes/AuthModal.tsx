@@ -69,8 +69,10 @@ export default function AuthModal({
         }
 
         setOk(
-          "Registro exitoso. Revisá tu correo para confirmar la cuenta (si la confirmación está activa)."
+          "Registro exitoso. Si la confirmación por correo está desactivada, ingresás automáticamente."
         );
+        onAutenticado?.();
+        window.setTimeout(() => cerrar(), 350);
         return;
       }
 
@@ -83,6 +85,9 @@ export default function AuthModal({
       setOk("Sesión iniciada correctamente.");
       onAutenticado?.();
       window.setTimeout(() => cerrar(), 350);
+    } catch (error) {
+      console.error("Error inesperado en flujo de autenticación:", error);
+      setError("Ocurrió un error inesperado. Revisá la consola para más detalles.");
     } finally {
       setCargando(false);
     }

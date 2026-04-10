@@ -1,4 +1,4 @@
-import ProductSkeleton from "@/componentes/ProductSkeleton";
+import EsqueletoProducto from "@/componentes/EsqueletoProducto";
 
 export default function NotebooksLoading() {
   return (
@@ -7,7 +7,7 @@ export default function NotebooksLoading() {
         <div className="mb-5 h-9 w-56 animate-pulse rounded bg-oscuro-800" />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, idx) => (
-            <ProductSkeleton key={idx} />
+            <EsqueletoProducto key={idx} />
           ))}
         </div>
       </section>

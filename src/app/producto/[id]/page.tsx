@@ -6,23 +6,26 @@ interface ProductoPageProps {
   params: Promise<{ id: string }>;
 }
 
+function crearImagenesDesdeId(id: string): string[] {
+  return [
+    `/productos/${id}-principal.jpg`,
+    `/productos/${id}-img2.jpg`,
+    `/productos/${id}-img3.jpg`,
+  ];
+}
+
 function construirProductoDetalle(id: string): ProductDetailData | null {
   const catalogo = [...productosDestacados, ...productosRebajados];
   const productoCatalogo = catalogo.find((p) => p.id === id);
 
   if (productoCatalogo) {
-    const galeria = [
-      productoCatalogo.imagen,
-      ...catalogo
-        .filter((p) => p.categoria === productoCatalogo.categoria && p.id !== productoCatalogo.id)
-        .slice(0, 3)
-        .map((p) => p.imagen),
-    ];
-
     return {
       ...productoCatalogo,
       sku: `SKU-${productoCatalogo.id.toUpperCase()}`,
-      galeria,
+      imagenes:
+        productoCatalogo.imagenes.length > 0
+          ? productoCatalogo.imagenes.slice(0, 3)
+          : crearImagenesDesdeId(productoCatalogo.id),
     };
   }
 
@@ -35,10 +38,9 @@ function construirProductoDetalle(id: string): ProductDetailData | null {
     descripcion: `Producto destacado en novedades (${novedad.categoria}).`,
     categoria: novedad.categoria,
     precio: novedad.precio,
-    imagen: novedad.imagen,
     enStock: true,
     sku: `SKU-${id.toUpperCase()}`,
-    galeria: [novedad.imagen, ...catalogo.slice(0, 3).map((p) => p.imagen)],
+    imagenes: crearImagenesDesdeId(id),
   };
 }
 

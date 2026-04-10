@@ -35,12 +35,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     let mounted = true;
 
-    supabase.auth.getSession().then(({ data }) => {
-      if (!mounted) return;
-      setSession(data.session ?? null);
-      setUser(data.session?.user ?? null);
-      setLoading(false);
-    });
+    supabase.auth
+      .getSession()
+      .then(({ data, error }) => {
+        if (error) {
+          console.error("Error al recuperar sesión de Supabase:", error);
+        }
+        if (!mounted) return;
+        setSession(data.session ?? null);
+        setUser(data.session?.user ?? null);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error inesperado al recuperar sesión:", error);
+        if (!mounted) return;
+        setLoading(false);
+      });
 
     const {
       data: { subscription },
@@ -59,6 +69,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async (email: string, password: string) => {
       if (!supabase) return "Supabase no está configurado.";
       const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        console.error("Error de login en Supabase:", error);
+      }
       return error?.message ?? null;
     },
     [supabase]
@@ -67,8 +80,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signUp = useCallback(
     async (email: string, password: string) => {
       if (!supabase) return "Supabase no está configurado.";
-      const { error } = await supabase.auth.signUp({ email, password });
-      return error?.message ?? null;
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+
+      if (error) {
+        console.error("Error de registro en Supabase:", error);
+        return error.message;
+      }
+
+      if (!data.session) {
+        const { error: loginAutomaticoError } =
+          await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
+
+        if (loginAutomaticoError) {
+          console.error(
+            "Registro exitoso pero no se pudo iniciar sesión automáticamente:",
+            loginAutomaticoError
+          );
+          return "Usuario creado. Si no inicia sesión automáticamente, desactivá la confirmación por correo en Supabase Auth.";
+        }
+      }
+
+      return null;
     },
     [supabase]
   );
@@ -76,6 +114,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = useCallback(async () => {
     if (!supabase) return "Supabase no está configurado.";
     const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Error al cerrar sesión en Supabase:", error);
+    }
     return error?.message ?? null;
   }, [supabase]);
 

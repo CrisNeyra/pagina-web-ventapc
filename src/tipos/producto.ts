@@ -4,7 +4,7 @@ export interface Producto {
   descripcion: string;
   precio: number;
   precioAnterior?: number;
-  imagen: string;
+  imagenes: string[];
   categoria: string;
   enStock: boolean;
   etiqueta?: string; // "PC ARMADA", "COMBO", etc.

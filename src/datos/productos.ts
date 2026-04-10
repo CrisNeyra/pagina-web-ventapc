@@ -1,5 +1,37 @@
 import { Producto, Banner, Novedad } from "@/tipos/producto";
 
+type ProductoBase = Omit<Producto, "imagenes"> & {
+  imagen?: string;
+  imagenes?: string[];
+};
+
+function crearImagenesProducto(id: string): string[] {
+  return [
+    `/productos/${id}-principal.jpg`,
+    `/productos/${id}-img2.jpg`,
+    `/productos/${id}-img3.jpg`,
+  ];
+}
+
+function normalizarProducto(producto: ProductoBase): Producto {
+  const imagenesNormalizadas =
+    producto.imagenes && producto.imagenes.length > 0
+      ? producto.imagenes.slice(0, 3)
+      : crearImagenesProducto(producto.id);
+
+  return {
+    id: producto.id,
+    nombre: producto.nombre,
+    descripcion: producto.descripcion,
+    precio: producto.precio,
+    precioAnterior: producto.precioAnterior,
+    categoria: producto.categoria,
+    enStock: producto.enStock,
+    etiqueta: producto.etiqueta,
+    imagenes: imagenesNormalizadas,
+  };
+}
+
 // ── Banners del carrusel principal ──
 export const banners: Banner[] = [
   {
@@ -42,7 +74,7 @@ export const categoriasDestacadas = [
 ];
 
 // ── Productos mock ──
-export const productosDestacados: Producto[] = [
+const productosDestacadosBase: ProductoBase[] = [
   // Monitores
   {
     id: "mon-001",
@@ -64,7 +96,7 @@ export const productosDestacados: Producto[] = [
     enStock: true,
   },
   {
-    id: "mon-004",
+    id: "mon-003",
     nombre: 'Monitor 4K 28" IPS 60Hz',
     descripcion: "Panel IPS, 3840x2160, 99% sRGB, HDR",
     precio: 329999,
@@ -72,10 +104,27 @@ export const productosDestacados: Producto[] = [
     categoria: "Monitores",
     enStock: false,
   },
+  {
+    id: "note-001",
+    nombre: 'Notebook Lenovo Legion 5 15.6" Ryzen 7 RTX 4060',
+    descripcion: "16GB RAM, 1TB SSD NVMe, panel 165Hz y teclado RGB.",
+    precio: 2199999,
+    precioAnterior: 2399999,
+    categoria: "Notebooks",
+    enStock: true,
+  },
+  {
+    id: "note-002",
+    nombre: 'Notebook ASUS TUF Gaming F15 15.6" Intel i7 RTX 4050',
+    descripcion: "16GB RAM, 512GB SSD, chasis reforzado y pantalla 144Hz.",
+    precio: 1999999,
+    categoria: "Notebooks",
+    enStock: true,
+  },
 
   // Procesadores
   {
-    id: "cpu-001",
+    id: "proc-001",
     nombre: "Procesador AMD Ryzen 7 7800X3D",
     descripcion: "8 Núcleos, 16 Hilos, 5.0GHz, AM5, 3D V-Cache",
     precio: 459999,
@@ -85,7 +134,7 @@ export const productosDestacados: Producto[] = [
     enStock: true,
   },
   {
-    id: "cpu-002",
+    id: "proc-002",
     nombre: "Procesador Intel Core i7-14700K",
     descripcion: "20 Núcleos, 28 Hilos, 5.6GHz, LGA1700",
     precio: 489999,
@@ -94,7 +143,7 @@ export const productosDestacados: Producto[] = [
     enStock: true,
   },
   {
-    id: "cpu-003",
+    id: "proc-003",
     nombre: "Procesador AMD Ryzen 5 7600X",
     descripcion: "6 Núcleos, 12 Hilos, 5.3GHz, AM5",
     precio: 269999,
@@ -104,7 +153,7 @@ export const productosDestacados: Producto[] = [
     enStock: true,
   },
   {
-    id: "cpu-004",
+    id: "proc-004",
     nombre: "Procesador Intel Core i5-14600KF",
     descripcion: "14 Núcleos, 20 Hilos, 5.3GHz, LGA1700",
     precio: 349999,
@@ -115,7 +164,7 @@ export const productosDestacados: Producto[] = [
 
   // Placas de Video
   {
-    id: "gpu-002",
+    id: "gpu-001",
     nombre: "Placa de Video RX 7800 XT 16GB",
     descripcion: "GDDR6, FSR 3, Ray Tracing, Dual Fan",
     precio: 749999,
@@ -124,7 +173,7 @@ export const productosDestacados: Producto[] = [
     enStock: true,
   },
   {
-    id: "gpu-003",
+    id: "gpu-002",
     nombre: "Placa de Video RTX 4060 8GB",
     descripcion: "GDDR6, DLSS 3, Ray Tracing, Dual Fan",
     precio: 499999,
@@ -134,7 +183,7 @@ export const productosDestacados: Producto[] = [
     enStock: true,
   },
   {
-    id: "gpu-004",
+    id: "gpu-003",
     nombre: "Placa de Video RTX 4090 24GB",
     descripcion: "GDDR6X, DLSS 3.5, Ray Tracing, ADA Lovelace",
     precio: 2499999,
@@ -225,7 +274,7 @@ export const productosDestacados: Producto[] = [
 ];
 
 // ── Productos con precios rebajados (PCs armadas, combos) ──
-export const productosRebajados: Producto[] = [
+const productosRebajadosBase: ProductoBase[] = [
   {
     id: "pc-001",
     nombre: "PC AMD Ryzen 5 5600GT 16GB 512GB SSD WIFI",
@@ -317,7 +366,7 @@ export const ultimasNovedades: Novedad[] = [
 ];
 
 // ── Catálogo inicial extendido (3 productos por categoría visual) ──
-export const catalogoInicialExtendido: Producto[] = [
+const catalogoInicialExtendidoBase: ProductoBase[] = [
   // Placas de Video
   {
     id: "cat-gpu-001",
@@ -611,3 +660,12 @@ export const catalogoInicialExtendido: Producto[] = [
     enStock: true,
   },
 ];
+
+export const productosDestacados: Producto[] = productosDestacadosBase.map(
+  normalizarProducto
+);
+export const productosRebajados: Producto[] = productosRebajadosBase.map(
+  normalizarProducto
+);
+export const catalogoInicialExtendido: Producto[] =
+  catalogoInicialExtendidoBase.map(normalizarProducto);

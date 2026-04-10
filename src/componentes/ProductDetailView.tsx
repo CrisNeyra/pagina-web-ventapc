@@ -14,9 +14,8 @@ export interface ProductDetailData {
   categoria: string;
   precio: number;
   precioAnterior?: number;
-  imagen: string;
+  imagenes: string[];
   enStock: boolean;
-  galeria: string[];
   sku: string;
 }
 
@@ -40,7 +39,9 @@ const preguntasFrecuentes = [
 ];
 
 export default function ProductDetailView({ producto }: ProductDetailViewProps) {
-  const [imagenActiva, setImagenActiva] = useState(producto.galeria[0] ?? producto.imagen);
+  const [imagenActiva, setImagenActiva] = useState(
+    producto.imagenes[0] ?? "/placeholder-producto.svg"
+  );
   const [tabActiva, setTabActiva] = useState<"especificaciones" | "preguntas">("especificaciones");
   const addItem = useCartStore((state) => state.addItem);
 
@@ -58,7 +59,7 @@ export default function ProductDetailView({ producto }: ProductDetailViewProps) 
       id: producto.id,
       nombre: producto.nombre,
       precio: producto.precio,
-      imagen: producto.imagen,
+      imagen: producto.imagenes[0] ?? "/placeholder-producto.svg",
       enStock: producto.enStock,
     });
     toast.success(`✅ ${producto.nombre} agregado al carrito`);
@@ -79,8 +80,8 @@ export default function ProductDetailView({ producto }: ProductDetailViewProps) 
               />
             </div>
 
-            <div className="grid grid-cols-4 gap-3">
-              {producto.galeria.map((imagen) => (
+            <div className="grid grid-cols-3 gap-3">
+              {producto.imagenes.slice(0, 3).map((imagen) => (
                 <button
                   key={imagen}
                   onClick={() => setImagenActiva(imagen)}

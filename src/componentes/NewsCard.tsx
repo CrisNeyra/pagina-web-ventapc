@@ -19,7 +19,10 @@ export default function NewsCard({ novedad }: NewsCardProps) {
             alt={novedad.titulo}
             fill
             sizes="(max-width: 768px) 100vw, 30vw"
-            className="object-contain p-3 transition-transform duration-300 hover:scale-105"
+            className="object-cover transition-transform duration-300 hover:scale-105"
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = "/placeholder-producto.svg";
+            }}
           />
         </div>
 
