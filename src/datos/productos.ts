@@ -34,11 +34,18 @@ function asegurarDescripcionCuatroLineas(
   return lineasFinales.join("\n");
 }
 
+function asegurarTresImagenes(imagenes: string[] | undefined, id: string): string[] {
+  const imagenesBase =
+    imagenes && imagenes.length > 0 ? imagenes.filter(Boolean) : crearImagenesProducto(id);
+  const imagenesDefecto = crearImagenesProducto(id);
+  const primera = imagenesBase[0] ?? imagenesDefecto[0];
+  const segunda = imagenesBase[1] ?? imagenesDefecto[1];
+  const tercera = imagenesBase[2] ?? imagenesDefecto[2];
+  return [primera, segunda, tercera];
+}
+
 function normalizarProducto(producto: ProductoBase): Producto {
-  const imagenesNormalizadas =
-    producto.imagenes && producto.imagenes.length > 0
-      ? producto.imagenes.slice(0, 3)
-      : crearImagenesProducto(producto.id);
+  const imagenesNormalizadas = asegurarTresImagenes(producto.imagenes, producto.id);
 
   return {
     id: producto.id,
@@ -158,7 +165,11 @@ const productosDestacadosBase: ProductoBase[] = [
     descripcion:
       "Motherboard mATX Intel B660 con socket LGA1700 para 12va y 13va Gen.\nSoporta memoria DDR4 hasta 128GB y perfiles XMP para mejor rendimiento.\nIncluye ranura M.2 PCIe 4.0, HDMI, DisplayPort y USB 3.2 de alta velocidad.\nIdeal para equipos gaming y productividad con excelente estabilidad térmica.",
     precio: 214999,
-    imagenes: ["/images/productos/placeholder.webp"],
+    imagenes: [
+      "/productos/mother-001-principal.jpg",
+      "/productos/mother-001-img2.jpg",
+      "/productos/mother-001-img3.jpg",
+    ],
     categoria: "Mothers",
     enStock: true,
   },
@@ -168,7 +179,11 @@ const productosDestacadosBase: ProductoBase[] = [
     descripcion:
       "Placa madre AM5 con chipset B650 preparada para Ryzen serie 7000.\nCompatible con DDR5 y almacenamiento NVMe PCIe 4.0 para cargas ultrarrápidas.\nCuenta con VRM reforzado, LAN Gigabit y múltiples puertos USB para periféricos.\nExcelente opción para armar una PC moderna con gran relación precio/rendimiento.",
     precio: 289999,
-    imagenes: ["/images/productos/placeholder.webp"],
+    imagenes: [
+      "/productos/mother-002-principal.jpg",
+      "/productos/mother-002-img2.jpg",
+      "/productos/mother-002-img3.jpg",
+    ],
     categoria: "Mothers",
     enStock: true,
   },
@@ -178,7 +193,11 @@ const productosDestacadosBase: ProductoBase[] = [
     descripcion:
       "Motherboard ATX AM4 con diseño robusto para procesadores Ryzen de alto desempeño.\nDispone de doble M.2, LAN 2.5G y audio premium para una experiencia completa.\nSistema de disipación extendida que mantiene temperaturas estables bajo carga.\nRecomendada para setups gamer exigentes y estaciones de trabajo avanzadas.",
     precio: 254999,
-    imagenes: ["/images/productos/placeholder.webp"],
+    imagenes: [
+      "/productos/mother-003-principal.jpg",
+      "/productos/mother-003-img2.jpg",
+      "/productos/mother-003-img3.jpg",
+    ],
     categoria: "Mothers",
     enStock: true,
   },
@@ -190,7 +209,11 @@ const productosDestacadosBase: ProductoBase[] = [
     descripcion:
       "Fuente ATX de 550W con certificación 80 Plus Bronze para mayor eficiencia.\nVentilador silencioso de 120mm con control térmico para menor ruido.\nProtecciones eléctricas completas contra sobrecarga, sobretensión y cortocircuitos.\nIdeal para PCs gamer de entrada y equipos de oficina de alto uso.",
     precio: 119999,
-    imagenes: ["/images/productos/placeholder.webp"],
+    imagenes: [
+      "/productos/fuente-001-principal.jpg",
+      "/productos/fuente-001-img2.jpg",
+      "/productos/fuente-001-img3.jpg",
+    ],
     categoria: "Fuentes",
     enStock: true,
   },
@@ -200,7 +223,11 @@ const productosDestacadosBase: ProductoBase[] = [
     descripcion:
       "PSU de 750W full modular con certificación 80 Plus Gold de alta eficiencia.\nCapacitores japoneses y topología premium para voltajes estables y durabilidad.\nIncluye cables mallados y múltiples conectores para GPUs de nueva generación.\nPerfecta para builds de gama media/alta con margen para futuras actualizaciones.",
     precio: 214999,
-    imagenes: ["/images/productos/placeholder.webp"],
+    imagenes: [
+      "/productos/fuente-002-principal.jpg",
+      "/productos/fuente-002-img2.jpg",
+      "/productos/fuente-002-img3.jpg",
+    ],
     categoria: "Fuentes",
     enStock: true,
   },
@@ -210,7 +237,11 @@ const productosDestacadosBase: ProductoBase[] = [
     descripcion:
       "Fuente de alimentación 850W diseñada para configuraciones gamer de alto consumo.\nCertificación Gold y línea de 12V estable para sostener CPU y GPU exigentes.\nModo de operación silencioso con ventilador HDB y excelente flujo térmico.\nCompatible con equipos de última generación y upgrades de largo plazo.",
     precio: 279999,
-    imagenes: ["/images/productos/placeholder.webp"],
+    imagenes: [
+      "/productos/fuente-003-principal.jpg",
+      "/productos/fuente-003-img2.jpg",
+      "/productos/fuente-003-img3.jpg",
+    ],
     categoria: "Fuentes",
     enStock: true,
   },
@@ -222,7 +253,11 @@ const productosDestacadosBase: ProductoBase[] = [
     descripcion:
       "Silla ergonómica premium con respaldo reclinable y almohadas cervical/lumbar.\nTapizado transpirable de alta calidad para sesiones largas de juego o trabajo.\nApoyabrazos 4D ajustables y base metálica reforzada para máxima estabilidad.\nPensada para confort prolongado con estética gamer profesional.",
     precio: 539999,
-    imagenes: ["/images/productos/placeholder.webp"],
+    imagenes: [
+      "/productos/silla-001-principal.jpg",
+      "/productos/silla-001-img2.jpg",
+      "/productos/silla-001-img3.jpg",
+    ],
     categoria: "Sillas Gamers",
     enStock: true,
   },
@@ -232,7 +267,11 @@ const productosDestacadosBase: ProductoBase[] = [
     descripcion:
       "Diseño deportivo con estructura robusta y espuma de alta densidad.\nRespaldo reclinable hasta 180 grados para descanso entre partidas intensas.\nIncluye apoyabrazos regulables y mecanismo de balanceo suave y estable.\nExcelente elección para escritorios gamer con gran relación costo-beneficio.",
     precio: 349999,
-    imagenes: ["/images/productos/placeholder.webp"],
+    imagenes: [
+      "/productos/silla-002-principal.jpg",
+      "/productos/silla-002-img2.jpg",
+      "/productos/silla-002-img3.jpg",
+    ],
     categoria: "Sillas Gamers",
     enStock: true,
   },
@@ -242,7 +281,11 @@ const productosDestacadosBase: ProductoBase[] = [
     descripcion:
       "Silla gamer icónica con estructura de acero y acabado premium duradero.\nSoporte lumbar ajustable y cabecera acolchada para postura saludable.\nRuedas silenciosas y pistón de clase 4 para ajuste de altura preciso.\nIdeal para streamers y usuarios que priorizan ergonomía y estilo.",
     precio: 589999,
-    imagenes: ["/images/productos/placeholder.webp"],
+    imagenes: [
+      "/productos/silla-003-principal.jpg",
+      "/productos/silla-003-img2.jpg",
+      "/productos/silla-003-img3.jpg",
+    ],
     categoria: "Sillas Gamers",
     enStock: true,
   },
@@ -254,7 +297,11 @@ const productosDestacadosBase: ProductoBase[] = [
     descripcion:
       "Combo inalámbrico de teclado y mouse con conexión estable de largo alcance.\nTeclado tamaño completo con descanso para manos y teclas multimedia dedicadas.\nMouse ergonómico con sensor preciso para uso diario y productividad.\nSolución completa para oficina y home setup con gran autonomía de batería.",
     precio: 89999,
-    imagenes: ["/images/productos/placeholder.webp"],
+    imagenes: [
+      "/productos/periferico-001-principal.jpg",
+      "/productos/periferico-001-img2.jpg",
+      "/productos/periferico-001-img3.jpg",
+    ],
     categoria: "Periféricos",
     enStock: true,
   },
@@ -264,7 +311,11 @@ const productosDestacadosBase: ProductoBase[] = [
     descripcion:
       "Teclado mecánico compacto con switches lineales de respuesta rápida.\nEstructura de aluminio aeronáutico y retroiluminación RGB personalizable.\nCuenta con anti-ghosting completo y perfiles onboard para torneos.\nRecomendado para jugadores competitivos que buscan precisión y durabilidad.",
     precio: 164999,
-    imagenes: ["/images/productos/placeholder.webp"],
+    imagenes: [
+      "/productos/periferico-002-principal.jpg",
+      "/productos/periferico-002-img2.jpg",
+      "/productos/periferico-002-img3.jpg",
+    ],
     categoria: "Periféricos",
     enStock: true,
   },
@@ -274,7 +325,11 @@ const productosDestacadosBase: ProductoBase[] = [
     descripcion:
       "Mouse gamer con sensor HERO de alta precisión y peso configurable.\nIncluye 11 botones programables para macros en juegos y productividad.\nIluminación RGB LIGHTSYNC y switches mecánicos de larga vida útil.\nAgarre cómodo y control total para FPS, MOBA y uso intensivo.",
     precio: 129999,
-    imagenes: ["/images/productos/placeholder.webp"],
+    imagenes: [
+      "/productos/periferico-003-principal.jpg",
+      "/productos/periferico-003-img2.jpg",
+      "/productos/periferico-003-img3.jpg",
+    ],
     categoria: "Periféricos",
     enStock: true,
   },
@@ -840,7 +895,7 @@ const productosDesdeNovedades: Producto[] = ultimasNovedades.map((novedad) => {
     precio: novedad.precio,
     categoria: novedad.categoria,
     enStock: true,
-    imagenes: [novedad.imagen],
+    imagenes: asegurarTresImagenes([novedad.imagen], idProducto),
   };
 });
 

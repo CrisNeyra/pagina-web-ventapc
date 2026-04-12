@@ -44,11 +44,11 @@ export default function HeroVideos() {
   };
 
   return (
-    <section className="w-full bg-oscuro-950 flex flex-col md:flex-row md:items-stretch min-h-0 h-auto md:h-[min(50vh,420px)]">
+    <section className="flex h-full min-h-0 w-full flex-col bg-oscuro-950 md:flex-row md:items-stretch">
 
       {/* ─── Zona de videos — izquierda (60%) ────────────────────────── */}
       <div
-        className="relative w-full md:w-[60%] h-[180px] sm:h-[240px] md:h-full min-h-[180px] max-h-[50vh] overflow-hidden bg-oscuro-900 select-none"
+        className="relative h-[300px] min-h-[300px] w-full overflow-hidden bg-oscuro-900 select-none sm:h-[360px] md:h-full md:min-h-0 md:w-[60%]"
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
@@ -129,9 +129,8 @@ export default function HeroVideos() {
       </div>
 
       {/* ─── Panel promocional — derecha (40%) ───────────────────────── */}
-      <div className="w-full md:w-[40%] md:h-full min-h-0 bg-oscuro-900 border-l border-cyber-purple-500/35
-                      flex items-center justify-center px-6 sm:px-8 md:px-10 py-6 md:py-8 relative overflow-y-auto">
-
+      <div className="w-full min-h-[300px] bg-oscuro-900 border-l border-cyber-purple-500/35 md:h-full md:min-h-0 md:w-[40%]
+                    flex items-center justify-center px-6 sm:px-8 md:px-10 py-8 md:py-10 relative overflow-y-visible">
         {/* Glow de fondo sutil */}
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_rgba(34,211,238,0.12)_0%,_transparent_60%)]" />
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_bottom_left,_rgba(236,72,153,0.14)_0%,_transparent_55%)]" />

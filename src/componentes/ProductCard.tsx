@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import type { Producto } from "@/tipos/producto";
@@ -13,6 +14,15 @@ interface ProductCardProps {
 
 export default function ProductCard({ producto }: ProductCardProps) {
   const addItem = useCartStore((state) => state.addItem);
+  const imagenPrincipal = producto.imagenes[0] ?? "/placeholder-producto.svg";
+  const rutasFallback = [
+    imagenPrincipal,
+    `/img/productos/${producto.id}-1.jpg`,
+    `/productos/${producto.id}-principal.jpg`,
+    "/placeholder-producto.svg",
+  ];
+  const [indiceImagen, setIndiceImagen] = useState(0);
+  const imagenActual = rutasFallback[indiceImagen] ?? "/placeholder-producto.svg";
 
   const agregarAlCarrito = () => {
     if (!producto.enStock) {
@@ -23,7 +33,7 @@ export default function ProductCard({ producto }: ProductCardProps) {
       id: producto.id,
       nombre: producto.nombre,
       precio: producto.precio,
-      imagen: producto.imagenes[0] ?? "/placeholder-producto.svg",
+      imagen: imagenPrincipal,
       enStock: producto.enStock,
     });
     toast.success(`✅ ${producto.nombre} agregado al carrito`);
@@ -34,11 +44,16 @@ export default function ProductCard({ producto }: ProductCardProps) {
       <Link href={`/producto/${producto.id}`} className="block">
         <div className="relative mb-4 h-44 w-full overflow-hidden rounded-xl bg-oscuro-800">
           <Image
-            src={producto.imagenes[0] ?? "/placeholder-producto.svg"}
+            src={imagenActual}
             alt={producto.nombre}
             fill
             sizes="(max-width: 768px) 100vw, 25vw"
             className="object-contain p-3 transition-transform duration-300 group-hover:scale-105"
+            onError={() => {
+              setIndiceImagen((previo) =>
+                previo < rutasFallback.length - 1 ? previo + 1 : previo
+              );
+            }}
           />
         </div>
         <div className="mb-2 flex items-center justify-between gap-2">

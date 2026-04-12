@@ -7,6 +7,7 @@ import {
   FiSearch,
   FiUser,
   FiShoppingCart,
+  FiLogOut,
   FiMenu,
   FiX,
 } from "react-icons/fi";
@@ -189,24 +190,24 @@ export default function Navbar() {
 
           {/* Iconos de acción */}
           <div className="flex items-center gap-5">
-            {/* Mi cuenta */}
+            {/* Usuario (siempre visible en desktop) */}
             {user ? (
-              <button
-                onClick={cerrarSesion}
+              <Link
+                href="/usuario"
                 className="hidden md:flex items-center gap-2 text-cyber-cyan-200/75 hover:text-cyber-cyan-100 transition-colors duration-200 text-sm"
-                aria-label="Cerrar sesión"
+                aria-label="Ir al perfil de usuario"
               >
                 <FiUser size={22} />
-                <span className="hidden lg:inline">Salir</span>
-              </button>
+                <span className="hidden lg:inline">Usuario</span>
+              </Link>
             ) : (
               <button
                 onClick={() => setAuthModalAbierto(true)}
                 className="hidden md:flex items-center gap-2 text-cyber-cyan-200/75 hover:text-cyber-cyan-100 transition-colors duration-200 text-sm"
-                aria-label="Ingresar o registrarse"
+                aria-label="Ingresar como usuario"
               >
                 <FiUser size={22} />
-                <span className="hidden lg:inline">Ingresá</span>
+                <span className="hidden lg:inline">Usuario</span>
               </button>
             )}
 
@@ -227,6 +228,18 @@ export default function Navbar() {
                 </span>
               )}
             </button>
+
+            {/* Salir */}
+            {user && (
+              <button
+                onClick={cerrarSesion}
+                className="hidden md:flex items-center gap-2 text-cyber-cyan-200/75 hover:text-cyber-cyan-100 transition-colors duration-200 text-sm"
+                aria-label="Cerrar sesión"
+              >
+                <FiLogOut size={20} />
+                <span className="hidden lg:inline">Salir</span>
+              </button>
+            )}
 
             {/* Botón menú mobile */}
             <button
@@ -342,20 +355,53 @@ export default function Navbar() {
               </li>
             ))}
             <li className="border-t border-cyber-purple-500/25 mt-2 pt-2">
+              {user ? (
+                <Link
+                  href="/usuario"
+                  onClick={() => setMenuAbierto(false)}
+                  className="flex items-center gap-2 px-6 py-3 text-sm text-cyber-cyan-200/80 hover:text-cyber-cyan-100 w-full"
+                >
+                  <FiUser size={18} />
+                  Usuario
+                </Link>
+              ) : (
+                <button
+                  onClick={() => {
+                    setMenuAbierto(false);
+                    setAuthModalAbierto(true);
+                  }}
+                  className="flex items-center gap-2 px-6 py-3 text-sm text-cyber-cyan-200/80 hover:text-cyber-cyan-100 w-full"
+                >
+                  <FiUser size={18} />
+                  Usuario
+                </button>
+              )}
+            </li>
+            <li>
               <button
                 onClick={() => {
                   setMenuAbierto(false);
-                  if (user) {
-                    void cerrarSesion();
-                  } else {
-                    setAuthModalAbierto(true);
-                  }
+                  setDrawerAbierto(true);
                 }}
                 className="flex items-center gap-2 px-6 py-3 text-sm text-cyber-cyan-200/80 hover:text-cyber-cyan-100 w-full"
               >
-                <FiUser size={18} />
-                {user ? "Salir" : "Ingresá"}
+                <FiShoppingCart size={18} />
+                Carrito
               </button>
+            </li>
+            <li className="border-t border-cyber-purple-500/25 mt-2 pt-2">
+              {user && (
+                <button
+                  onClick={() => {
+                    setMenuAbierto(false);
+                    void cerrarSesion();
+                  }}
+                  className="flex items-center gap-2 px-6 py-3 text-sm text-cyber-cyan-200/80 hover:text-cyber-cyan-100 w-full"
+                >
+                  <FiLogOut size={18} />
+                  Salir
+                </button>
+              )}
             </li>
           </ul>
         </nav>
