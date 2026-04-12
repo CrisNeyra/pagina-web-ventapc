@@ -5,6 +5,7 @@ import BarraBeneficios from "@/componentes/BarraBeneficios";
 import BannerArmaTuPC from "@/componentes/BannerArmaTuPC";
 import GrillaCategorias from "@/componentes/GrillaCategorias";
 import ValoracionesUsuarios from "@/componentes/ValoracionesUsuarios";
+import BrandsGrid from "@/componentes/BrandsGrid";
 import ProductCard from "@/componentes/ProductCard";
 import { useBusquedaStore } from "@/store/busquedaStore";
 import { productosDestacados, productosRebajados } from "@/datos/productos";
@@ -89,6 +90,9 @@ export default function PaginaInicio() {
           </a>
         </div>
       </section>
+
+      {/* 2. Marcas destacadas (sobre productos destacados) */}
+      <BrandsGrid />
 
       {/* 3. Productos destacados */}
       {(!hayBusqueda || destacadosFiltrados.length > 0) && (

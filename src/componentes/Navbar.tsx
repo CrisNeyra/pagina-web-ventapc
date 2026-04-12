@@ -29,6 +29,7 @@ export default function Navbar() {
   const totalItems = useCartStore((state) => state.totalItems);
   const terminoBusqueda = useBusquedaStore((state) => state.termino);
   const setTerminoBusqueda = useBusquedaStore((state) => state.setTermino);
+  const limpiarBusqueda = useBusquedaStore((state) => state.limpiar);
   const [sugerenciasDesktopAbiertas, setSugerenciasDesktopAbiertas] = useState(false);
   const [sugerenciasMobileAbiertas, setSugerenciasMobileAbiertas] = useState(false);
   const desktopBusquedaRef = useRef<HTMLDivElement | null>(null);
@@ -103,8 +104,13 @@ export default function Navbar() {
             {/* Nuevo logo a la izquierda del buscador */}
             <Link
               href="/"
+              onClick={() => {
+                limpiarBusqueda();
+                setMenuAbierto(false);
+              }}
               aria-label="Ir al inicio"
               className="w-[180px] max-w-[200px] flex-shrink-0"
+              title="Ir al inicio"
             >
               <Image
                 src="/logo.jpg"
