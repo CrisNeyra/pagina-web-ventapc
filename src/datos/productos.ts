@@ -32,6 +32,10 @@ function normalizarProducto(producto: ProductoBase): Producto {
   };
 }
 
+function obtenerIdDesdeEnlaceProducto(enlace: string): string {
+  return enlace.replace("/producto/", "").trim();
+}
+
 // ── Banners del carrusel principal ──
 export const banners: Banner[] = [
   {
@@ -328,7 +332,7 @@ export const ultimasNovedades: Novedad[] = [
     categoria: "PLACAS DE VIDEO RADEON AMD",
     titulo: "RX 9070 XT 16GB Ultra Power",
     precio: 1187300,
-    imagen: "/productos/rx-9070xt.jpg",
+    imagen: "/productos/rx-9070xt-principal.jpg",
     enlace: "/producto/rx-9070xt",
   },
   {
@@ -336,7 +340,7 @@ export const ultimasNovedades: Novedad[] = [
     categoria: "PLACAS DE RED INALÁMBRICAS",
     titulo: "AX3000: Velocidad real",
     precio: 45800,
-    imagen: "/productos/placa-red-ax3000.jpg",
+    imagen: "/productos/placa-red-ax3000-principal.jpg",
     enlace: "/producto/placa-red-ax3000",
   },
   {
@@ -344,7 +348,7 @@ export const ultimasNovedades: Novedad[] = [
     categoria: "MONITORES Y PANTALLAS",
     titulo: 'Samsung G9 49" Potencia Total',
     precio: 1758600,
-    imagen: "/productos/samsung-g9-49.jpg",
+    imagen: "/productos/samsung-g9-49-principal.jpg",
     enlace: "/producto/samsung-g9-49",
   },
   {
@@ -352,7 +356,7 @@ export const ultimasNovedades: Novedad[] = [
     categoria: "NOTEBOOKS",
     titulo: "Vivobook 15 R7 Potencia PRO",
     precio: 1372400,
-    imagen: "/productos/vivobook-15-r7.jpg",
+    imagen: "/productos/vivobook-15-r7-principal.jpg",
     enlace: "/producto/vivobook-15-r7",
   },
   {
@@ -360,7 +364,7 @@ export const ultimasNovedades: Novedad[] = [
     categoria: "CONSOLAS",
     titulo: "Jugá donde quieras",
     precio: 1106800,
-    imagen: "/productos/consola-ps5.jpg",
+    imagen: "/productos/consola-ps5-principal.jpg",
     enlace: "/producto/consola-ps5",
   },
 ];
@@ -669,3 +673,27 @@ export const productosRebajados: Producto[] = productosRebajadosBase.map(
 );
 export const catalogoInicialExtendido: Producto[] =
   catalogoInicialExtendidoBase.map(normalizarProducto);
+
+const productosDesdeNovedades: Producto[] = ultimasNovedades.map((novedad) => {
+  const idProducto = obtenerIdDesdeEnlaceProducto(novedad.enlace);
+  return {
+    id: idProducto,
+    nombre: novedad.titulo,
+    descripcion: `Producto destacado en novedades (${novedad.categoria}).`,
+    precio: novedad.precio,
+    categoria: novedad.categoria,
+    enStock: true,
+    imagenes: [novedad.imagen],
+  };
+});
+
+const mapaCatalogo = new Map<string, Producto>();
+[...productosDestacados, ...productosRebajados, ...productosDesdeNovedades].forEach(
+  (producto) => {
+    if (!mapaCatalogo.has(producto.id)) {
+      mapaCatalogo.set(producto.id, producto);
+    }
+  }
+);
+
+export const catalogoCompleto: Producto[] = Array.from(mapaCatalogo.values());

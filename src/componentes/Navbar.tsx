@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -11,11 +11,13 @@ import {
   FiX,
 } from "react-icons/fi";
 import { enlacesNavegacion } from "@/datos/navegacion";
+import { catalogoCompleto } from "@/datos/productos";
 import AuthModal from "@/componentes/AuthModal";
 import CartDrawer from "@/componentes/CartDrawer";
 import { useAuth } from "@/context/AuthContext";
 import { useCartStore } from "@/store/cartStore";
 import { useBusquedaStore } from "@/store/busquedaStore";
+import { formatearPrecio } from "@/utils/formato";
 import { toast } from "sonner";
 
 export default function Navbar() {
@@ -26,10 +28,61 @@ export default function Navbar() {
   const totalItems = useCartStore((state) => state.totalItems);
   const terminoBusqueda = useBusquedaStore((state) => state.termino);
   const setTerminoBusqueda = useBusquedaStore((state) => state.setTermino);
+  const [sugerenciasDesktopAbiertas, setSugerenciasDesktopAbiertas] = useState(false);
+  const [sugerenciasMobileAbiertas, setSugerenciasMobileAbiertas] = useState(false);
+  const desktopBusquedaRef = useRef<HTMLDivElement | null>(null);
+  const mobileBusquedaRef = useRef<HTMLFormElement | null>(null);
+  const terminoNormalizado = terminoBusqueda.trim().toLowerCase();
+
+  const sugerencias = useMemo(() => {
+    if (!terminoNormalizado) return [];
+    return catalogoCompleto
+      .filter((producto) => producto.nombre.toLowerCase().includes(terminoNormalizado))
+      .slice(0, 6);
+  }, [terminoNormalizado]);
+
+  const cerrarSugerencias = () => {
+    setSugerenciasDesktopAbiertas(false);
+    setSugerenciasMobileAbiertas(false);
+  };
 
   const manejarBusqueda = (e: React.FormEvent) => {
     e.preventDefault();
+    cerrarSugerencias();
   };
+
+  const seleccionarSugerencia = (nombre: string) => {
+    setTerminoBusqueda(nombre);
+    setMenuAbierto(false);
+    cerrarSugerencias();
+  };
+
+  useEffect(() => {
+    const manejarClickFuera = (event: MouseEvent) => {
+      const target = event.target as Node;
+      const clickEnDesktop =
+        desktopBusquedaRef.current && desktopBusquedaRef.current.contains(target);
+      const clickEnMobile =
+        mobileBusquedaRef.current && mobileBusquedaRef.current.contains(target);
+
+      if (!clickEnDesktop && !clickEnMobile) {
+        cerrarSugerencias();
+      }
+    };
+
+    const manejarEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        cerrarSugerencias();
+      }
+    };
+
+    document.addEventListener("mousedown", manejarClickFuera);
+    document.addEventListener("keydown", manejarEscape);
+    return () => {
+      document.removeEventListener("mousedown", manejarClickFuera);
+      document.removeEventListener("keydown", manejarEscape);
+    };
+  }, []);
 
   const cerrarSesion = async () => {
     const error = await signOut();
@@ -68,11 +121,15 @@ export default function Navbar() {
               className="hidden md:flex flex-1 min-w-[260px] max-w-2xl"
               role="search"
             >
-              <div className="relative w-full">
+              <div ref={desktopBusquedaRef} className="relative w-full">
                 <input
                   type="search"
                   value={terminoBusqueda}
-                  onChange={(e) => setTerminoBusqueda(e.target.value)}
+                  onFocus={() => setSugerenciasDesktopAbiertas(true)}
+                  onChange={(e) => {
+                    setTerminoBusqueda(e.target.value);
+                    setSugerenciasDesktopAbiertas(true);
+                  }}
                   placeholder="Buscar productos"
                   aria-label="Buscar productos"
                   className="w-full rounded-md bg-oscuro-900/95 text-cyber-cyan-100
@@ -88,6 +145,44 @@ export default function Navbar() {
                 >
                   <FiSearch size={18} />
                 </button>
+
+                {sugerenciasDesktopAbiertas && terminoNormalizado && (
+                  <div className="absolute top-full z-[70] mt-2 w-full overflow-hidden rounded-xl border border-cyber-purple-500/40 bg-oscuro-900/98 shadow-[0_0_22px_rgba(168,85,247,0.25)]">
+                    {sugerencias.length > 0 ? (
+                      <ul className="max-h-96 overflow-y-auto">
+                        {sugerencias.map((producto) => (
+                          <li key={`desktop-${producto.id}`} className="border-b border-cyber-purple-500/20 last:border-b-0">
+                            <Link
+                              href={`/producto/${producto.id}`}
+                              onClick={() => seleccionarSugerencia(producto.nombre)}
+                              className="flex items-center gap-3 p-3 transition-colors hover:bg-cyber-cyan-500/10"
+                            >
+                              <div className="relative h-11 w-11 overflow-hidden rounded-md border border-cyber-cyan-500/25 bg-oscuro-800">
+                                <Image
+                                  src={producto.imagenes[0] ?? "/placeholder-producto.svg"}
+                                  alt={producto.nombre}
+                                  fill
+                                  sizes="44px"
+                                  className="object-cover"
+                                />
+                              </div>
+                              <div className="min-w-0">
+                                <p className="truncate text-sm font-semibold text-white">{producto.nombre}</p>
+                                <p className="text-xs font-semibold text-cyber-cyan-300">
+                                  {formatearPrecio(producto.precio)}
+                                </p>
+                              </div>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="px-4 py-3 text-sm text-cyber-cyan-200/80">
+                        No se encontraron productos para &quot;{terminoBusqueda.trim()}&quot;.
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
             </form>
           </div>
@@ -146,11 +241,15 @@ export default function Navbar() {
 
         {/* ── Barra de búsqueda mobile ── */}
         <div className="md:hidden px-4 pb-3">
-          <form onSubmit={manejarBusqueda} className="relative" role="search">
+          <form ref={mobileBusquedaRef} onSubmit={manejarBusqueda} className="relative" role="search">
             <input
               type="search"
               value={terminoBusqueda}
-              onChange={(e) => setTerminoBusqueda(e.target.value)}
+              onFocus={() => setSugerenciasMobileAbiertas(true)}
+              onChange={(e) => {
+                setTerminoBusqueda(e.target.value);
+                setSugerenciasMobileAbiertas(true);
+              }}
               placeholder="Buscar productos"
               aria-label="Buscar productos"
               className="w-full rounded-md bg-oscuro-900/95 text-cyber-cyan-100
@@ -165,6 +264,44 @@ export default function Navbar() {
             >
               <FiSearch size={18} />
             </button>
+
+            {sugerenciasMobileAbiertas && terminoNormalizado && (
+              <div className="absolute top-full z-[70] mt-2 w-full overflow-hidden rounded-xl border border-cyber-purple-500/40 bg-oscuro-900/98 shadow-[0_0_22px_rgba(168,85,247,0.25)]">
+                {sugerencias.length > 0 ? (
+                  <ul className="max-h-80 overflow-y-auto">
+                    {sugerencias.map((producto) => (
+                      <li key={`mobile-${producto.id}`} className="border-b border-cyber-purple-500/20 last:border-b-0">
+                        <Link
+                          href={`/producto/${producto.id}`}
+                          onClick={() => seleccionarSugerencia(producto.nombre)}
+                          className="flex items-center gap-3 p-3 transition-colors hover:bg-cyber-cyan-500/10"
+                        >
+                          <div className="relative h-10 w-10 overflow-hidden rounded-md border border-cyber-cyan-500/25 bg-oscuro-800">
+                            <Image
+                              src={producto.imagenes[0] ?? "/placeholder-producto.svg"}
+                              alt={producto.nombre}
+                              fill
+                              sizes="40px"
+                              className="object-cover"
+                            />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-semibold text-white">{producto.nombre}</p>
+                            <p className="text-xs font-semibold text-cyber-cyan-300">
+                              {formatearPrecio(producto.precio)}
+                            </p>
+                          </div>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="px-4 py-3 text-sm text-cyber-cyan-200/80">
+                    No se encontraron productos para &quot;{terminoBusqueda.trim()}&quot;.
+                  </p>
+                )}
+              </div>
+            )}
           </form>
         </div>
       </div>

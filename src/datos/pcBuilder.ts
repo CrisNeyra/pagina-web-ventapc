@@ -3,6 +3,37 @@ import type {
   BuilderCategoryId,
   BuilderProduct,
 } from "@/tipos/pcBuilder";
+import { productosDestacados, productosRebajados } from "@/datos/productos";
+
+// TODO: agregar imagen real en public/productos/{id}-principal.jpg para motherboard, cooler, fuente y gabinete.
+
+const catalogoBase = [...productosDestacados, ...productosRebajados];
+
+function obtenerProductoPorId(id: string) {
+  const producto = catalogoBase.find((item) => item.id === id);
+  if (!producto) {
+    throw new Error(`No se encontró el producto "${id}" para Pc Builder.`);
+  }
+  return producto;
+}
+
+function crearBuilderProduct(
+  id: string,
+  categoria: BuilderCategoryId,
+  productoId: string,
+  imagenOverride?: string
+): BuilderProduct {
+  const producto = obtenerProductoPorId(productoId);
+  return {
+    id,
+    categoria,
+    nombre: producto.nombre,
+    descripcion: producto.descripcion,
+    precio: producto.precio,
+    imagen: imagenOverride ?? producto.imagenes[0] ?? "/placeholder-producto.svg",
+    stock: producto.enStock,
+  };
+}
 
 export const builderCategories: BuilderCategory[] = [
   { id: "procesador", nombre: "Procesador", icono: "CPU" },
@@ -16,150 +47,39 @@ export const builderCategories: BuilderCategory[] = [
 ];
 
 export const builderProducts: BuilderProduct[] = [
-  {
-    id: "b-cpu-001",
-    categoria: "procesador",
-    nombre: "AMD Ryzen 7 7800X3D",
-    descripcion: "8C/16T, socket AM5, ideal para gaming de alto FPS.",
-    precio: 459999,
-    imagen: "/productos/ryzen-7-7800x3d.jpg",
-    stock: true,
-  },
-  {
-    id: "b-cpu-002",
-    categoria: "procesador",
-    nombre: "Intel Core i7-14700K",
-    descripcion: "20 núcleos híbridos, socket LGA1700.",
-    precio: 489999,
-    imagen: "/productos/intel-i7-14700k.jpg",
-    stock: true,
-  },
-  {
-    id: "b-mb-001",
-    categoria: "motherboard",
-    nombre: "Motherboard B650 ATX WiFi",
-    descripcion: "AM5, DDR5, PCIe 5.0, WiFi 6E integrado.",
-    precio: 249999,
-    imagen: "/productos/pc-ryzen5-5600gt.jpg",
-    stock: true,
-  },
-  {
-    id: "b-mb-002",
-    categoria: "motherboard",
-    nombre: "Motherboard Z790 ATX",
-    descripcion: "LGA1700, DDR5, VRM reforzado para overclock.",
-    precio: 309999,
-    imagen: "/productos/pc-ryzen7-5700g.jpg",
-    stock: true,
-  },
-  {
-    id: "b-cl-001",
-    categoria: "cooler",
-    nombre: "Cooler Líquido 240mm ARGB",
-    descripcion: "Bomba de alto caudal y doble ventilador PWM.",
-    precio: 119999,
-    imagen: "/productos/combo-gabinete-mouse.jpg",
-    stock: true,
-  },
-  {
-    id: "b-cl-002",
-    categoria: "cooler",
-    nombre: "Cooler por Aire Torre Doble",
-    descripcion: "Disipador de 6 heatpipes y ventilador 120mm.",
-    precio: 69999,
-    imagen: "/productos/combo-gabinete-mouse.jpg",
-    stock: true,
-  },
-  {
-    id: "b-ram-001",
-    categoria: "ram",
-    nombre: "DDR5 32GB (2x16) 6000MHz RGB",
-    descripcion: "Baja latencia y perfil XMP/EXPO.",
-    precio: 129999,
-    imagen: "/productos/ram-ddr5-32gb.jpg",
-    stock: true,
-  },
-  {
-    id: "b-ram-002",
-    categoria: "ram",
-    nombre: "DDR5 64GB (2x32) 5600MHz",
-    descripcion: "Kit para creación de contenido y multitarea pesada.",
-    precio: 249999,
-    imagen: "/productos/ram-ddr5-64gb.jpg",
-    stock: true,
-  },
-  {
-    id: "b-gpu-001",
-    categoria: "gpu",
-    nombre: "NVIDIA RTX 4060 8GB",
-    descripcion: "DLSS 3 y ray tracing para 1080p/1440p.",
-    precio: 499999,
-    imagen: "/productos/rtx-4060.jpg",
-    stock: true,
-  },
-  {
-    id: "b-gpu-002",
-    categoria: "gpu",
-    nombre: "AMD RX 7800 XT 16GB",
-    descripcion: "Excelente rendimiento en 1440p y 4K optimizado.",
-    precio: 749999,
-    imagen: "/productos/rx-7800xt.jpg",
-    stock: true,
-  },
-  {
-    id: "b-ssd-001",
-    categoria: "almacenamiento",
-    nombre: "SSD NVMe Gen4 1TB 7000MB/s",
-    descripcion: "Carga rápida de juegos y sistema operativo.",
-    precio: 109999,
-    imagen: "/productos/ssd-nvme-1tb.jpg",
-    stock: true,
-  },
-  {
-    id: "b-ssd-002",
-    categoria: "almacenamiento",
-    nombre: "SSD NVMe Gen4 2TB 7400MB/s",
-    descripcion: "Mayor capacidad para biblioteca de juegos.",
-    precio: 199999,
-    imagen: "/productos/ssd-nvme-2tb.jpg",
-    stock: true,
-  },
-  {
-    id: "b-psu-001",
-    categoria: "fuente",
-    nombre: "Fuente 750W 80 Plus Gold",
-    descripcion: "Modular, cables mallados, certificación Gold.",
-    precio: 159999,
-    imagen: "/productos/pc-gamer-rtx3050.jpg",
-    stock: true,
-  },
-  {
-    id: "b-psu-002",
-    categoria: "fuente",
-    nombre: "Fuente 850W 80 Plus Gold",
-    descripcion: "Margen de potencia para upgrades futuros.",
-    precio: 199999,
-    imagen: "/productos/pc-gamer-rtx3050.jpg",
-    stock: true,
-  },
-  {
-    id: "b-case-001",
-    categoria: "gabinete",
-    nombre: "Gabinete Mid Tower Mesh ARGB",
-    descripcion: "Frontal mallado, airflow alto, vidrio templado.",
-    precio: 129999,
-    imagen: "/productos/combo-gabinete-mouse.jpg",
-    stock: true,
-  },
-  {
-    id: "b-case-002",
-    categoria: "gabinete",
-    nombre: "Gabinete Doble Cámara Premium",
-    descripcion: "Gestión de cables avanzada y excelente estética.",
-    precio: 179999,
-    imagen: "/productos/combo-gabinete-mouse.jpg",
-    stock: true,
-  },
+  crearBuilderProduct("b-cpu-001", "procesador", "proc-001"),
+  crearBuilderProduct("b-cpu-002", "procesador", "proc-002"),
+  crearBuilderProduct("b-cpu-003", "procesador", "proc-003"),
+  crearBuilderProduct("b-cpu-004", "procesador", "proc-004"),
+
+  // TODO: agregar imagen real de motherboard (usar id propio en public/productos/{id}-principal.jpg).
+  crearBuilderProduct("b-mb-001", "motherboard", "pc-001", "/productos/pc-001-principal.jpg"),
+  crearBuilderProduct("b-mb-002", "motherboard", "pc-002", "/productos/pc-002-principal.jpg"),
+
+  // TODO: agregar imagen real de cooler (usar id propio en public/productos/{id}-principal.jpg).
+  crearBuilderProduct("b-cl-001", "cooler", "combo-001", "/productos/combo-001-principal.jpg"),
+  crearBuilderProduct("b-cl-002", "cooler", "pc-003", "/productos/pc-003-principal.jpg"),
+
+  crearBuilderProduct("b-ram-001", "ram", "ram-001"),
+  crearBuilderProduct("b-ram-002", "ram", "ram-002"),
+  crearBuilderProduct("b-ram-003", "ram", "ram-003"),
+
+  crearBuilderProduct("b-gpu-001", "gpu", "gpu-001"),
+  crearBuilderProduct("b-gpu-002", "gpu", "gpu-002"),
+  crearBuilderProduct("b-gpu-003", "gpu", "gpu-003"),
+
+  crearBuilderProduct("b-ssd-001", "almacenamiento", "ssd-001"),
+  crearBuilderProduct("b-ssd-002", "almacenamiento", "ssd-002"),
+  crearBuilderProduct("b-ssd-003", "almacenamiento", "ssd-003"),
+  crearBuilderProduct("b-ssd-004", "almacenamiento", "ssd-004"),
+
+  // TODO: agregar imagen real de fuente (usar id propio en public/productos/{id}-principal.jpg).
+  crearBuilderProduct("b-psu-001", "fuente", "pc-002", "/productos/pc-002-principal.jpg"),
+  crearBuilderProduct("b-psu-002", "fuente", "combo-001", "/productos/combo-001-principal.jpg"),
+
+  // TODO: agregar imagen real de gabinete (usar id propio en public/productos/{id}-principal.jpg).
+  crearBuilderProduct("b-case-001", "gabinete", "combo-001", "/productos/combo-001-principal.jpg"),
+  crearBuilderProduct("b-case-002", "gabinete", "pc-001", "/productos/pc-001-principal.jpg"),
 ];
 
 export const defaultBuilderCategory: BuilderCategoryId = "procesador";

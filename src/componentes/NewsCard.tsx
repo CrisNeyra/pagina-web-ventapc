@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import type { Novedad } from "@/tipos/producto";
 import { formatearPrecio } from "@/utils/formato";
 
@@ -10,19 +11,19 @@ interface NewsCardProps {
 }
 
 export default function NewsCard({ novedad }: NewsCardProps) {
+  const [imagenActual, setImagenActual] = useState(novedad.imagen);
+
   return (
     <article className="rounded-xl border border-cyber-purple-500/30 bg-oscuro-900/75 p-4 transition-all duration-200 hover:border-cyber-pink-400/70 hover:shadow-[0_0_20px_rgba(236,72,153,0.2)]">
       <Link href={novedad.enlace} className="block">
         <div className="relative mb-4 h-40 w-full overflow-hidden rounded-xl bg-oscuro-800">
           <Image
-            src={novedad.imagen}
+            src={imagenActual}
             alt={novedad.titulo}
             fill
             sizes="(max-width: 768px) 100vw, 30vw"
             className="object-cover transition-transform duration-300 hover:scale-105"
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = "/placeholder-producto.svg";
-            }}
+            onError={() => setImagenActual("/placeholder-producto.svg")}
           />
         </div>
 
