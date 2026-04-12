@@ -103,6 +103,9 @@ export default function ProductDetailView({ producto }: ProductDetailViewProps) 
               {producto.categoria}
             </p>
             <h1 className="text-2xl font-bold leading-tight text-white md:text-3xl">{producto.nombre}</h1>
+            <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-cyber-cyan-100/80">
+              {producto.descripcion}
+            </p>
 
             <div className="mt-3 flex flex-wrap gap-2 text-xs">
               <span className="rounded-md border border-cyber-purple-500/30 bg-oscuro-800 px-2 py-1 text-cyber-cyan-200">

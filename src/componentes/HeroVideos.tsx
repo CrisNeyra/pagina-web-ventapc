@@ -44,11 +44,11 @@ export default function HeroVideos() {
   };
 
   return (
-    <section className="w-full bg-oscuro-950 flex flex-col md:flex-row md:items-stretch min-h-0 h-auto md:h-[min(70vh,620px)]">
+    <section className="w-full bg-oscuro-950 flex flex-col md:flex-row md:items-stretch min-h-0 h-auto md:h-[min(50vh,420px)]">
 
       {/* ─── Zona de videos — izquierda (60%) ────────────────────────── */}
       <div
-        className="relative w-full md:w-[60%] h-[240px] sm:h-[320px] md:h-full min-h-[240px] max-h-[70vh] overflow-hidden bg-oscuro-900 select-none"
+        className="relative w-full md:w-[60%] h-[180px] sm:h-[240px] md:h-full min-h-[180px] max-h-[50vh] overflow-hidden bg-oscuro-900 select-none"
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
