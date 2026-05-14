@@ -6,7 +6,7 @@ import Navbar from "@/componentes/Navbar";
 import Footer from "@/componentes/Footer";
 import FloatingWhatsApp from "@/componentes/FloatingWhatsApp";
 import WelcomeBannerModal from "@/componentes/WelcomeBannerModal";
-import ThemedToaster from "@/componentes/ThemedToaster";
+import { Toaster } from "sonner";
 import { AuthProvider } from "@/context/AuthContext";
 
 const geistSans = Geist({
@@ -43,7 +43,7 @@ export default function RootLayout({
             <Footer />
             <FloatingWhatsApp />
             <WelcomeBannerModal />
-            <ThemedToaster />
+            <Toaster position="bottom-center" richColors theme="dark" />
           </AuthProvider>
         </ProveedorRedux>
       </body>
