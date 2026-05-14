@@ -15,7 +15,6 @@ import { enlacesNavegacion } from "@/datos/navegacion";
 import { catalogoCompleto } from "@/datos/productos";
 import AuthModal from "@/componentes/AuthModal";
 import CartDrawer from "@/componentes/CartDrawer";
-import ThemeToggle from "@/componentes/ThemeToggle";
 import { useAuth } from "@/context/AuthContext";
 import { useCartStore } from "@/store/cartStore";
 import { useBusquedaStore } from "@/store/busquedaStore";
@@ -197,8 +196,6 @@ export default function Navbar() {
 
           {/* Iconos de acción */}
           <div className="flex items-center gap-5">
-            <ThemeToggle className="h-9 w-9 p-0" />
-
             {/* Usuario (siempre visible en desktop) */}
             {user ? (
               <Link
