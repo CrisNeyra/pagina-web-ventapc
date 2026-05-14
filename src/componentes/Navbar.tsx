@@ -15,6 +15,7 @@ import { enlacesNavegacion } from "@/datos/navegacion";
 import { catalogoCompleto } from "@/datos/productos";
 import AuthModal from "@/componentes/AuthModal";
 import CartDrawer from "@/componentes/CartDrawer";
+import ThemeToggle from "@/componentes/ThemeToggle";
 import { useAuth } from "@/context/AuthContext";
 import { useCartStore } from "@/store/cartStore";
 import { useBusquedaStore } from "@/store/busquedaStore";
@@ -109,7 +110,7 @@ export default function Navbar() {
                 setMenuAbierto(false);
               }}
               aria-label="Ir al inicio"
-              className="w-[180px] max-w-[200px] flex-shrink-0"
+              className="w-[170px] sm:w-[188px] md:w-[208px] flex-shrink-0"
               title="Ir al inicio"
             >
               <Image
@@ -118,7 +119,7 @@ export default function Navbar() {
                 width={480}
                 height={200}
                 preload
-                className="h-[72px] w-full object-contain rounded-md border border-cyber-cyan-500/45 bg-oscuro-900/85 px-2 py-1 drop-shadow-[0_0_18px_rgba(34,211,238,0.55)]"
+                className="h-[70px] sm:h-[76px] md:h-[83px] w-full object-contain"
               />
             </Link>
 
@@ -196,6 +197,8 @@ export default function Navbar() {
 
           {/* Iconos de acción */}
           <div className="flex items-center gap-5">
+            <ThemeToggle className="h-9 w-9 p-0" />
+
             {/* Usuario (siempre visible en desktop) */}
             {user ? (
               <Link

@@ -4,7 +4,6 @@ import HeroVideos from "@/componentes/HeroVideos";
 import BarraBeneficios from "@/componentes/BarraBeneficios";
 import BannerArmaTuPC from "@/componentes/BannerArmaTuPC";
 import GrillaCategorias from "@/componentes/GrillaCategorias";
-import ValoracionesUsuarios from "@/componentes/ValoracionesUsuarios";
 import BrandsGrid from "@/componentes/BrandsGrid";
 import ProductCard from "@/componentes/ProductCard";
 import { useBusquedaStore } from "@/store/busquedaStore";
@@ -75,15 +74,15 @@ export default function PaginaInicio() {
     hayBusqueda && destacadosFiltrados.length === 0 && productosFiltrados.length === 0;
 
   return (
-    <main className="flex-1 bg-oscuro-950">
+    <main className="flex-1 bg-background">
       {/* 1. First fold: Hero + beneficios + indicador scroll */}
-      <section className="relative grid min-h-[calc(100vh-130px)] grid-rows-[minmax(0,1fr)_auto] bg-oscuro-950">
+      <section className="relative grid min-h-[calc(100vh-130px)] grid-rows-[minmax(0,1fr)_auto] bg-background">
         <HeroVideos />
         <BarraBeneficios />
         <div className="pointer-events-none absolute inset-x-0 bottom-2 z-20 flex items-center justify-center">
           <a
             href="#productos-destacados"
-            className="pointer-events-auto flex flex-col items-center gap-1 rounded-full border border-cyber-cyan-500/35 bg-oscuro-950/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-cyber-cyan-300 backdrop-blur-sm"
+            className="pointer-events-auto flex flex-col items-center gap-1 rounded-full border border-cyber-cyan-500/35 bg-oscuro-950/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-cyber-cyan-300 opacity-60 backdrop-blur-sm transition-all duration-200 hover:scale-[1.03] hover:opacity-100 hover:shadow-[0_0_18px_rgba(109,40,217,0.35)]"
           >
             <span>Desliza para explorar</span>
             <FiChevronDown className="animate-bounce text-cyber-cyan-200" size={16} />
@@ -134,9 +133,6 @@ export default function PaginaInicio() {
 
       {/* 6. Grilla de categorías */}
       <GrillaCategorias />
-
-      {/* 7. Valoraciones de usuarios */}
-      <ValoracionesUsuarios />
 
       {noHayResultados && (
         <section className="mx-auto my-10 max-w-7xl px-4">

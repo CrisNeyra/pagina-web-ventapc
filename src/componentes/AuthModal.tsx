@@ -64,7 +64,11 @@ export default function AuthModal({
       if (modo === "registro") {
         const signUpError = await signUp(email, password);
         if (signUpError) {
-          setError(signUpError);
+          if (signUpError.includes("Usuario creado")) {
+            setOk(signUpError);
+          } else {
+            setError(signUpError);
+          }
           return;
         }
 
@@ -161,6 +165,7 @@ export default function AuthModal({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              autoComplete="email"
               className="w-full rounded-md border border-cyber-purple-500/45 bg-oscuro-950 px-3 py-2 text-sm text-cyber-cyan-100 outline-none focus:border-cyber-cyan-400 focus:ring-2 focus:ring-cyber-cyan-500/40"
               placeholder="tuemail@dominio.com"
             />
@@ -177,6 +182,7 @@ export default function AuthModal({
               minLength={6}
               maxLength={6}
               required
+              autoComplete={modo === "login" ? "current-password" : "new-password"}
               className="w-full rounded-md border border-cyber-purple-500/45 bg-oscuro-950 px-3 py-2 text-sm text-cyber-cyan-100 outline-none focus:border-cyber-cyan-400 focus:ring-2 focus:ring-cyber-cyan-500/40"
               placeholder="Ej: 1234ab"
             />
