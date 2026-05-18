@@ -1,119 +1,182 @@
-# Aura Pro - E-commerce Gamer
+# Aura Pro — E-commerce Gamer
 
-Plataforma de e-commerce ficticia orientada a hardware gamer y componentes de PC, construida con Next.js 14, TypeScript y Supabase.
+Plataforma de e-commerce ficticia orientada a hardware gamer y componentes de PC. Diseño cyberpunk (tema oscuro), catálogo estático enriquecido, carrito, buscador global y configurador **Armá tu PC**.
 
-## Stack Tecnológico
+**Repositorio:** [github.com/CrisNeyra/pagina-web-ventapc](https://github.com/CrisNeyra/pagina-web-ventapc)
+
+**Demo (producción):** [pagina-web-ventapc.vercel.app](https://pagina-web-ventapc.vercel.app)
+
+---
+
+## Stack tecnológico
 
 ### Frontend
-- Next.js 14 (App Router)
-- React 19
-- TypeScript
-- Tailwind CSS
-- Zustand (estado global para búsqueda, carrito y builder)
-- Sonner (toasts y feedback visual)
-- React Icons
+- **Next.js 16** (App Router) + **React 19**
+- **TypeScript**
+- **Tailwind CSS v4**
+- **Zustand** — búsqueda, carrito y PC builder (con persistencia local del build)
+- **Redux Toolkit** — slice de carrito legacy (`ProveedorRedux`)
+- **Sonner** — notificaciones toast
+- **Framer Motion** — animaciones en componentes UI
+- **React Icons** / **Lucide**
 
-### Backend / Servicios
-- Supabase Auth (registro, login, sesión)
-- Supabase Postgres (persistencia de builds de PC)
-- API routes de Next.js (`src/app/**/route.ts`)
+### Backend y servicios
+- **Firebase Authentication** — registro, login y sesión
+- **Cloud Firestore** — guardado de configuraciones de PC (`pc_builds`)
+- **Cloud Storage for Firebase** — preparado para assets de productos
+- **Firebase Hosting / Functions** — configuración en `firebase.json`, `functions/` y guía en `docs/`
 
-## Arquitectura del Proyecto
+> El proyecto migró de Supabase a Firebase. Para el proceso completo de migración de usuarios y datos, ver [`docs/migracion-firebase.md`](docs/migracion-firebase.md).
+
+---
+
+## Arquitectura del proyecto
 
 ```txt
 src/
-  app/                  # Rutas App Router (home, productos, notebooks, usuario, etc.)
-  componentes/          # Componentes UI reutilizables
-  context/              # AuthContext y providers
-  datos/                # Catálogo estático, navegación y datasets UI
-  store/                # Zustand stores (carrito, búsqueda, builder)
-  servicios/            # Integraciones y lógica de guardado (Supabase)
-  configuracion/        # Clientes/config de Supabase y entorno
-  tipos/                # Tipos TypeScript de dominio
+  app/                  # Rutas App Router (home, productos, notebooks, usuario, arma-tu-pc, etc.)
+  componentes/          # UI reutilizable (Navbar, ProductCard, PcBuilder, modales, etc.)
+  context/              # AuthContext (Firebase)
+  datos/                # Catálogo estático, navegación, datasets del builder
+  store/                # Zustand (carrito, búsqueda, builder) + Redux (carrito)
+  servicios/            # Guardado de builds en Firestore
+  configuracion/        # Cliente Firebase y validación de entorno (Zod)
+  tipos/                # Tipos TypeScript compartidos
+  utils/                # Formato de precios, helpers
 public/
   productos/            # Imágenes de catálogo
-  banners/              # Banners home
-  assets/               # SVGs y recursos auxiliares
+  banners/              # Banners (p. ej. banner-cuotas.jpg)
+  assets/               # Recursos auxiliares
+docs/                   # Guías (migración Firebase, etc.)
+scripts/firebase/       # Scripts de importación / migración
+functions/              # Cloud Functions (Node)
+supabase/               # Schema histórico (referencia)
 ```
 
-## Variables de Entorno
+---
 
-Creá `.env.local` en la raíz del proyecto:
+## Variables de entorno
+
+Copiá `.env.local.example` a `.env.local` en la raíz y completá los valores desde la consola de Firebase (proyecto `aurapro-27727` → Configuración del proyecto → Tus apps):
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=https://TU-PROYECTO.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=TU-ANON-KEY
+NEXT_PUBLIC_FIREBASE_API_KEY=
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=aurapro-27727
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+NEXT_PUBLIC_FIREBASE_APP_ID=
+NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=
 ```
 
-Referencia disponible en `.env.local.example`.
+**Importante:** `.env.local` no se sube a Git (está en `.gitignore`).
 
-## Instalación y Ejecución
+### Auth en desarrollo
+En Firebase Console → **Authentication** → **Sign-in method** → **Email/Password**:
+- Activá el proveedor Email.
+- Para probar sin confirmar correo: desactivá **Email link** / confirmación por email según tu flujo (en desarrollo suele convenir desactivar la confirmación obligatoria).
 
-1. Instalar dependencias:
+---
+
+## Instalación y ejecución local
 
 ```bash
 npm install
-```
-
-2. Levantar entorno local:
-
-```bash
 npm run dev
 ```
 
-3. Abrir en navegador:
+Abrí [http://localhost:3000](http://localhost:3000).
 
-```txt
-http://localhost:3000
-```
+Si el puerto 3000 está ocupado, Next.js puede usar **3001**; revisá el mensaje en la terminal.
 
-## Scripts Disponibles
+### Otros scripts
 
-- `npm run dev` - entorno de desarrollo
-- `npm run build` - build de producción
-- `npm run start` - servir build de producción
-- `npm run lint` - validación de código con ESLint
+| Comando | Descripción |
+|--------|-------------|
+| `npm run build` | Build de producción |
+| `npm run start` | Servir build local |
+| `npm run lint` | ESLint |
+| `npm run firebase:users:import` | Importar usuarios (script) |
+| `npm run firebase:firestore:migrate` | Migrar datos a Firestore |
+| `npm run firebase:functions:serve` | Functions en local |
+| `npm run firebase:functions:deploy` | Desplegar Functions |
 
-## Funcionalidades Implementadas
+---
 
-- Home cyberpunk con hero de video y beneficios.
-- Búsqueda global con autocompletado y navegación a producto.
-- Catálogo dinámico con categorías, productos destacados y listados.
-- Página de detalle de producto con galería de 3 imágenes.
-- Carrito lateral con actualización de cantidades.
-- Armá tu PC (builder por categorías de componentes).
-- Autenticación de usuario con Supabase.
-- Área de usuario con perfil, compras, métodos de pago, soporte y valoración.
-- Botón flotante de WhatsApp con diálogo estilo widget.
+## Funcionalidades principales
 
-## Criterios de Imágenes de Productos
+### Home y catálogo
+- Hero con video, barra de beneficios y enlace **“Desliza para explorar”** (semi-transparente; más visible al pasar el mouse).
+- Grilla de **marcas** y **productos destacados**.
+- Listado de productos con **“Ver más”** y filtrado por **búsqueda global** (Navbar).
+- Banner **Armá tu PC**, grilla de categorías.
+- Catálogo en `src/datos/productos.ts` con normalización de imágenes (3 por producto) y descripciones de hasta 4 líneas.
 
-- Convención principal recomendada:
-  - `/public/productos/{id}-principal.jpg`
-  - `/public/productos/{id}-img2.jpg`
-  - `/public/productos/{id}-img3.jpg`
-- El frontend contempla fallback a placeholder si una imagen no está disponible.
+### Búsqueda y navegación
+- Input en **Navbar** (desktop y mobile) con **autocompletado** (hasta 6 resultados) y enlace al detalle.
+- Logo enlaza a `/` y **limpia la búsqueda** al volver al inicio.
 
-## Calidad y Buenas Prácticas
+### Producto y carrito
+- Página de detalle con galería.
+- **ProductCard** con fallback de imágenes y **Agregar al carrito** (Zustand + toasts).
+- **CartDrawer** lateral.
 
-- Tipado estricto con TypeScript en dominio y componentes.
-- Separación por capas (UI, datos, servicios, estado).
-- Componentes desacoplados y reutilizables.
-- Experiencia responsive para desktop y mobile.
-- Feedback de interacción con notificaciones y estados visuales.
+### Armá tu PC
+- Selector por categorías (CPU, motherboard, RAM, GPU, etc.).
+- Subtotal en tiempo real, limpiar build, avance a checkout.
+- **Guardar configuración** en Firestore (requiere usuario autenticado y Firebase configurado).
 
-## Roadmap Técnico Recomendado
+### Usuario
+- Modal **Login / Registro** con validación de contraseña (6 caracteres: 4 números + 2 letras).
+- Autocompletado del navegador (`email` / `current-password`) para recordar credenciales.
+- Página **`/usuario`** con secciones de perfil (según implementación actual).
 
-- Persistir historial real de compras en Supabase.
-- CRUD completo de métodos de pago por usuario.
-- Panel de administración de catálogo.
-- Pruebas unitarias y E2E (Vitest + Playwright).
-- Métricas y observabilidad (logs, tiempos de carga, errores).
+### UX y marketing
+- **WelcomeBannerModal:** banner `public/banners/banner-cuotas.jpg` en la primera visita y al iniciar sesión; cierre con **X** o automático a los **3 segundos**.
+- **FloatingWhatsApp:** al pasar el mouse, diálogo de confirmación antes de abrir WhatsApp.
+- Tema visual **oscuro cyberpunk** (cyan / purple / pink).
+
+### Removido / simplificado recientemente
+- Sección **“Valoraciones de usuarios”** en el home (eliminada).
+- **Modo claro** y toggle de tema (eliminados; solo tema oscuro).
+
+---
 
 ## Despliegue
 
-El proyecto está preparado para deploy en Vercel:
+### Vercel (recomendado para Next.js)
+1. Conectá el repo de GitHub.
+2. Agregá las variables `NEXT_PUBLIC_FIREBASE_*` en **Settings → Environment Variables**.
+3. Deploy automático en cada push a `main`.
 
-1. Conectar repositorio a Vercel.
-2. Configurar variables de entorno (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`).
-3. Deploy automático por push a rama principal.
+### Firebase Hosting
+Ver pasos en [`docs/migracion-firebase.md`](docs/migracion-firebase.md) (sección Hosting).
+
+---
+
+## Estructura de datos (Firestore)
+
+Colección usada por el builder (ejemplo):
+
+- `pc_builds/{buildId}` — `user_id`, `subtotal`, `items[]`, timestamps.
+
+Reglas e índices: `firestore.rules`, `firestore.indexes.json`.
+
+---
+
+## Contribuir y licencia
+
+Proyecto educativo / portfolio. Para cambios, creá una rama desde `main`, hacé commit descriptivo y abrí un PR.
+
+---
+
+## Changelog reciente (resumen)
+
+| Área | Cambio |
+|------|--------|
+| Auth | Migración de Supabase a **Firebase Auth** |
+| Datos | Builds de PC en **Firestore** |
+| Home | Marcas, hero, sin bloque de valoraciones |
+| UX | Banner cuotas, WhatsApp con confirmación, logo sin borde glow |
+| Auth UI | Mensajes de éxito en verde; autocompletado de credenciales |
+| Tema | Solo modo oscuro (removido tema claro) |
