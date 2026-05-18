@@ -6,12 +6,17 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "firebase:users:import": "node scripts/firebase/import-users.mjs",
+    "firebase:firestore:migrate": "node scripts/firebase/migrate-firestore.mjs",
+    "firebase:functions:serve": "npm --prefix functions run serve",
+    "firebase:functions:deploy": "npm --prefix functions run deploy"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@reduxjs/toolkit": "^2.11.2",
-    "@supabase/supabase-js": "^2.101.1",
+    "firebase": "^12.13.0",
+    "firebase-admin": "^13.10.0",
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.7.0",
     "next": "16.2.1",

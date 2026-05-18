@@ -1,14 +1,13 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import type { User } from "@supabase/supabase-js";
 import { builderCategories, builderProducts } from "@/datos/pcBuilder";
 import { formatearPrecio } from "@/utils/formato";
-import { obtenerClienteSupabase } from "@/configuracion/supabase";
 import { calcularSubtotalBuilder, useBuilderStore } from "@/store/builderStore";
 import { guardarBuildConReintentos } from "@/servicios/buildsPcServicio";
+import { useAuth } from "@/context/AuthContext";
 
 export default function PcBuilder() {
   const {
@@ -19,12 +18,10 @@ export default function PcBuilder() {
     quitarProducto,
     limpiarBuild,
   } = useBuilderStore();
+  const { user } = useAuth();
   const [guardando, setGuardando] = useState(false);
   const [feedback, setFeedback] = useState("");
-  const [usuario, setUsuario] = useState<User | null>(null);
   const [imagenesConError, setImagenesConError] = useState<Record<string, true>>({});
-
-  const supabase = obtenerClienteSupabase();
 
   const productosCategoria = useMemo(
     () =>
@@ -42,21 +39,11 @@ export default function PcBuilder() {
     [categoriaActiva]
   );
 
-  useEffect(() => {
-    if (!supabase) return;
-    supabase.auth.getUser().then(({ data }) => setUsuario(data.user ?? null));
-  }, [supabase]);
-
   const guardarConfiguracion = async () => {
     setFeedback("");
 
-    if (!supabase) {
-      setFeedback("Configurá Supabase para guardar builds en base de datos real.");
-      return;
-    }
-
-    if (!usuario) {
-      setFeedback("Iniciá sesión para guardar esta configuración.");
+    if (!user) {
+      setFeedback("Inicia sesion para guardar esta configuracion.");
       return;
     }
 
@@ -76,8 +63,8 @@ export default function PcBuilder() {
     }
 
     setGuardando(true);
-    const resultado = await guardarBuildConReintentos(supabase, {
-      user_id: usuario.id,
+    const resultado = await guardarBuildConReintentos({
+      user_id: user.uid,
       subtotal,
       items: itemsSeleccionados,
     });

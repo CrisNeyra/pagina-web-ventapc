@@ -46,7 +46,7 @@ export default function WelcomeBannerModal() {
   useEffect(() => {
     if (loading) return;
 
-    const idActual = user?.id ?? null;
+    const idActual = user?.uid ?? null;
 
     if (!authInicializadoRef.current) {
       authInicializadoRef.current = true;
@@ -61,7 +61,7 @@ export default function WelcomeBannerModal() {
     }
 
     ultimoUsuarioRef.current = idActual;
-  }, [loading, user?.id]);
+  }, [loading, user?.uid]);
 
   useEffect(() => {
     if (!visible) return;

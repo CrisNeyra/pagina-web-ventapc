@@ -46,7 +46,7 @@ export default function AuthModal({
 
     if (!configured) {
       setError(
-        "Falta configurar Supabase. Cargá NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_ANON_KEY en .env.local."
+        "Falta configurar Firebase. Carga las variables NEXT_PUBLIC_FIREBASE_* en .env.local."
       );
       return;
     }
@@ -73,7 +73,7 @@ export default function AuthModal({
         }
 
         setOk(
-          "Registro exitoso. Si la confirmación por correo está desactivada, ingresás automáticamente."
+          "Registro exitoso. Inicias sesion automaticamente con Firebase."
         );
         onAutenticado?.();
         window.setTimeout(() => cerrar(), 350);

@@ -55,7 +55,7 @@ export default function UsuarioPage() {
         <article className="rounded-2xl border border-cyber-purple-500/35 bg-oscuro-900/80 p-5 lg:col-span-1">
           <h1 className="text-xl font-black text-white">Usuario</h1>
           <p className="mt-3 text-sm text-cyber-cyan-200/85"><span className="font-semibold">Email:</span> {user.email}</p>
-          <p className="mt-1 text-sm text-cyber-cyan-200/85"><span className="font-semibold">ID:</span> {user.id.slice(0, 8)}...</p>
+          <p className="mt-1 text-sm text-cyber-cyan-200/85"><span className="font-semibold">ID:</span> {user.uid.slice(0, 8)}...</p>
           <p className="mt-1 text-sm text-cyber-cyan-200/85"><span className="font-semibold">Estado:</span> Activo</p>
         </article>
 

@@ -8,12 +8,18 @@ import {
   useMemo,
   useState,
 } from "react";
-import type { Session, User } from "@supabase/supabase-js";
-import { obtenerClienteSupabase } from "@/configuracion/supabase";
+import {
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut as cerrarSesionFirebase,
+  type User,
+} from "firebase/auth";
+import { FirebaseError } from "firebase/app";
+import { obtenerAuthFirebase } from "@/configuracion/firebase";
 
 interface AuthContextValue {
   user: User | null;
-  session: Session | null;
   loading: boolean;
   configured: boolean;
   signIn: (email: string, password: string) => Promise<string | null>;
@@ -23,114 +29,104 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+function mensajeAuthFirebase(error: unknown) {
+  if (!(error instanceof FirebaseError)) {
+    return "Ocurrio un error inesperado de autenticacion.";
+  }
+
+  switch (error.code) {
+    case "auth/invalid-email":
+      return "El email no es valido.";
+    case "auth/email-already-in-use":
+      return "Este email ya esta registrado.";
+    case "auth/invalid-credential":
+    case "auth/wrong-password":
+    case "auth/user-not-found":
+      return "Email o contrasena incorrectos.";
+    case "auth/weak-password":
+      return "La contrasena no cumple los requisitos minimos.";
+    case "auth/too-many-requests":
+      return "Demasiados intentos. Intenta nuevamente en unos minutos.";
+    default:
+      return error.message || "Error de autenticacion.";
+  }
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const supabase = useMemo(() => obtenerClienteSupabase(), []);
-  const configured = Boolean(supabase);
+  const auth = useMemo(() => obtenerAuthFirebase(), []);
+  const configured = Boolean(auth);
   const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(configured);
 
   useEffect(() => {
-    if (!supabase) return;
+    if (!auth) return;
 
-    let mounted = true;
-
-    supabase.auth
-      .getSession()
-      .then(({ data, error }) => {
-        if (error) {
-          console.error("Error al recuperar sesión de Supabase:", error);
-        }
-        if (!mounted) return;
-        setSession(data.session ?? null);
-        setUser(data.session?.user ?? null);
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      (usuarioActual) => {
+        setUser(usuarioActual ?? null);
         setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error inesperado al recuperar sesión:", error);
-        if (!mounted) return;
+      },
+      (error) => {
+        console.error("Error al escuchar cambios de autenticacion:", error);
         setLoading(false);
-      });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
-      setSession(nextSession ?? null);
-      setUser(nextSession?.user ?? null);
-    });
+      }
+    );
 
     return () => {
-      mounted = false;
-      subscription.unsubscribe();
+      unsubscribe();
     };
-  }, [supabase]);
+  }, [auth]);
 
   const signIn = useCallback(
     async (email: string, password: string) => {
-      if (!supabase) return "Supabase no está configurado.";
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) {
-        console.error("Error de login en Supabase:", error);
+      if (!auth) return "Firebase no esta configurado.";
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        return null;
+      } catch (error) {
+        console.error("Error de login en Firebase:", error);
+        return mensajeAuthFirebase(error);
       }
-      return error?.message ?? null;
     },
-    [supabase]
+    [auth]
   );
 
   const signUp = useCallback(
     async (email: string, password: string) => {
-      if (!supabase) return "Supabase no está configurado.";
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-
-      if (error) {
-        console.error("Error de registro en Supabase:", error);
-        return error.message;
+      if (!auth) return "Firebase no esta configurado.";
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        return null;
+      } catch (error) {
+        console.error("Error de registro en Firebase:", error);
+        return mensajeAuthFirebase(error);
       }
-
-      if (!data.session) {
-        const { error: loginAutomaticoError } =
-          await supabase.auth.signInWithPassword({
-            email,
-            password,
-          });
-
-        if (loginAutomaticoError) {
-          console.error(
-            "Registro exitoso pero no se pudo iniciar sesión automáticamente:",
-            loginAutomaticoError
-          );
-          return "Usuario creado. Si no inicia sesión automáticamente, desactivá la confirmación por correo en Supabase Auth.";
-        }
-      }
-
-      return null;
     },
-    [supabase]
+    [auth]
   );
 
   const signOut = useCallback(async () => {
-    if (!supabase) return "Supabase no está configurado.";
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error("Error al cerrar sesión en Supabase:", error);
+    if (!auth) return "Firebase no esta configurado.";
+    try {
+      await cerrarSesionFirebase(auth);
+      return null;
+    } catch (error) {
+      console.error("Error al cerrar sesion en Firebase:", error);
+      return mensajeAuthFirebase(error);
     }
-    return error?.message ?? null;
-  }, [supabase]);
+  }, [auth]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
       user,
-      session,
       loading,
       configured,
       signIn,
       signUp,
       signOut,
     }),
-    [configured, loading, session, signIn, signOut, signUp, user]
+    [configured, loading, signIn, signOut, signUp, user]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

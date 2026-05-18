@@ -1,5 +1,5 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
-import type { BaseDatosSupabase } from "@/tipos/baseDatosSupabase";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { obtenerFirestoreDb } from "@/configuracion/firebase";
 
 interface ItemBuild {
   id: string;
@@ -24,28 +24,37 @@ async function esperar(ms: number) {
 }
 
 export async function guardarBuildConReintentos(
-  clienteSupabase: SupabaseClient<BaseDatosSupabase>,
   datosBuild: DatosBuild
 ): Promise<ResultadoGuardadoBuild> {
+  const db = obtenerFirestoreDb();
+  if (!db) {
+    return {
+      ok: false,
+      mensaje: "Configura Firebase para guardar builds en base de datos real.",
+    };
+  }
+
   const maximoIntentos = 3;
 
   for (let intento = 1; intento <= maximoIntentos; intento += 1) {
-    const { error } = await clienteSupabase.from("pc_builds").insert(datosBuild);
-
-    if (!error) {
+    try {
+      await addDoc(collection(db, "pc_builds"), {
+        ...datosBuild,
+        created_at: serverTimestamp(),
+      });
       return {
         ok: true,
         mensaje: "Configuración guardada en la base de datos.",
       };
-    }
-
-    const esUltimoIntento = intento === maximoIntentos;
-    if (esUltimoIntento) {
-      return {
-        ok: false,
-        mensaje:
-          "No se pudo guardar la build. Verificá la tabla pc_builds, RLS y variables de entorno.",
-      };
+    } catch {
+      const esUltimoIntento = intento === maximoIntentos;
+      if (esUltimoIntento) {
+        return {
+          ok: false,
+          mensaje:
+            "No se pudo guardar la build. Verifica Firestore, reglas de seguridad y variables de entorno.",
+        };
+      }
     }
 
     await esperar(350 * intento);
