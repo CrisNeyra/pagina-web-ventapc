@@ -183,7 +183,17 @@ exports.stripeWebhook = onRequest(
       return res.status(200).json({ received: true });
     } catch (error) {
       console.error("Error stripeWebhook:", error);
-      return res.status(400).send("WEBHOOK_ERROR");
+
+      const esErrorDeFirma =
+        error?.type === "StripeSignatureVerificationError" ||
+        /signature/i.test(String(error?.message ?? ""));
+
+      if (esErrorDeFirma) {
+        return res.status(400).send("INVALID_STRIPE_SIGNATURE");
+      }
+
+      // Errores transitorios (Firestore, red, etc.): 500 para que Stripe reintente con backoff.
+      return res.status(500).send("WEBHOOK_HANDLER_ERROR");
     }
   }
 );
