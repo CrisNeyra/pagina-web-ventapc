@@ -14,7 +14,7 @@ export default function BrandsGrid() {
         {marcas.map((marca) => (
           <article
             key={marca.nombre}
-            className="flex h-24 items-center justify-center rounded-xl border border-cyber-purple-500/25 bg-oscuro-800/70 p-3 transition-all duration-200 hover:-translate-y-0.5 hover:border-cyber-cyan-400/70 hover:shadow-[0_0_18px_rgba(34,211,238,0.2)]"
+            className="flex h-24 items-center justify-center rounded-xl border border-cyber-purple-500/25 bg-white p-3 transition-all duration-200 hover:-translate-y-0.5 hover:border-cyber-cyan-400/70 hover:shadow-[0_0_18px_rgba(34,211,238,0.2)]"
             aria-label={`Marca ${marca.nombre}`}
           >
             <div className="relative h-12 w-24">

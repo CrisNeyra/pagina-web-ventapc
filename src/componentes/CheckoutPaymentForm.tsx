@@ -11,9 +11,13 @@ import { useCartStore } from "@/store/cartStore";
 
 interface CheckoutPaymentFormProps {
   orderId: string;
+  etiquetaBoton?: string;
 }
 
-export default function CheckoutPaymentForm({ orderId }: CheckoutPaymentFormProps) {
+export default function CheckoutPaymentForm({
+  orderId,
+  etiquetaBoton = "Pagar ahora",
+}: CheckoutPaymentFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const router = useRouter();
@@ -74,7 +78,7 @@ export default function CheckoutPaymentForm({ orderId }: CheckoutPaymentFormProp
         disabled={!stripe || !elements || procesando}
         className="w-full rounded-md bg-cyber-cyan-500 px-4 py-3 text-sm font-bold text-oscuro-950 transition-colors hover:bg-cyber-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {procesando ? "Procesando pago..." : "Pagar ahora"}
+        {procesando ? "Procesando pago..." : etiquetaBoton}
       </button>
     </form>
   );

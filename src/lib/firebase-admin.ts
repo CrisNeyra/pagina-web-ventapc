@@ -28,3 +28,15 @@ export function obtenerFirebaseAuthAdmin() {
   if (!app) return null;
   return admin.auth(app);
 }
+
+export function obtenerFirestoreAdmin() {
+  const app = obtenerFirebaseAdmin();
+  if (!app) return null;
+  return admin.firestore(app);
+}
+
+export function obtenerStorageAdmin() {
+  const app = obtenerFirebaseAdmin();
+  if (!app) return null;
+  return admin.storage(app);
+}

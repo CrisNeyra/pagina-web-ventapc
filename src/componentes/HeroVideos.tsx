@@ -48,7 +48,7 @@ export default function HeroVideos() {
 
       {/* ─── Zona de videos — izquierda (60%) ────────────────────────── */}
       <div
-        className="relative h-[300px] min-h-[300px] w-full overflow-hidden bg-oscuro-900 select-none sm:h-[360px] md:h-full md:min-h-0 md:w-[60%]"
+        className="relative h-[270px] min-h-[270px] w-full overflow-hidden bg-oscuro-900 select-none sm:h-[324px] md:h-full md:min-h-0 md:w-[60%]"
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
@@ -129,7 +129,7 @@ export default function HeroVideos() {
       </div>
 
       {/* ─── Panel promocional — derecha (40%) ───────────────────────── */}
-      <div className="w-full min-h-[300px] bg-oscuro-900 border-l border-cyber-purple-500/35 md:h-full md:min-h-0 md:w-[40%]
+      <div className="w-full min-h-[270px] bg-oscuro-900 border-l border-cyber-purple-500/35 md:h-full md:min-h-0 md:w-[40%]
                     flex items-center justify-center px-6 sm:px-8 md:px-10 py-8 md:py-10 relative overflow-y-visible">
         {/* Glow de fondo sutil */}
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_rgba(34,211,238,0.12)_0%,_transparent_60%)]" />

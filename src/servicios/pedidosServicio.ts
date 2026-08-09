@@ -25,6 +25,8 @@ export interface Pedido {
 
 const ETIQUETAS_ESTADO: Record<string, string> = {
   pending_payment: "Pendiente de pago",
+  pending_cash: "Pendiente de pago en local",
+  pending_transfer: "Pendiente de transferencia",
   paid: "Pagado",
   payment_failed: "Pago fallido",
 };

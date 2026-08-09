@@ -13,7 +13,7 @@ export default function PaginaInicio() {
 
   return (
     <main className="flex-1 bg-background">
-      <section className="relative grid min-h-[calc(100vh-130px)] grid-rows-[minmax(0,1fr)_auto] bg-background">
+      <section className="relative grid min-h-[calc((100vh-130px)*0.9)] grid-rows-[minmax(0,1fr)_auto] bg-background">
         <HeroVideos />
         <BarraBeneficios />
         <div className="pointer-events-none absolute inset-x-0 bottom-2 z-20 flex items-center justify-center">
