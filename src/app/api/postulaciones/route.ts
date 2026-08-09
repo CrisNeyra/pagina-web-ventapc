@@ -5,10 +5,17 @@ import {
   obtenerFirestoreAdmin,
   obtenerStorageAdmin,
 } from "@/lib/firebase-admin";
+import { excedeRateLimit, obtenerIpCliente } from "@/lib/rate-limit";
+import { enviarEmailConfirmacionPostulacion } from "@/lib/email";
 
 const MAX_CV_BYTES = 5 * 1024 * 1024;
 
 export async function POST(request: NextRequest) {
+  const ip = obtenerIpCliente(request);
+  if (excedeRateLimit(`postulaciones:ip:${ip}`, 5)) {
+    return NextResponse.json({ error: "RATE_LIMITED" }, { status: 429 });
+  }
+
   if (!firebaseAdminConfigurado()) {
     return NextResponse.json(
       { error: "POSTULACIONES_NO_CONFIGURADAS" },
@@ -63,6 +70,12 @@ export async function POST(request: NextRequest) {
       cvNombre,
       estado: "recibida",
       createdAt: new Date(),
+    });
+
+    void enviarEmailConfirmacionPostulacion({
+      email,
+      nombre,
+      postulacionId,
     });
 
     return NextResponse.json({ ok: true, id: postulacionId });

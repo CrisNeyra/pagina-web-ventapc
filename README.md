@@ -127,6 +127,18 @@ NEXT_PUBLIC_FIREBASE_APP_CHECK_DEBUG_TOKEN=token_debug_en_local
 
 Registrá el sitio en Firebase Console → App Check → reCAPTCHA v3.
 
+### Emails y panel de administración (opcional)
+Para confirmaciones de pedido/postulación y el panel `/admin`:
+
+```env
+RESEND_API_KEY=re_...
+EMAIL_FROM=Aura Pro <onboarding@resend.dev>
+ADMIN_EMAILS=admin@aurapro.com,soporte@aurapro.com
+```
+
+- **Resend:** creá una API key en [resend.com](https://resend.com). Sin estas variables, los pedidos y postulaciones se guardan igual pero no se envían correos.
+- **`ADMIN_EMAILS`:** lista separada por coma. Solo esas cuentas (con sesión Firebase activa) pueden acceder a `/admin` y a `GET /api/admin/pedidos` y `GET /api/admin/postulaciones`.
+
 ### Validación de precios en pagos
 Antes de desplegar Functions, sincronizá el catálogo de precios:
 
@@ -180,7 +192,7 @@ Si el puerto 3000 está ocupado, Next.js puede usar **3001**; revisá el mensaje
 ## Funcionalidades principales
 
 ### Home y catálogo
-- Hero con video, barra de beneficios y enlace **“Desliza para explorar”** (semi-transparente; más visible al pasar el mouse).
+- Hero con video (poster estático + carga diferida), barra de beneficios y enlace **“Desliza para explorar”** (semi-transparente; más visible al pasar el mouse).
 - Grilla de **marcas** y **productos destacados**.
 - Listado de productos con **“Ver más”** y filtrado por **búsqueda global** (Navbar).
 - Banner **Armá tu PC**, grilla de categorías.
@@ -194,7 +206,9 @@ Si el puerto 3000 está ocupado, Next.js puede usar **3001**; revisá el mensaje
 - Página de detalle con galería.
 - **ProductCard** con fallback de imágenes y **Agregar al carrito** (Zustand + toasts).
 - **CartDrawer** lateral.
-- **Checkout** con Stripe Elements conectado a `createStripePaymentIntent` (requiere auth + variables Stripe).
+- **Checkout** con Stripe Elements y métodos offline (efectivo, transferencia con -10%, débito/crédito con cuotas) conectado a `createStripePaymentIntent` (requiere auth + variables Stripe).
+- **Trabajá con nosotros** (`/trabaja-con-nosotros`): formulario RRHH con CV PDF.
+- **Panel admin** (`/admin`): pedidos pendientes y postulaciones recibidas (requiere `ADMIN_EMAILS` + sesión Firebase).
 
 ### Armá tu PC
 - Selector por categorías (CPU, motherboard, RAM, GPU, etc.).
@@ -225,6 +239,7 @@ Si el puerto 3000 está ocupado, Next.js puede usar **3001**; revisá el mensaje
    - `NEXT_PUBLIC_FIREBASE_*` (todas las públicas de Firebase)
    - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` y `NEXT_PUBLIC_CREATE_PAYMENT_INTENT_URL` (si usás tarjetas)
    - **`FIREBASE_SERVICE_ACCOUNT_JSON`** — obligatoria para pedidos offline (efectivo/transferencia), postulaciones RRHH y cookies de sesión en el servidor
+   - **`RESEND_API_KEY`**, **`EMAIL_FROM`** y **`ADMIN_EMAILS`** — para emails de confirmación y panel `/admin`
 3. Para `FIREBASE_SERVICE_ACCOUNT_JSON` en Vercel:
    - Firebase Console → Configuración del proyecto → **Cuentas de servicio** → **Generar nueva clave privada**
    - Abrí el archivo `.json` descargado, copiá **todo el contenido en una sola línea** (sin saltos de línea)

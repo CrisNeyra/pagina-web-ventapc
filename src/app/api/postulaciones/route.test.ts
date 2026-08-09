@@ -47,6 +47,7 @@ function crearFormData(
 
 function crearRequest(formData: FormData) {
   return {
+    headers: new Headers({ "x-forwarded-for": "127.0.0.1" }),
     formData: async () => formData,
   } as unknown as NextRequest;
 }
