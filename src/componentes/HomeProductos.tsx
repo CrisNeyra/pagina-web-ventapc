@@ -30,14 +30,20 @@ export default function HomeProductos({
   const { productosFiltrados, terminoNormalizado, hayBusqueda } =
     useProductosFiltrados(productosUnicos);
   const [mostrarTodosProductos, setMostrarTodosProductos] = useState(false);
-  const [destacadosAleatorios, setDestacadosAleatorios] = useState(() =>
-    obtenerDestacadosIniciales(productosDestacados)
+  const [montado, setMontado] = useState(false);
+  const destacadosIniciales = useMemo(
+    () => obtenerDestacadosIniciales(productosDestacados),
+    [productosDestacados]
   );
-  const [productosAleatorios, setProductosAleatorios] = useState(() =>
-    obtenerProductosIniciales(productosUnicos, obtenerDestacadosIniciales(productosDestacados))
+  const productosIniciales = useMemo(
+    () => obtenerProductosIniciales(productosUnicos, destacadosIniciales),
+    [productosUnicos, destacadosIniciales]
   );
+  const [destacadosAleatorios, setDestacadosAleatorios] = useState(destacadosIniciales);
+  const [productosAleatorios, setProductosAleatorios] = useState(productosIniciales);
 
   useEffect(() => {
+    setMontado(true);
     const destacados = mezclarProductos(productosDestacados).slice(0, 4);
     const idsDestacados = new Set(destacados.map((producto) => producto.id));
     setDestacadosAleatorios(destacados);
@@ -48,6 +54,9 @@ export default function HomeProductos({
     );
   }, [productosDestacados, productosUnicos]);
 
+  const destacadosMostrar = montado ? destacadosAleatorios : destacadosIniciales;
+  const productosMostrar = montado ? productosAleatorios : productosIniciales;
+
   const destacadosFiltrados = useMemo(
     () =>
       productosDestacados.filter((producto) =>
@@ -56,7 +65,7 @@ export default function HomeProductos({
     [productosDestacados, terminoNormalizado]
   );
 
-  const productosSeccion = hayBusqueda ? productosFiltrados : productosAleatorios;
+  const productosSeccion = hayBusqueda ? productosFiltrados : productosMostrar;
   const productosVisibles =
     hayBusqueda || mostrarTodosProductos
       ? productosSeccion
@@ -73,7 +82,7 @@ export default function HomeProductos({
             Productos Destacados
           </h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {(hayBusqueda ? destacadosFiltrados : destacadosAleatorios).map((producto) => (
+            {(hayBusqueda ? destacadosFiltrados : destacadosMostrar).map((producto) => (
               <ProductCard key={producto.id} producto={producto} />
             ))}
           </div>
