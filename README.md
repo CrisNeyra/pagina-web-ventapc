@@ -180,6 +180,7 @@ Si el puerto 3000 está ocupado, Next.js puede usar **3001**; revisá el mensaje
 | `npm run start` | Servir build local |
 | `npm run lint` | ESLint |
 | `npm run test` | Tests unitarios (Vitest) |
+| `npm run test:coverage` | Tests con reporte de cobertura |
 | `npm run test:watch` | Tests en modo watch |
 | `npm run test:e2e` | Tests E2E (Playwright) |
 | `npm run firebase:users:import` | Importar usuarios (script) |
@@ -206,7 +207,7 @@ Si el puerto 3000 está ocupado, Next.js puede usar **3001**; revisá el mensaje
 - Página de detalle con galería.
 - **ProductCard** con fallback de imágenes y **Agregar al carrito** (Zustand + toasts).
 - **CartDrawer** lateral.
-- **Checkout** con Stripe Elements y métodos offline (efectivo, transferencia con -10%, débito/crédito con cuotas) conectado a `createStripePaymentIntent` (requiere auth + variables Stripe).
+- **Checkout** con Stripe Elements y métodos offline (efectivo, transferencia con -10%, débito/crédito con cuotas), paso de **retiro o envío a domicilio**, conectado a `createStripePaymentIntent` (requiere auth + variables Stripe).
 - **Trabajá con nosotros** (`/trabaja-con-nosotros`): formulario RRHH con CV PDF.
 - **Panel admin** (`/admin`): pedidos pendientes y postulaciones recibidas (requiere `ADMIN_EMAILS` + sesión Firebase).
 

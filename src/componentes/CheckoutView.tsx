@@ -24,6 +24,12 @@ import { formatearPrecio } from "@/utils/formato";
 import type { MetodoPago } from "@/tipos/metodoPago";
 import CheckoutMetodosPago from "@/componentes/CheckoutMetodosPago";
 import CheckoutPaymentForm from "@/componentes/CheckoutPaymentForm";
+import CheckoutEntrega from "@/componentes/CheckoutEntrega";
+import {
+  costoEntrega,
+  validarDatosEntrega,
+  type DatosEntrega,
+} from "@/lib/entrega";
 
 const DATOS_TRANSFERENCIA = {
   banco: "Banco Galicia",
@@ -37,6 +43,7 @@ export default function CheckoutView() {
   const { user, loading: authLoading } = useAuth();
   const { items, subtotal, clearCart } = useCartStore();
   const [metodoPago, setMetodoPago] = useState<MetodoPago | null>(null);
+  const [datosEntrega, setDatosEntrega] = useState<DatosEntrega>({ tipo: "retiro" });
   const [cuotas, setCuotas] = useState(1);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [orderId, setOrderId] = useState<string | null>(null);
@@ -60,10 +67,14 @@ export default function CheckoutView() {
     [items]
   );
 
-  const total = useMemo(() => {
+  const totalProductos = useMemo(() => {
     if (!metodoPago) return subtotal;
     return calcularTotalCheckout(itemsPago, metodoPago);
   }, [itemsPago, metodoPago, subtotal]);
+
+  const costoEnvio = useMemo(() => costoEntrega(datosEntrega.tipo), [datosEntrega.tipo]);
+
+  const total = totalProductos + costoEnvio;
 
   const descuentoTransferencia = useMemo(
     () => (metodoPago === "transferencia" ? calcularDescuentoTransferencia(subtotal) : 0),
@@ -73,12 +84,17 @@ export default function CheckoutView() {
   const requiereStripe = metodoPago === "debito" || metodoPago === "credito";
   const stripeDisponible = pagosConfigurados();
 
+  const entregaValida = useMemo(
+    () => validarDatosEntrega(datosEntrega).ok,
+    [datosEntrega]
+  );
+
   useEffect(() => {
     setClientSecret(null);
     setOrderId(null);
     setErrorPago("");
 
-    if (!metodoPago || !requiereStripe || !stripeDisponible) return;
+    if (!metodoPago || !requiereStripe || !stripeDisponible || !entregaValida) return;
     if (authLoading || !user || itemsPago.length === 0) return;
 
     let cancelado = false;
@@ -98,6 +114,7 @@ export default function CheckoutView() {
       const resultado = await crearPaymentIntent(itemsPago, idToken, {
         metodoPago: metodoPago === "credito" ? "credito" : "debito",
         cuotas: metodoPago === "credito" ? cuotas : 1,
+        entrega: datosEntrega,
       });
 
       if (cancelado) return;
@@ -118,10 +135,26 @@ export default function CheckoutView() {
     return () => {
       cancelado = true;
     };
-  }, [authLoading, user, itemsPago, metodoPago, cuotas, requiereStripe, stripeDisponible]);
+  }, [
+    authLoading,
+    user,
+    itemsPago,
+    metodoPago,
+    cuotas,
+    requiereStripe,
+    stripeDisponible,
+    entregaValida,
+    datosEntrega,
+  ]);
 
   const confirmarPedidoOffline = async () => {
     if (!metodoPago || (metodoPago !== "efectivo" && metodoPago !== "transferencia")) return;
+
+    const validacionEntrega = validarDatosEntrega(datosEntrega);
+    if (!validacionEntrega.ok) {
+      setErrorPago(validacionEntrega.error);
+      return;
+    }
 
     setConfirmandoPedido(true);
     setErrorPago("");
@@ -134,7 +167,7 @@ export default function CheckoutView() {
     }
 
     const idToken = await auth.currentUser.getIdToken();
-    const resultado = await crearPedidoOffline(itemsPago, metodoPago, idToken);
+    const resultado = await crearPedidoOffline(itemsPago, metodoPago, idToken, datosEntrega);
 
     if (!resultado.ok) {
       setErrorPago(resultado.mensaje);
@@ -202,15 +235,17 @@ export default function CheckoutView() {
         <div>
           <h1 className="mb-2 text-2xl font-black text-white sm:text-3xl">Checkout</h1>
           <p className="mb-6 text-sm text-cyber-cyan-200/75">
-            Elegí cómo querés pagar tu pedido.
+            Elegí cómo querés recibir y pagar tu pedido.
           </p>
 
-          <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-cyber-cyan-300">
+          <CheckoutEntrega datos={datosEntrega} onChange={setDatosEntrega} />
+
+          <h2 className="mb-3 mt-8 text-sm font-bold uppercase tracking-wide text-cyber-cyan-300">
             Forma de pago
           </h2>
           <CheckoutMetodosPago seleccionado={metodoPago} onSeleccionar={setMetodoPago} />
 
-          {metodoPago === "efectivo" && (
+          {metodoPago === "efectivo" && entregaValida && (
             <div className="mt-6 space-y-4 rounded-xl border border-cyber-purple-500/30 bg-oscuro-800/70 p-4">
               <p className="text-sm text-cyber-cyan-200/85">
                 Tu pedido quedará reservado por 48 horas. Podés abonar en efectivo al retirar en
@@ -230,7 +265,7 @@ export default function CheckoutView() {
             </div>
           )}
 
-          {metodoPago === "transferencia" && (
+          {metodoPago === "transferencia" && entregaValida && (
             <div className="mt-6 space-y-4 rounded-xl border border-cyber-purple-500/30 bg-oscuro-800/70 p-4">
               <p className="text-sm font-bold text-cyber-lime-400">
                 ¡10% de descuento aplicado! Ahorrás {formatearPrecio(descuentoTransferencia)}
@@ -369,9 +404,18 @@ export default function CheckoutView() {
             </div>
           )}
 
+          {costoEnvio > 0 && (
+            <div className="mt-4 flex items-center justify-between text-sm text-cyber-cyan-200/85">
+              <span>Envío a domicilio</span>
+              <span>{formatearPrecio(costoEnvio)}</span>
+            </div>
+          )}
+
           <div className="mt-4 flex items-center justify-between border-t border-cyber-purple-500/30 pt-4">
             <span className="text-sm text-cyber-cyan-200">Total</span>
-            <strong className="text-xl text-cyber-cyan-300">{formatearPrecio(total)}</strong>
+            <strong className="text-xl text-cyber-cyan-300">
+              {formatearPrecio(metodoPago ? total : subtotal + costoEnvio)}
+            </strong>
           </div>
 
           {metodoPago === "credito" && cuotas > 1 && (

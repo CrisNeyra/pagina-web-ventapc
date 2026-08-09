@@ -13,6 +13,7 @@ export default function HeroVideos() {
   const [activo, setActivo] = useState(0);
   const [visible, setVisible] = useState(false);
   const [videoListo, setVideoListo] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
   const contenedorRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef(0);
 
@@ -29,6 +30,14 @@ export default function HeroVideos() {
   }, []);
 
   useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const actualizar = () => setReducedMotion(media.matches);
+    actualizar();
+    media.addEventListener("change", actualizar);
+    return () => media.removeEventListener("change", actualizar);
+  }, []);
+
+  useEffect(() => {
     const elemento = contenedorRef.current;
     if (!elemento) return;
 
@@ -42,10 +51,10 @@ export default function HeroVideos() {
   }, []);
 
   useEffect(() => {
-    if (!visible) return;
+    if (!visible || reducedMotion) return;
     const timer = window.setInterval(siguiente, CAMBIO_AUTOMATICO_MS);
     return () => window.clearInterval(timer);
-  }, [visible, siguiente]);
+  }, [visible, siguiente, reducedMotion]);
 
   const onTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
@@ -77,7 +86,7 @@ export default function HeroVideos() {
         />
 
         <AnimatePresence mode="sync">
-          {visible && (
+          {visible && !reducedMotion && (
             <motion.div
               key={activo}
               initial={{ opacity: 0 }}
@@ -110,7 +119,7 @@ export default function HeroVideos() {
         <button
           onClick={anterior}
           aria-label="Video anterior"
-          className="absolute left-3 top-1/2 z-10 -translate-y-1/2 rounded-full border border-cyber-cyan-500/45 bg-oscuro-950/65 p-2.5 text-white backdrop-blur-sm transition-all duration-200 hover:bg-cyber-purple-500/75"
+          className="absolute left-3 top-1/2 z-10 -translate-y-1/2 rounded-full border border-cyber-cyan-500/45 bg-oscuro-950/65 p-2.5 text-white backdrop-blur-sm transition-all duration-200 hover:bg-cyber-purple-500/75 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyber-cyan-400"
         >
           <FiChevronLeft size={18} />
         </button>
@@ -118,7 +127,7 @@ export default function HeroVideos() {
         <button
           onClick={siguiente}
           aria-label="Video siguiente"
-          className="absolute right-3 top-1/2 z-10 -translate-y-1/2 rounded-full border border-cyber-cyan-500/45 bg-oscuro-950/65 p-2.5 text-white backdrop-blur-sm transition-all duration-200 hover:bg-cyber-purple-500/75"
+          className="absolute right-3 top-1/2 z-10 -translate-y-1/2 rounded-full border border-cyber-cyan-500/45 bg-oscuro-950/65 p-2.5 text-white backdrop-blur-sm transition-all duration-200 hover:bg-cyber-purple-500/75 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyber-cyan-400"
         >
           <FiChevronRight size={18} />
         </button>

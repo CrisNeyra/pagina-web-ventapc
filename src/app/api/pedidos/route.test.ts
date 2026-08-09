@@ -53,6 +53,7 @@ describe("POST /api/pedidos", () => {
       headers: { authorization: "Bearer token-valido" },
       body: JSON.stringify({
         metodoPago: "transferencia",
+        entrega: { tipo: "retiro" },
         items: [{ id: "gpu-001", precio: 100000, cantidad: 1 }],
       }),
     });
@@ -64,6 +65,32 @@ describe("POST /api/pedidos", () => {
     expect(data.ok).toBe(true);
     expect(data.total).toBe(90000);
     expect(docSet).toHaveBeenCalledOnce();
+  });
+
+  it("suma costo de envío al total", async () => {
+    const request = new NextRequest("http://localhost/api/pedidos", {
+      method: "POST",
+      headers: { authorization: "Bearer token-valido" },
+      body: JSON.stringify({
+        metodoPago: "efectivo",
+        entrega: {
+          tipo: "envio",
+          envio: {
+            direccion: "Calle 123",
+            ciudad: "CABA",
+            codigoPostal: "1425",
+            telefonoContacto: "+54 11 5555-5555",
+          },
+        },
+        items: [{ id: "gpu-001", precio: 100000, cantidad: 1 }],
+      }),
+    });
+
+    const response = await crearPedido(request);
+    const data = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(data.total).toBe(105000);
   });
 
   it("rechaza método de pago inválido", async () => {

@@ -1,4 +1,5 @@
 import type { MetodoPago } from "@/tipos/metodoPago";
+import type { DatosEntrega } from "@/lib/entrega";
 
 export interface ItemPedidoRequest {
   id: string;
@@ -41,7 +42,8 @@ function mapearError(error?: string): string {
 export async function crearPedidoOffline(
   items: ItemPedidoRequest[],
   metodoPago: MetodoPago,
-  idToken: string
+  idToken: string,
+  entrega: DatosEntrega
 ): Promise<RespuestaCrearPedido> {
   try {
     const respuesta = await fetch("/api/pedidos", {
@@ -50,7 +52,7 @@ export async function crearPedidoOffline(
         "Content-Type": "application/json",
         Authorization: `Bearer ${idToken}`,
       },
-      body: JSON.stringify({ items, metodoPago }),
+      body: JSON.stringify({ items, metodoPago, entrega }),
     });
 
     const datos = (await respuesta.json().catch(() => ({}))) as {

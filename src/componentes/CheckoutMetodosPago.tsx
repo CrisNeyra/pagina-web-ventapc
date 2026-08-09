@@ -35,7 +35,7 @@ export default function CheckoutMetodosPago({
             key={metodo.id}
             type="button"
             onClick={() => onSeleccionar(metodo.id)}
-            className={`rounded-xl border p-4 text-left transition-all duration-200 ${
+            className={`rounded-xl border p-4 text-left transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyber-cyan-400 ${
               activo
                 ? "border-cyber-cyan-400 bg-cyber-cyan-500/10 shadow-[0_0_20px_rgba(34,211,238,0.2)]"
                 : "border-cyber-purple-500/30 bg-oscuro-800/70 hover:border-cyber-cyan-400/50"

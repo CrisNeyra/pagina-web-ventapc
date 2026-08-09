@@ -20,6 +20,46 @@ interface ItemPago {
   cantidad?: number;
 }
 
+interface DatosEnvio {
+  direccion: string;
+  ciudad: string;
+  codigoPostal: string;
+  telefonoContacto: string;
+}
+
+interface DatosEntrega {
+  tipo: "retiro" | "envio";
+  envio?: DatosEnvio;
+}
+
+const COSTO_ENVIO_PESOS = 5000;
+
+function validarEntrega(
+  entrega?: DatosEntrega
+): { ok: true; entrega: DatosEntrega } | { ok: false } {
+  const datos = entrega ?? { tipo: "retiro" };
+  if (datos.tipo === "retiro") {
+    return { ok: true, entrega: datos };
+  }
+
+  const envio = datos.envio;
+  if (
+    !envio ||
+    !envio.direccion?.trim() ||
+    !envio.ciudad?.trim() ||
+    !envio.codigoPostal?.trim() ||
+    !envio.telefonoContacto?.trim()
+  ) {
+    return { ok: false };
+  }
+
+  return { ok: true, entrega: datos };
+}
+
+function costoEnvioPesos(tipo: DatosEntrega["tipo"]): number {
+  return tipo === "envio" ? COSTO_ENVIO_PESOS : 0;
+}
+
 function parseBearerToken(req: { headers: { authorization?: string } }): string | null {
   const header = req.headers.authorization || "";
   if (!header.startsWith("Bearer ")) return null;
@@ -93,12 +133,14 @@ export const createStripePaymentIntent = onRequest(
         metadata = {},
         metodoPago,
         cuotas,
+        entrega,
       } = (req.body ?? {}) as {
         items?: ItemPago[];
         currency?: string;
         metadata?: Record<string, string>;
         metodoPago?: string;
         cuotas?: number;
+        entrega?: DatosEntrega;
       };
 
       const metodoPagoValido = metodoPago === "credito" ? "credito" : "debito";
@@ -113,8 +155,16 @@ export const createStripePaymentIntent = onRequest(
         return;
       }
 
+      const validacionEntrega = validarEntrega(entrega);
+      if (!validacionEntrega.ok) {
+        res.status(400).json({ error: "ENTREGA_INVALIDA" });
+        return;
+      }
+
       const itemsValidos = items as ItemPago[];
-      const amount = calculateAmount(itemsValidos);
+      const costoEnvio = costoEnvioPesos(validacionEntrega.entrega.tipo);
+      const amount =
+        calculateAmount(itemsValidos) + Math.round(costoEnvio * 100);
       if (amount <= 0) {
         res.status(400).json({ error: "INVALID_AMOUNT" });
         return;
@@ -151,6 +201,8 @@ export const createStripePaymentIntent = onRequest(
         amount,
         currency,
         items: itemsValidos,
+        entrega: validacionEntrega.entrega,
+        costoEnvio,
         metadata: {
           ...metadata,
           metodoPago: metodoPagoValido,

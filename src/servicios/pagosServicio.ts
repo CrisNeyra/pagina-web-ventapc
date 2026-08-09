@@ -1,6 +1,7 @@
 import { obtenerUrlPaymentIntent } from "@/configuracion/stripe";
 import { preciosCatalogo } from "@/datos/preciosCatalogo";
 import { validarItemsContraCatalogo } from "@/lib/validarItemsPago";
+import type { DatosEntrega } from "@/lib/entrega";
 
 export interface ItemPago {
   id: string;
@@ -48,6 +49,7 @@ function mapearErrorHttp(status: number, error?: string): string {
 export interface OpcionesPaymentIntent {
   metodoPago?: "debito" | "credito";
   cuotas?: number;
+  entrega?: DatosEntrega;
 }
 
 export async function crearPaymentIntent(
@@ -93,6 +95,7 @@ export async function crearPaymentIntent(
         currency: "ars",
         metodoPago: opciones.metodoPago ?? "debito",
         cuotas,
+        entrega: opciones.entrega ?? { tipo: "retiro" },
         metadata: {
           metodoPago: opciones.metodoPago ?? "debito",
           cuotas: String(cuotas),

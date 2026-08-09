@@ -12,6 +12,7 @@ import {
   enviarEmailConfirmacionPedido,
   notificarAdminNuevoPedido,
 } from "@/lib/email";
+import { costoEntrega, validarDatosEntrega, type DatosEntrega } from "@/lib/entrega";
 import { etiquetaMetodoPago } from "@/servicios/pedidosServicio";
 import type { MetodoPago } from "@/tipos/metodoPago";
 import { preciosCatalogo } from "@/datos/preciosCatalogo";
@@ -58,11 +59,18 @@ export async function POST(request: NextRequest) {
       items?: ItemPedidoRequest[];
       metodoPago?: MetodoPago;
       cuotas?: number;
+      entrega?: DatosEntrega;
     };
 
     const metodoPago = body.metodoPago;
     if (!metodoPago || !METODOS_OFFLINE.includes(metodoPago)) {
       return NextResponse.json({ error: "METODO_PAGO_INVALIDO" }, { status: 400 });
+    }
+
+    const entrega = body.entrega ?? { tipo: "retiro" as const };
+    const validacionEntrega = validarDatosEntrega(entrega);
+    if (!validacionEntrega.ok) {
+      return NextResponse.json({ error: "ENTREGA_INVALIDA" }, { status: 400 });
     }
 
     const items = body.items ?? [];
@@ -71,7 +79,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: validacion.error }, { status: 400 });
     }
 
-    const total = calcularTotalCheckout(items, metodoPago);
+    const total = calcularTotalCheckout(items, metodoPago) + costoEntrega(entrega.tipo);
     if (total <= 0) {
       return NextResponse.json({ error: "INVALID_AMOUNT" }, { status: 400 });
     }
@@ -85,6 +93,8 @@ export async function POST(request: NextRequest) {
       amount: total,
       currency: "ars",
       items,
+      entrega,
+      costoEnvio: costoEntrega(entrega.tipo),
       cuotas: metodoPago === "credito" ? body.cuotas ?? 1 : null,
       createdAt: new Date(),
     });
