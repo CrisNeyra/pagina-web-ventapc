@@ -20,7 +20,7 @@ interface CartState {
   items: CartItem[];
   totalItems: number;
   subtotal: number;
-  addItem: (producto: CartProduct, cantidad?: number) => void;
+  addItem: (producto: CartProduct, cantidad?: number) => boolean;
   removeItem: (productId: string) => void;
   updateQuantity: (productId: string, cantidad: number) => void;
   clearCart: () => void;
@@ -58,6 +58,8 @@ export const useCartStore = create<CartState>()(
       totalItems: 0,
       subtotal: 0,
       addItem: (producto, cantidad = 1) => {
+        if (producto.enStock === false) return false;
+
         const prevItems = normalizarItems(get().items);
         const existente = prevItems.find((item) => item.producto.id === producto.id);
 
@@ -71,6 +73,7 @@ export const useCartStore = create<CartState>()(
 
         const { totalItems, subtotal } = calcularTotales(items);
         set({ items, totalItems, subtotal });
+        return true;
       },
       removeItem: (productId) => {
         const items = normalizarItems(get().items).filter(

@@ -55,13 +55,17 @@ export default function ProductDetailView({ producto }: ProductDetailViewProps) 
       toast.error("Este producto no tiene stock disponible.");
       return;
     }
-    addItem({
+    const agregado = addItem({
       id: producto.id,
       nombre: producto.nombre,
       precio: producto.precio,
       imagen: producto.imagenes[0] ?? "/placeholder-producto.svg",
       enStock: producto.enStock,
     });
+    if (!agregado) {
+      toast.error("Este producto no tiene stock disponible.");
+      return;
+    }
     toast.success(`✅ ${producto.nombre} agregado al carrito`);
   };
 

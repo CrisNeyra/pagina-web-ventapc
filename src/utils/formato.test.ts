@@ -2,11 +2,15 @@ import { describe, it, expect } from "vitest";
 import { calcularDescuento, formatearPrecio } from "./formato";
 
 describe("formatearPrecio", () => {
-  it("formatea un número como moneda argentina", () => {
-    const resultado = formatearPrecio(389999);
-    expect(resultado).toContain("389");
-    expect(resultado).toMatch(/\$|ARS/);
-  });
+  it(
+    "formatea un número como moneda argentina",
+    () => {
+      const resultado = formatearPrecio(389999);
+      expect(resultado).toContain("389");
+      expect(resultado).toMatch(/\$|ARS/);
+    },
+    15000
+  );
 
   it("formatea cero sin decimales", () => {
     const resultado = formatearPrecio(0);

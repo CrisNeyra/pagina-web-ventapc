@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { formatearPrecio } from "@/utils/formato";
+import { METODOS_PAGO } from "@/tipos/metodoPago";
 import {
   etiquetaEstadoPedido,
+  etiquetaMetodoPago,
+  montoPedidoEnPesos,
   obtenerPedidosUsuario,
   type Pedido,
 } from "@/servicios/pedidosServicio";
@@ -14,12 +17,14 @@ export default function UsuarioPage() {
   const { user } = useAuth();
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
   const [cargandoPedidos, setCargandoPedidos] = useState(false);
-  const [metodosPago, setMetodosPago] = useState<string[]>([
-    "Visa **** 4821",
-    "Mastercard **** 0974",
-  ]);
-  const [nuevoMetodo, setNuevoMetodo] = useState("");
   const [preferenciaAyuda, setPreferenciaAyuda] = useState<"whatsapp" | "email" | "ambos">("ambos");
+
+  const metodosUsados = useMemo(() => {
+    const unicos = new Set(
+      pedidos.map((pedido) => pedido.metodoPago).filter(Boolean) as string[]
+    );
+    return Array.from(unicos);
+  }, [pedidos]);
 
   useEffect(() => {
     if (!user) {
@@ -114,8 +119,16 @@ export default function UsuarioPage() {
                       : "—"}
                   </span>
                   <span className="text-cyber-cyan-300">{etiquetaEstadoPedido(pedido.estado)}</span>
+                  {pedido.metodoPago && (
+                    <span className="text-xs text-cyber-cyan-200/70">
+                      {etiquetaMetodoPago(pedido.metodoPago)}
+                      {pedido.metodoPago === "credito" && pedido.cuotas
+                        ? ` · ${pedido.cuotas} cuotas`
+                        : ""}
+                    </span>
+                  )}
                   <span className="font-bold text-white">
-                    {formatearPrecio(pedido.amount / 100)}
+                    {formatearPrecio(montoPedidoEnPesos(pedido))}
                   </span>
                 </li>
               ))}
@@ -125,32 +138,32 @@ export default function UsuarioPage() {
 
         <article className="rounded-2xl border border-cyber-purple-500/35 bg-oscuro-900/80 p-5 lg:col-span-1">
           <h2 className="text-lg font-bold text-white">Formas de pago</h2>
+          <p className="mt-2 text-xs text-cyber-cyan-200/70">
+            Métodos disponibles en checkout
+          </p>
           <ul className="mt-3 space-y-2 text-sm">
-            {metodosPago.map((metodo) => (
-              <li key={metodo} className="rounded-md border border-cyber-purple-500/25 bg-oscuro-800/80 px-3 py-2 text-cyber-cyan-100/85">
-                {metodo}
+            {METODOS_PAGO.map((metodo) => (
+              <li
+                key={metodo.id}
+                className="rounded-md border border-cyber-purple-500/25 bg-oscuro-800/80 px-3 py-2"
+              >
+                <p className="font-semibold text-cyber-cyan-100">{metodo.titulo}</p>
+                <p className="text-xs text-cyber-cyan-200/70">{metodo.descripcion}</p>
               </li>
             ))}
           </ul>
-          <div className="mt-3 flex gap-2">
-            <input
-              value={nuevoMetodo}
-              onChange={(e) => setNuevoMetodo(e.target.value)}
-              placeholder="Ej: Amex **** 3321"
-              className="flex-1 rounded-md border border-cyber-purple-500/40 bg-oscuro-800 px-3 py-2 text-sm text-cyber-cyan-100 outline-none focus:border-cyber-cyan-400"
-            />
-            <button
-              type="button"
-              onClick={() => {
-                if (!nuevoMetodo.trim()) return;
-                setMetodosPago((previo) => [...previo, nuevoMetodo.trim()]);
-                setNuevoMetodo("");
-              }}
-              className="rounded-md border border-cyber-cyan-400/55 bg-cyber-cyan-500/10 px-3 py-2 text-sm font-semibold text-cyber-cyan-300 hover:bg-cyber-cyan-400 hover:text-oscuro-950"
-            >
-              Agregar
-            </button>
-          </div>
+          {metodosUsados.length > 0 && (
+            <div className="mt-4 border-t border-cyber-purple-500/25 pt-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-cyber-cyan-300">
+                Usados en tus pedidos
+              </p>
+              <ul className="mt-2 space-y-1 text-sm text-cyber-cyan-200/85">
+                {metodosUsados.map((metodo) => (
+                  <li key={metodo}>• {etiquetaMetodoPago(metodo)}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </article>
 
         <article className="rounded-2xl border border-cyber-purple-500/35 bg-oscuro-900/80 p-5 lg:col-span-3">

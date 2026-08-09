@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "CAMPOS_REQUERIDOS" }, { status: 400 });
     }
 
-    if (!(cv instanceof File) || cv.type !== "application/pdf") {
+    if (!(cv instanceof Blob) || cv.type !== "application/pdf") {
       return NextResponse.json({ error: "CV_INVALIDO" }, { status: 400 });
     }
 
@@ -37,7 +37,9 @@ export async function POST(request: NextRequest) {
     }
 
     const postulacionId = randomUUID();
-    const cvPath = `postulaciones/${postulacionId}/${cv.name}`;
+    const cvNombre =
+      cv instanceof File && cv.name ? cv.name : "curriculum.pdf";
+    const cvPath = `postulaciones/${postulacionId}/${cvNombre}`;
     const buffer = Buffer.from(await cv.arrayBuffer());
 
     const storage = obtenerStorageAdmin();
@@ -58,7 +60,7 @@ export async function POST(request: NextRequest) {
       telefono,
       mensaje,
       cvPath,
-      cvNombre: cv.name,
+      cvNombre,
       estado: "recibida",
       createdAt: new Date(),
     });

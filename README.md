@@ -169,6 +169,7 @@ Si el puerto 3000 está ocupado, Next.js puede usar **3001**; revisá el mensaje
 | `npm run lint` | ESLint |
 | `npm run test` | Tests unitarios (Vitest) |
 | `npm run test:watch` | Tests en modo watch |
+| `npm run test:e2e` | Tests E2E (Playwright) |
 | `npm run firebase:users:import` | Importar usuarios (script) |
 | `npm run firebase:firestore:migrate` | Migrar datos a Firestore |
 | `npm run firebase:functions:serve` | Functions en local |

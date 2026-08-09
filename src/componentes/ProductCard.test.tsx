@@ -55,11 +55,12 @@ describe("ProductCard", () => {
     const sinStock = { ...productoMock, enStock: false };
     render(<ProductCard producto={sinStock} />);
 
-    await user.click(screen.getByRole("button", { name: /agregar al carrito/i }));
+    const boton = screen.getByRole("button", { name: /sin stock/i });
+    expect(boton).toBeDisabled();
+
+    await user.click(boton);
 
     expect(useCartStore.getState().items).toHaveLength(0);
-    expect(toast.error).toHaveBeenCalledWith(
-      "Este producto no tiene stock disponible."
-    );
+    expect(toast.error).not.toHaveBeenCalled();
   });
 });

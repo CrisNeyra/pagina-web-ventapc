@@ -29,13 +29,17 @@ export default function ProductCard({ producto }: ProductCardProps) {
       toast.error("Este producto no tiene stock disponible.");
       return;
     }
-    addItem({
+    const agregado = addItem({
       id: producto.id,
       nombre: producto.nombre,
       precio: producto.precio,
       imagen: imagenPrincipal,
       enStock: producto.enStock,
     });
+    if (!agregado) {
+      toast.error("Este producto no tiene stock disponible.");
+      return;
+    }
     toast.success(`✅ ${producto.nombre} agregado al carrito`);
   };
 
@@ -92,9 +96,10 @@ export default function ProductCard({ producto }: ProductCardProps) {
       <button
         type="button"
         onClick={agregarAlCarrito}
-        className="mt-3 w-full rounded-md border border-cyber-cyan-400/60 bg-cyber-cyan-500/10 px-3 py-2 text-sm font-bold text-cyber-cyan-300 transition-colors hover:bg-cyber-cyan-400 hover:text-oscuro-950"
+        disabled={!producto.enStock}
+        className="mt-3 w-full rounded-md border border-cyber-cyan-400/60 bg-cyber-cyan-500/10 px-3 py-2 text-sm font-bold text-cyber-cyan-300 transition-colors hover:bg-cyber-cyan-400 hover:text-oscuro-950 disabled:cursor-not-allowed disabled:border-oscuro-700 disabled:bg-oscuro-800 disabled:text-gray-500 disabled:hover:bg-oscuro-800 disabled:hover:text-gray-500"
       >
-        Agregar al carrito
+        {producto.enStock ? "Agregar al carrito" : "Sin stock"}
       </button>
     </article>
   );

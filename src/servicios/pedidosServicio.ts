@@ -20,7 +20,30 @@ export interface Pedido {
   amount: number;
   currency: string;
   items: ItemPedido[];
+  metodoPago?: string;
+  paymentIntentId?: string;
+  cuotas?: number | null;
   createdAt: Date | null;
+}
+
+const ETIQUETAS_METODO_PAGO: Record<string, string> = {
+  efectivo: "Efectivo en el local",
+  transferencia: "Transferencia bancaria",
+  debito: "Tarjeta de débito",
+  credito: "Tarjeta de crédito",
+};
+
+export function etiquetaMetodoPago(metodo?: string): string {
+  if (!metodo) return "—";
+  return ETIQUETAS_METODO_PAGO[metodo] ?? metodo;
+}
+
+/** Stripe guarda centavos; pedidos offline guardan pesos. */
+export function montoPedidoEnPesos(pedido: Pick<Pedido, "amount" | "paymentIntentId">): number {
+  if (pedido.paymentIntentId) {
+    return Math.round(pedido.amount / 100);
+  }
+  return pedido.amount;
 }
 
 const ETIQUETAS_ESTADO: Record<string, string> = {
@@ -58,6 +81,9 @@ export async function obtenerPedidosUsuario(userId: string): Promise<Pedido[]> {
       amount: Number(datos.amount ?? 0),
       currency: String(datos.currency ?? "ars"),
       items: Array.isArray(datos.items) ? datos.items : [],
+      metodoPago: datos.metodoPago ? String(datos.metodoPago) : undefined,
+      paymentIntentId: datos.paymentIntentId ? String(datos.paymentIntentId) : undefined,
+      cuotas: datos.cuotas != null ? Number(datos.cuotas) : null,
       createdAt: convertirFecha(datos.createdAt),
     };
   });

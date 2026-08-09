@@ -77,6 +77,16 @@ describe("cartStore", () => {
     expect(useCartStore.getState().items[0].cantidad).toBe(1);
   });
 
+  it("no agrega productos sin stock", () => {
+    const agregado = useCartStore.getState().addItem({
+      ...productoMock,
+      enStock: false,
+    });
+
+    expect(agregado).toBe(false);
+    expect(useCartStore.getState().items).toHaveLength(0);
+  });
+
   it("limpia el carrito por completo", () => {
     const { addItem, clearCart } = useCartStore.getState();
     addItem(productoMock);
