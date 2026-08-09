@@ -112,7 +112,10 @@ Para proteger `/usuario` y `/checkout` en el servidor, agregá el JSON de la ser
 FIREBASE_SERVICE_ACCOUNT_JSON={"type":"service_account",...}
 ```
 
-Sin esta variable, el `proxy.ts` no bloquea rutas (la auth sigue funcionando en cliente). En producción se recomienda configurarla en Vercel.
+Sin esta variable, el `proxy.ts` no bloquea rutas (la auth sigue funcionando en cliente). En producción (Vercel) es **obligatoria** para:
+- Crear pedidos con efectivo o transferencia (`POST /api/pedidos`)
+- Recibir postulaciones con CV (`POST /api/postulaciones`)
+- Sincronizar cookies de sesión en el middleware
 
 ### App Check (opcional)
 Para proteger Firebase contra abuso de bots:
@@ -216,9 +219,18 @@ Si el puerto 3000 está ocupado, Next.js puede usar **3001**; revisá el mensaje
 ## Despliegue
 
 ### Vercel (recomendado para Next.js)
-1. Conectá el repo de GitHub.
-2. Agregá las variables `NEXT_PUBLIC_FIREBASE_*` en **Settings → Environment Variables**.
-3. Deploy automático en cada push a `main`.
+1. Conectá el repo de GitHub en [vercel.com](https://vercel.com).
+2. En **Settings → Environment Variables**, agregá todas las variables de `.env.local.example`:
+   - `NEXT_PUBLIC_FIREBASE_*` (todas las públicas de Firebase)
+   - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` y `NEXT_PUBLIC_CREATE_PAYMENT_INTENT_URL` (si usás tarjetas)
+   - **`FIREBASE_SERVICE_ACCOUNT_JSON`** — obligatoria para pedidos offline (efectivo/transferencia), postulaciones RRHH y cookies de sesión en el servidor
+3. Para `FIREBASE_SERVICE_ACCOUNT_JSON` en Vercel:
+   - Firebase Console → Configuración del proyecto → **Cuentas de servicio** → **Generar nueva clave privada**
+   - Abrí el archivo `.json` descargado, copiá **todo el contenido en una sola línea** (sin saltos de línea)
+   - Pegalo como valor de la variable en Vercel (entornos Production, Preview y Development)
+4. Deploy automático en cada push a `main`. Verificá en el dashboard que el último deploy esté **Ready**.
+
+Sin `FIREBASE_SERVICE_ACCOUNT_JSON` en Vercel, el checkout con efectivo/transferencia y el formulario **Trabajá con nosotros** devolverán error 503 en producción.
 
 ### Firebase Hosting
 Ver pasos en [`docs/migracion-firebase.md`](docs/migracion-firebase.md) (sección Hosting).

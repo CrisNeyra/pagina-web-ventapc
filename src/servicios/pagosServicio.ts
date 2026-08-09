@@ -45,9 +45,15 @@ function mapearErrorHttp(status: number, error?: string): string {
   }
 }
 
+export interface OpcionesPaymentIntent {
+  metodoPago?: "debito" | "credito";
+  cuotas?: number;
+}
+
 export async function crearPaymentIntent(
   items: ItemPago[],
-  idToken: string
+  idToken: string,
+  opciones: OpcionesPaymentIntent = {}
 ): Promise<RespuestaPaymentIntent> {
   const url = obtenerUrlPaymentIntent();
   if (!url) {
@@ -71,13 +77,27 @@ export async function crearPaymentIntent(
   }
 
   try {
+    const cuotas =
+      opciones.metodoPago === "credito"
+        ? Math.min(12, Math.max(1, opciones.cuotas ?? 1))
+        : 1;
+
     const respuesta = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${idToken}`,
       },
-      body: JSON.stringify({ items, currency: "ars" }),
+      body: JSON.stringify({
+        items,
+        currency: "ars",
+        metodoPago: opciones.metodoPago ?? "debito",
+        cuotas,
+        metadata: {
+          metodoPago: opciones.metodoPago ?? "debito",
+          cuotas: String(cuotas),
+        },
+      }),
     });
 
     const datos = (await respuesta.json().catch(() => ({}))) as {

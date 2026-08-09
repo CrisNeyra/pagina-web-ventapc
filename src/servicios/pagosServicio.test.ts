@@ -64,6 +64,30 @@ describe("crearPaymentIntent", () => {
     );
   });
 
+  it("envía metodoPago y cuotas al crear payment intent", async () => {
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        orderId: "order-456",
+        paymentIntentId: "pi_456",
+        clientSecret: "cs_test_456",
+      }),
+    });
+
+    await crearPaymentIntent(
+      [{ id: "gpu-001", precio: 100000, cantidad: 1 }],
+      "token-test",
+      { metodoPago: "credito", cuotas: 6 }
+    );
+
+    const llamada = (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0];
+    const body = JSON.parse(llamada[1].body as string);
+
+    expect(body.metodoPago).toBe("credito");
+    expect(body.cuotas).toBe(6);
+    expect(body.metadata.cuotas).toBe("6");
+  });
+
   it("mapea error de autorización", async () => {
     global.fetch = vi.fn().mockResolvedValue({
       ok: false,

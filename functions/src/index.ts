@@ -87,11 +87,25 @@ export const createStripePaymentIntent = onRequest(
 
     try {
       const decodedToken = await verifyUser(req);
-      const { items, currency = "ars", metadata = {} } = (req.body ?? {}) as {
+      const {
+        items,
+        currency = "ars",
+        metadata = {},
+        metodoPago,
+        cuotas,
+      } = (req.body ?? {}) as {
         items?: ItemPago[];
         currency?: string;
         metadata?: Record<string, string>;
+        metodoPago?: string;
+        cuotas?: number;
       };
+
+      const metodoPagoValido = metodoPago === "credito" ? "credito" : "debito";
+      const cuotasValidas =
+        metodoPagoValido === "credito"
+          ? Math.min(12, Math.max(1, Number(cuotas) || 1))
+          : 1;
 
       const validacionCatalogo = validarItemsContraCatalogo(items ?? []);
       if (!validacionCatalogo.ok) {
@@ -122,6 +136,8 @@ export const createStripePaymentIntent = onRequest(
         metadata: {
           uid: decodedToken.uid,
           source: "aurapro-web",
+          metodoPago: metodoPagoValido,
+          cuotas: String(cuotasValidas),
           ...metadata,
         },
       });
@@ -129,11 +145,17 @@ export const createStripePaymentIntent = onRequest(
       const orderRef = await admin.firestore().collection("pedidos").add({
         uid: decodedToken.uid,
         estado: "pending_payment",
+        metodoPago: metodoPagoValido,
+        cuotas: cuotasValidas,
         paymentIntentId: intent.id,
         amount,
         currency,
         items: itemsValidos,
-        metadata,
+        metadata: {
+          ...metadata,
+          metodoPago: metodoPagoValido,
+          cuotas: String(cuotasValidas),
+        },
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       });

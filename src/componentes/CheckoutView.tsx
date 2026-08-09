@@ -95,7 +95,10 @@ export default function CheckoutView() {
       }
 
       const idToken = await auth.currentUser.getIdToken();
-      const resultado = await crearPaymentIntent(itemsPago, idToken);
+      const resultado = await crearPaymentIntent(itemsPago, idToken, {
+        metodoPago: metodoPago === "credito" ? "credito" : "debito",
+        cuotas: metodoPago === "credito" ? cuotas : 1,
+      });
 
       if (cancelado) return;
 
@@ -115,7 +118,7 @@ export default function CheckoutView() {
     return () => {
       cancelado = true;
     };
-  }, [authLoading, user, itemsPago, metodoPago, requiereStripe, stripeDisponible]);
+  }, [authLoading, user, itemsPago, metodoPago, cuotas, requiereStripe, stripeDisponible]);
 
   const confirmarPedidoOffline = async () => {
     if (!metodoPago || (metodoPago !== "efectivo" && metodoPago !== "transferencia")) return;
