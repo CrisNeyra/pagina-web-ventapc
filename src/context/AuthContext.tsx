@@ -18,6 +18,24 @@ import {
 import { FirebaseError } from "firebase/app";
 import { obtenerAuthFirebase } from "@/configuracion/firebase";
 
+async function sincronizarCookieSesion(usuario: User | null) {
+  try {
+    if (usuario) {
+      const idToken = await usuario.getIdToken();
+      await fetch("/api/auth/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken }),
+      });
+      return;
+    }
+
+    await fetch("/api/auth/session", { method: "DELETE" });
+  } catch {
+    // En local puede fallar si FIREBASE_SERVICE_ACCOUNT_JSON no está configurado.
+  }
+}
+
 interface AuthContextValue {
   user: User | null;
   loading: boolean;
@@ -66,6 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       (usuarioActual) => {
         setUser(usuarioActual ?? null);
         setLoading(false);
+        void sincronizarCookieSesion(usuarioActual);
       },
       (error) => {
         console.error("Error al escuchar cambios de autenticacion:", error);

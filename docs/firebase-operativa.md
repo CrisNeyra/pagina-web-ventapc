@@ -49,10 +49,11 @@ Funciones incluidas:
 - `stripeWebhook`
 - `healthcheck`
 
-Instalar dependencias de `functions/`:
+Instalar dependencias de `functions/` y compilar TypeScript:
 
 ```bash
 npm install --prefix functions
+npm run build --prefix functions
 ```
 
 Configurar secrets:
@@ -60,6 +61,18 @@ Configurar secrets:
 ```bash
 firebase functions:secrets:set STRIPE_SECRET_KEY
 firebase functions:secrets:set STRIPE_WEBHOOK_SECRET
+```
+
+Sincronizar precios del catalogo (obligatorio antes de deploy de pagos):
+
+```bash
+npm run catalogo:precios:sync
+```
+
+CORS en produccion (opcional, variable de entorno en Functions):
+
+```bash
+ALLOWED_ORIGINS=https://pagina-web-ventapc.vercel.app,http://localhost:3000
 ```
 
 Emulador local:

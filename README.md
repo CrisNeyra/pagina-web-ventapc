@@ -15,7 +15,6 @@ Plataforma de e-commerce ficticia orientada a hardware gamer y componentes de PC
 - **TypeScript**
 - **Tailwind CSS v4**
 - **Zustand** — búsqueda, carrito y PC builder (con persistencia local del build)
-- **Redux Toolkit** — slice de carrito legacy (`ProveedorRedux`)
 - **Sonner** — notificaciones toast
 - **Framer Motion** — animaciones en componentes UI
 - **React Icons** / **Lucide**
@@ -38,7 +37,7 @@ src/
   componentes/          # UI reutilizable (Navbar, ProductCard, PcBuilder, modales, etc.)
   context/              # AuthContext (Firebase)
   datos/                # Catálogo estático, navegación, datasets del builder
-  store/                # Zustand (carrito, búsqueda, builder) + Redux (carrito)
+  store/                # Zustand (carrito, búsqueda, builder)
   servicios/            # Guardado de builds en Firestore
   configuracion/        # Cliente Firebase y validación de entorno (Zod)
   tipos/                # Tipos TypeScript compartidos
@@ -50,8 +49,31 @@ public/
 docs/                   # Guías (migración Firebase, etc.)
 scripts/firebase/       # Scripts de importación / migración
 functions/              # Cloud Functions (Node)
-supabase/               # Schema histórico (referencia)
+supabase/               # Schema histórico (solo referencia, no se usa en runtime)
 ```
+
+Diagrama de arquitectura y decisiones técnicas: [`docs/adr-001-arquitectura.md`](docs/adr-001-arquitectura.md)
+
+```mermaid
+flowchart LR
+  subgraph cliente [Cliente]
+    Next[Next.js 16]
+    Zustand[Zustand]
+  end
+  subgraph firebase [Firebase]
+    Auth[Auth]
+    Firestore[(Firestore)]
+    Functions[Cloud Functions]
+  end
+  Stripe[Stripe]
+  Next --> Auth
+  Next --> Firestore
+  Next --> Functions
+  Functions --> Stripe
+  Functions --> Firestore
+  Zustand --> Next
+```
+
 
 ---
 
@@ -70,6 +92,52 @@ NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=
 ```
 
 **Importante:** `.env.local` no se sube a Git (está en `.gitignore`).
+
+### Stripe (checkout)
+Para habilitar pagos reales en `/checkout`:
+
+```env
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+NEXT_PUBLIC_CREATE_PAYMENT_INTENT_URL=https://southamerica-east1-aurapro-27727.cloudfunctions.net/createStripePaymentIntent
+```
+
+Si omitís `NEXT_PUBLIC_CREATE_PAYMENT_INTENT_URL`, se construye automáticamente desde `NEXT_PUBLIC_FIREBASE_PROJECT_ID` y la región `southamerica-east1`.
+
+Desplegá las Cloud Functions (`createStripePaymentIntent`, `stripeWebhook`) y configurá los secrets de Stripe según [`docs/firebase-operativa.md`](docs/firebase-operativa.md).
+
+### Middleware de auth (opcional en local)
+Para proteger `/usuario` y `/checkout` en el servidor, agregá el JSON de la service account:
+
+```env
+FIREBASE_SERVICE_ACCOUNT_JSON={"type":"service_account",...}
+```
+
+Sin esta variable, el `proxy.ts` no bloquea rutas (la auth sigue funcionando en cliente). En producción se recomienda configurarla en Vercel.
+
+### App Check (opcional)
+Para proteger Firebase contra abuso de bots:
+
+```env
+NEXT_PUBLIC_FIREBASE_APP_CHECK_SITE_KEY=tu_site_key_recaptcha_v3
+NEXT_PUBLIC_FIREBASE_APP_CHECK_DEBUG_TOKEN=token_debug_en_local
+```
+
+Registrá el sitio en Firebase Console → App Check → reCAPTCHA v3.
+
+### Validación de precios en pagos
+Antes de desplegar Functions, sincronizá el catálogo de precios:
+
+```bash
+npm run catalogo:precios:sync
+```
+
+Esto genera `functions/catalogoPrecios.json` usado por `createStripePaymentIntent` para rechazar precios manipulados.
+
+### CI/CD
+El workflow `.github/workflows/ci.yml` ejecuta lint, tests y build en cada push/PR a `main`.
+
+Pre-commit hooks (Husky + lint-staged) formatean y lintean archivos staged.
+
 
 ### Auth en desarrollo
 En Firebase Console → **Authentication** → **Sign-in method** → **Email/Password**:
@@ -96,6 +164,8 @@ Si el puerto 3000 está ocupado, Next.js puede usar **3001**; revisá el mensaje
 | `npm run build` | Build de producción |
 | `npm run start` | Servir build local |
 | `npm run lint` | ESLint |
+| `npm run test` | Tests unitarios (Vitest) |
+| `npm run test:watch` | Tests en modo watch |
 | `npm run firebase:users:import` | Importar usuarios (script) |
 | `npm run firebase:firestore:migrate` | Migrar datos a Firestore |
 | `npm run firebase:functions:serve` | Functions en local |
@@ -120,6 +190,7 @@ Si el puerto 3000 está ocupado, Next.js puede usar **3001**; revisá el mensaje
 - Página de detalle con galería.
 - **ProductCard** con fallback de imágenes y **Agregar al carrito** (Zustand + toasts).
 - **CartDrawer** lateral.
+- **Checkout** con Stripe Elements conectado a `createStripePaymentIntent` (requiere auth + variables Stripe).
 
 ### Armá tu PC
 - Selector por categorías (CPU, motherboard, RAM, GPU, etc.).

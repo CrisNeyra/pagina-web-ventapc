@@ -1,0 +1,7 @@
+.next
+node_modules
+coverage
+dist
+build
+functions/catalogoPrecios.json
+package-lock.json

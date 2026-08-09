@@ -1,32 +1,53 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { formatearPrecio } from "@/utils/formato";
-
-interface CompraEjemplo {
-  id: string;
-  fecha: string;
-  estado: string;
-  total: number;
-}
-
-const comprasMock: CompraEjemplo[] = [
-  { id: "AUR-22041", fecha: "2026-03-20", estado: "Entregado", total: 749999 },
-  { id: "AUR-21988", fecha: "2026-03-06", estado: "Entregado", total: 218607 },
-  { id: "AUR-21855", fecha: "2026-02-28", estado: "En camino", total: 129999 },
-  { id: "AUR-21690", fecha: "2026-02-11", estado: "Entregado", total: 389999 },
-];
+import {
+  etiquetaEstadoPedido,
+  obtenerPedidosUsuario,
+  type Pedido,
+} from "@/servicios/pedidosServicio";
 
 export default function UsuarioPage() {
   const { user } = useAuth();
+  const [pedidos, setPedidos] = useState<Pedido[]>([]);
+  const [cargandoPedidos, setCargandoPedidos] = useState(false);
   const [metodosPago, setMetodosPago] = useState<string[]>([
     "Visa **** 4821",
     "Mastercard **** 0974",
   ]);
   const [nuevoMetodo, setNuevoMetodo] = useState("");
   const [preferenciaAyuda, setPreferenciaAyuda] = useState<"whatsapp" | "email" | "ambos">("ambos");
+
+  useEffect(() => {
+    if (!user) {
+      setPedidos([]);
+      return;
+    }
+
+    const userId = user.uid;
+    let cancelado = false;
+
+    async function cargarPedidos() {
+      setCargandoPedidos(true);
+      try {
+        const resultado = await obtenerPedidosUsuario(userId);
+        if (!cancelado) setPedidos(resultado);
+      } catch {
+        if (!cancelado) setPedidos([]);
+      } finally {
+        if (!cancelado) setCargandoPedidos(false);
+      }
+    }
+
+    cargarPedidos();
+
+    return () => {
+      cancelado = true;
+    };
+  }, [user]);
 
   if (!user) {
     return (
@@ -73,16 +94,33 @@ export default function UsuarioPage() {
 
         <article className="rounded-2xl border border-cyber-purple-500/35 bg-oscuro-900/80 p-5 lg:col-span-2">
           <h2 className="text-lg font-bold text-white">Compras realizadas</h2>
-          <ul className="mt-4 space-y-2">
-            {comprasMock.map((compra) => (
-              <li key={compra.id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-cyber-purple-500/25 bg-oscuro-800/80 px-3 py-2 text-sm">
-                <span className="font-semibold text-cyber-cyan-200">{compra.id}</span>
-                <span className="text-cyber-cyan-100/75">{compra.fecha}</span>
-                <span className="text-cyber-cyan-300">{compra.estado}</span>
-                <span className="font-bold text-white">{formatearPrecio(compra.total)}</span>
-              </li>
-            ))}
-          </ul>
+          {cargandoPedidos ? (
+            <p className="mt-4 text-sm text-cyber-cyan-200/75">Cargando pedidos...</p>
+          ) : pedidos.length === 0 ? (
+            <p className="mt-4 rounded-lg border border-cyber-purple-500/25 bg-oscuro-800/80 px-3 py-3 text-sm text-cyber-cyan-200/75">
+              Todavía no tenés compras registradas. Cuando completes un pago en checkout, aparecerán acá.
+            </p>
+          ) : (
+            <ul className="mt-4 space-y-2">
+              {pedidos.map((pedido) => (
+                <li
+                  key={pedido.id}
+                  className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-cyber-purple-500/25 bg-oscuro-800/80 px-3 py-2 text-sm"
+                >
+                  <span className="font-semibold text-cyber-cyan-200">{pedido.id.slice(0, 8)}...</span>
+                  <span className="text-cyber-cyan-100/75">
+                    {pedido.createdAt
+                      ? pedido.createdAt.toLocaleDateString("es-AR")
+                      : "—"}
+                  </span>
+                  <span className="text-cyber-cyan-300">{etiquetaEstadoPedido(pedido.estado)}</span>
+                  <span className="font-bold text-white">
+                    {formatearPrecio(pedido.amount / 100)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
         </article>
 
         <article className="rounded-2xl border border-cyber-purple-500/35 bg-oscuro-900/80 p-5 lg:col-span-1">

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { FiX } from "react-icons/fi";
-import { validarPassword } from "@/lib/auth";
+import { validarPassword, MENSAJE_REQUISITOS_PASSWORD } from "@/lib/auth";
 import { useAuth } from "@/context/AuthContext";
 
 type AuthMode = "login" | "registro";
@@ -52,9 +52,7 @@ export default function AuthModal({
     }
 
     if (!validarPassword(password)) {
-      setError(
-        "La contraseña debe tener exactamente 6 caracteres: 4 números y 2 letras."
-      );
+      setError(MENSAJE_REQUISITOS_PASSWORD);
       return;
     }
 

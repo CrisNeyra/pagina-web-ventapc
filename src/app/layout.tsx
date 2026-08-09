@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import ProveedorRedux from "@/componentes/ProveedorRedux";
 import Navbar from "@/componentes/Navbar";
 import Footer from "@/componentes/Footer";
 import FloatingWhatsApp from "@/componentes/FloatingWhatsApp";
@@ -36,16 +35,14 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-oscuro-950 text-cyber-cyan-100">
-        <ProveedorRedux>
-          <AuthProvider>
-            <Navbar />
-            {children}
-            <Footer />
-            <FloatingWhatsApp />
-            <WelcomeBannerModal />
-            <Toaster position="bottom-center" richColors theme="dark" />
-          </AuthProvider>
-        </ProveedorRedux>
+        <AuthProvider>
+          <Navbar />
+          {children}
+          <Footer />
+          <FloatingWhatsApp />
+          <WelcomeBannerModal />
+          <Toaster position="bottom-center" richColors theme="dark" />
+        </AuthProvider>
       </body>
     </html>
   );

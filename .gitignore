@@ -51,3 +51,4 @@ secrets/
 exports/
 firebase-debug.log
 functions/node_modules/
+functions/lib/

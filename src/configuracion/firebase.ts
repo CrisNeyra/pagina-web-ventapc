@@ -4,6 +4,7 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { obtenerEntornoFirebase } from "@/configuracion/entornoFirebase";
+import { inicializarAppCheck } from "@/configuracion/appCheck";
 
 let appFirebase: FirebaseApp | null = null;
 
@@ -24,6 +25,10 @@ export function obtenerAppFirebase(): FirebaseApp | null {
             appId: entorno.NEXT_PUBLIC_FIREBASE_APP_ID,
             measurementId: entorno.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
           });
+
+    if (typeof window !== "undefined") {
+      inicializarAppCheck(appFirebase);
+    }
   }
 
   return appFirebase;

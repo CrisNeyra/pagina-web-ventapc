@@ -1,18 +1,22 @@
 {
-  "name": "ventapc-functions",
+  "name": "aura-pro-functions",
   "private": true,
   "engines": {
     "node": "20"
   },
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
-    "lint": "echo \"Configura un linter para functions si lo necesitas\"",
-    "serve": "firebase emulators:start --only functions",
-    "deploy": "firebase deploy --only functions"
+    "build": "tsc",
+    "lint": "tsc --noEmit",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "deploy": "npm run build && firebase deploy --only functions"
   },
   "dependencies": {
     "firebase-admin": "^13.6.0",
     "firebase-functions": "^6.6.0",
     "stripe": "^18.5.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
   }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "ventapc-temp",
+  "name": "aura-pro",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -7,14 +7,20 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "catalogo:precios:sync": "tsx scripts/sync-catalogo-precios.ts",
+    "prepare": "husky",
     "firebase:users:import": "node scripts/firebase/import-users.mjs",
     "firebase:firestore:migrate": "node scripts/firebase/migrate-firestore.mjs",
     "firebase:functions:serve": "npm --prefix functions run serve",
     "firebase:functions:deploy": "npm --prefix functions run deploy"
   },
   "dependencies": {
-    "@hookform/resolvers": "^5.2.2",
-    "@reduxjs/toolkit": "^2.11.2",
+    "@stripe/react-stripe-js": "^6.8.0",
+    "@stripe/stripe-js": "^9.13.0",
     "firebase": "^12.13.0",
     "firebase-admin": "^13.10.0",
     "framer-motion": "^12.38.0",
@@ -22,22 +28,33 @@
     "next": "16.2.1",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "react-hook-form": "^7.72.0",
     "react-icons": "^5.6.0",
-    "react-redux": "^9.2.0",
-    "react-router-dom": "^7.13.2",
     "sonner": "^2.0.7",
     "zod": "^4.3.6",
     "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "^7.0.0",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.0.5",
     "eslint": "^9",
     "eslint-config-next": "16.2.1",
+    "husky": "^9.1.7",
+    "jsdom": "^30.0.1",
+    "lint-staged": "^15.5.2",
+    "prettier": "^3.5.3",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "tsx": "^4.20.3",
+    "typescript": "^5",
+    "vitest": "^4.1.10"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,json,css,md}": "prettier --write",
+    "*.{ts,tsx}": "eslint --fix"
   }
 }
