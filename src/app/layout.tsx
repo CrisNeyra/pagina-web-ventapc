@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/componentes/Navbar";
 import Footer from "@/componentes/Footer";
+import DevConfigBanner from "@/componentes/DevConfigBanner";
 import FloatingWhatsApp from "@/componentes/FloatingWhatsApp";
 import WelcomeBannerModal from "@/componentes/WelcomeBannerModal";
 import { Toaster } from "sonner";
@@ -19,9 +20,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "VentaPC | Componentes de PC & Hardware Gamer",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://pagina-web-ventapc.vercel.app"
+  ),
+  title: "Aura Pro | Componentes de PC & Hardware Gamer",
   description:
-    "Tu tienda de confianza para hardware y componentes de PC de alta calidad. Placas de video, procesadores, memorias RAM y más.",
+    "Aura Pro — tu tienda de confianza para hardware y componentes de PC de alta calidad. Placas de video, procesadores, memorias RAM y más.",
+  openGraph: {
+    title: "Aura Pro | Hardware Gamer",
+    description: "Componentes de PC y periféricos gamer con envío a todo el país.",
+    siteName: "Aura Pro",
+    locale: "es_AR",
+    type: "website",
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Aura Pro" }],
+  },
 };
 
 export default function RootLayout({
@@ -36,6 +48,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-oscuro-950 text-cyber-cyan-100">
         <AuthProvider>
+          <DevConfigBanner />
           <Navbar />
           {children}
           <Footer />

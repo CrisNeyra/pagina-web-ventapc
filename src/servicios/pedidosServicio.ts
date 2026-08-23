@@ -6,6 +6,9 @@ import {
   type Timestamp,
 } from "firebase/firestore";
 import { obtenerFirestoreDb } from "@/configuracion/firebase";
+import { apiConfigurada } from "@/lib/api-client";
+import { obtenerApiToken } from "@/lib/api-token";
+import { obtenerPedidosUsuarioApi } from "@/servicios/apiBackendServicio";
 
 export interface ItemPedido {
   id: string;
@@ -67,6 +70,31 @@ function convertirFecha(valor: unknown): Date | null {
 }
 
 export async function obtenerPedidosUsuario(userId: string): Promise<Pedido[]> {
+  if (apiConfigurada()) {
+    const token = obtenerApiToken();
+    if (token) {
+      try {
+        const pedidos = await obtenerPedidosUsuarioApi(token);
+        return pedidos.map((pedido) => ({
+          id: pedido.id,
+          estado: pedido.estado,
+          amount: pedido.totalPesos,
+          currency: "ars",
+          items: pedido.items.map((item) => ({
+            id: item.nombre,
+            precio: item.precioUnitario,
+            cantidad: item.cantidad,
+            nombre: item.nombre,
+          })),
+          metodoPago: pedido.metodoPago ?? undefined,
+          createdAt: pedido.createdAt ? new Date(pedido.createdAt) : null,
+        }));
+      } catch {
+        return [];
+      }
+    }
+  }
+
   const db = obtenerFirestoreDb();
   if (!db) return [];
 

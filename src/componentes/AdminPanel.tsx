@@ -6,6 +6,14 @@ import { useAuth } from "@/context/AuthContext";
 import { obtenerAuthFirebase } from "@/configuracion/firebase";
 import { formatearPrecio } from "@/utils/formato";
 import { etiquetaEstadoPedido, etiquetaMetodoPago } from "@/servicios/pedidosServicio";
+import { apiConfigurada } from "@/lib/api-client";
+import { obtenerApiToken } from "@/lib/api-token";
+import {
+  actualizarPedidoAdminApi,
+  obtenerCvAdminApi,
+  obtenerPedidosAdminApi,
+  obtenerPostulacionesAdminApi,
+} from "@/servicios/apiBackendServicio";
 
 interface PedidoAdmin {
   id: string;
@@ -35,6 +43,42 @@ export default function AdminPanel() {
   const cargarDatos = useCallback(async () => {
     setCargando(true);
     setError("");
+
+    const apiToken = obtenerApiToken();
+
+    if (apiConfigurada() && apiToken) {
+      try {
+        const [datosPedidos, datosPostulaciones] = await Promise.all([
+          obtenerPedidosAdminApi(apiToken),
+          obtenerPostulacionesAdminApi(apiToken),
+        ]);
+        setPedidos(
+          datosPedidos.map((p) => ({
+            id: p.id,
+            email: p.email,
+            estado: p.estado,
+            metodoPago: p.metodoPago,
+            totalPesos: p.totalPesos,
+            createdAt: p.createdAt,
+          }))
+        );
+        setPostulaciones(
+          datosPostulaciones.map((p) => ({
+            id: p.id,
+            nombre: p.nombre,
+            email: p.email,
+            telefono: p.telefono,
+            cvNombre: p.cvNombre,
+            createdAt: p.createdAt,
+          }))
+        );
+      } catch {
+        setError("No se pudieron cargar los datos de administración.");
+      } finally {
+        setCargando(false);
+      }
+      return;
+    }
 
     const auth = obtenerAuthFirebase();
     if (!auth?.currentUser) {
@@ -75,6 +119,28 @@ export default function AdminPanel() {
       setCargando(false);
     }
   }, []);
+
+  const actualizarPedido = async (orderId: string, estado: string) => {
+    const apiToken = obtenerApiToken();
+    if (!apiConfigurada() || !apiToken) return;
+    try {
+      await actualizarPedidoAdminApi(apiToken, orderId, estado);
+      await cargarDatos();
+    } catch {
+      setError("No se pudo actualizar el pedido.");
+    }
+  };
+
+  const descargarCv = async (postulacionId: string) => {
+    const apiToken = obtenerApiToken();
+    if (!apiConfigurada() || !apiToken) return;
+    try {
+      const { url } = await obtenerCvAdminApi(apiToken, postulacionId);
+      window.open(url, "_blank", "noopener,noreferrer");
+    } catch {
+      setError("No se pudo obtener el CV.");
+    }
+  };
 
   useEffect(() => {
     if (!loading && user) {
@@ -150,6 +216,31 @@ export default function AdminPanel() {
                     {formatearPrecio(pedido.totalPesos)}
                   </span>
                 </div>
+                {apiConfigurada() && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => void actualizarPedido(pedido.id, "paid")}
+                      className="rounded border border-cyber-lime-400/50 px-2 py-1 text-xs text-cyber-lime-300"
+                    >
+                      Marcar pagado
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void actualizarPedido(pedido.id, "ready_for_pickup")}
+                      className="rounded border border-cyber-cyan-400/50 px-2 py-1 text-xs text-cyber-cyan-300"
+                    >
+                      Listo para retiro
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void actualizarPedido(pedido.id, "cancelled")}
+                      className="rounded border border-cyber-pink-400/50 px-2 py-1 text-xs text-cyber-pink-300"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                )}
               </li>
             ))}
           </ul>
@@ -174,6 +265,15 @@ export default function AdminPanel() {
                 <p className="text-cyber-cyan-200/70">{postulacion.telefono}</p>
                 {postulacion.cvNombre && (
                   <p className="text-xs text-cyber-cyan-300">CV: {postulacion.cvNombre}</p>
+                )}
+                {apiConfigurada() && (
+                  <button
+                    type="button"
+                    onClick={() => void descargarCv(postulacion.id)}
+                    className="mt-2 rounded border border-cyber-cyan-400/50 px-2 py-1 text-xs text-cyber-cyan-300"
+                  >
+                    Descargar CV
+                  </button>
                 )}
               </li>
             ))}

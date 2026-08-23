@@ -1,0 +1,150 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  user
+  admin
+}
+
+enum OrderStatus {
+  pending_payment
+  pending_cash
+  pending_transfer
+  paid
+  payment_failed
+  cancelled
+  ready_for_pickup
+  shipped
+}
+
+enum PostulacionStatus {
+  recibida
+  revisada
+  rechazada
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String?  @map("password_hash")
+  firebaseUid  String?  @unique @map("firebase_uid")
+  role         UserRole @default(user)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  orders    Order[]
+  pcBuilds  PcBuild[]
+
+  @@map("users")
+}
+
+model Product {
+  id          String   @id
+  slug        String   @unique
+  nombre      String
+  descripcion String   @db.Text
+  precio      Int
+  stock       Int      @default(10)
+  enStock     Boolean  @default(true) @map("en_stock")
+  categoria   String
+  imagenes    Json     @default("[]")
+  etiqueta    String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  orderItems OrderItem[]
+
+  @@index([categoria])
+  @@index([enStock])
+  @@map("products")
+}
+
+model Order {
+  id                    String      @id @default(uuid())
+  userId                String?     @map("user_id")
+  email                 String?
+  estado                OrderStatus @default(pending_payment)
+  metodoPago            String?     @map("metodo_pago")
+  totalPesos            Int         @map("total_pesos")
+  costoEnvio            Int         @default(0) @map("costo_envio")
+  stripeAmountCents     Int?        @map("stripe_amount_cents")
+  stripePaymentIntentId String?     @unique @map("stripe_payment_intent_id")
+  entrega               Json?
+  cuotas                Int?
+  idempotencyKey        String?     @unique @map("idempotency_key")
+  createdAt             DateTime    @default(now()) @map("created_at")
+  updatedAt             DateTime    @updatedAt @map("updated_at")
+
+  user  User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  items OrderItem[]
+
+  @@index([estado])
+  @@index([userId])
+  @@map("orders")
+}
+
+model OrderItem {
+  id             String @id @default(uuid())
+  orderId        String @map("order_id")
+  productId      String @map("product_id")
+  nombre         String
+  precioUnitario Int    @map("precio_unitario")
+  cantidad       Int
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@map("order_items")
+}
+
+model Postulacion {
+  id        String            @id @default(uuid())
+  nombre    String
+  email     String
+  telefono  String
+  mensaje   String            @db.Text
+  cvPath    String            @map("cv_path")
+  cvNombre  String            @map("cv_nombre")
+  estado    PostulacionStatus @default(recibida)
+  createdAt DateTime          @default(now()) @map("created_at")
+
+  @@index([estado])
+  @@map("postulaciones")
+}
+
+model SiteConfig {
+  clave     String   @id
+  valor     Json
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("site_config")
+}
+
+model ShippingZone {
+  id              String   @id @default(uuid())
+  nombre          String
+  codigosPostales String[] @map("codigos_postales")
+  costo           Int
+  activo          Boolean  @default(true)
+
+  @@map("shipping_zones")
+}
+
+model PcBuild {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  subtotal  Int
+  items     Json
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("pc_builds")
+}

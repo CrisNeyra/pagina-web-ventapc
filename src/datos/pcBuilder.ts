@@ -5,8 +5,7 @@ import type {
 } from "@/tipos/pcBuilder";
 import { productosDestacados, productosRebajados } from "@/datos/productos";
 
-// TODO: agregar imagen real en public/productos/{id}-principal.jpg para motherboard, cooler, fuente y gabinete.
-
+// Imágenes del PC Builder reutilizan assets del catálogo principal.
 const catalogoBase = [...productosDestacados, ...productosRebajados];
 
 function obtenerProductoPorId(id: string) {
@@ -52,11 +51,11 @@ export const builderProducts: BuilderProduct[] = [
   crearBuilderProduct("b-cpu-003", "procesador", "proc-003"),
   crearBuilderProduct("b-cpu-004", "procesador", "proc-004"),
 
-  // TODO: agregar imagen real de motherboard (usar id propio en public/productos/{id}-principal.jpg).
+  // Motherboards — imágenes del catálogo de PCs armadas.
   crearBuilderProduct("b-mb-001", "motherboard", "pc-001", "/productos/pc-001-principal.jpg"),
   crearBuilderProduct("b-mb-002", "motherboard", "pc-002", "/productos/pc-002-principal.jpg"),
 
-  // TODO: agregar imagen real de cooler (usar id propio en public/productos/{id}-principal.jpg).
+  // Coolers — imágenes de combos/PCs del catálogo.
   crearBuilderProduct("b-cl-001", "cooler", "combo-001", "/productos/combo-001-principal.jpg"),
   crearBuilderProduct("b-cl-002", "cooler", "pc-003", "/productos/pc-003-principal.jpg"),
 
@@ -73,11 +72,11 @@ export const builderProducts: BuilderProduct[] = [
   crearBuilderProduct("b-ssd-003", "almacenamiento", "ssd-003"),
   crearBuilderProduct("b-ssd-004", "almacenamiento", "ssd-004"),
 
-  // TODO: agregar imagen real de fuente (usar id propio en public/productos/{id}-principal.jpg).
+  // Fuentes — imágenes de PCs del catálogo.
   crearBuilderProduct("b-psu-001", "fuente", "pc-002", "/productos/pc-002-principal.jpg"),
   crearBuilderProduct("b-psu-002", "fuente", "combo-001", "/productos/combo-001-principal.jpg"),
 
-  // TODO: agregar imagen real de gabinete (usar id propio en public/productos/{id}-principal.jpg).
+  // Gabinetes — imágenes de combos/PCs del catálogo.
   crearBuilderProduct("b-case-001", "gabinete", "combo-001", "/productos/combo-001-principal.jpg"),
   crearBuilderProduct("b-case-002", "gabinete", "pc-001", "/productos/pc-001-principal.jpg"),
 ];

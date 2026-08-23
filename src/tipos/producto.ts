@@ -7,6 +7,7 @@ export interface Producto {
   imagenes: string[];
   categoria: string;
   enStock: boolean;
+  stock?: number;
   etiqueta?: string; // "PC ARMADA", "COMBO", etc.
 }
 

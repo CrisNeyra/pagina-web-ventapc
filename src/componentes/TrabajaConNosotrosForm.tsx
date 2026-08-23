@@ -3,6 +3,8 @@
 import { FormEvent, useState } from "react";
 import { FiUpload, FiSend } from "react-icons/fi";
 import { toast } from "sonner";
+import { apiConfigurada } from "@/lib/api-client";
+import { enviarPostulacionApi } from "@/servicios/apiBackendServicio";
 
 const MAX_CV_MB = 5;
 
@@ -33,16 +35,20 @@ export default function TrabajaConNosotrosForm() {
     const formData = new FormData(formulario);
 
     try {
-      const respuesta = await fetch("/api/postulaciones", {
-        method: "POST",
-        body: formData,
-      });
+      if (apiConfigurada()) {
+        await enviarPostulacionApi(formData);
+      } else {
+        const respuesta = await fetch("/api/postulaciones", {
+          method: "POST",
+          body: formData,
+        });
 
-      const datos = (await respuesta.json().catch(() => ({}))) as { error?: string };
+        const datos = (await respuesta.json().catch(() => ({}))) as { error?: string };
 
-      if (!respuesta.ok) {
-        toast.error(mapearError(datos.error ?? "ERROR_INTERNO"));
-        return;
+        if (!respuesta.ok) {
+          toast.error(mapearError(datos.error ?? "ERROR_INTERNO"));
+          return;
+        }
       }
 
       toast.success("¡Postulación enviada! Te contactaremos pronto.");

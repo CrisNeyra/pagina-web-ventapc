@@ -1,5 +1,7 @@
 import type { MetodoPago } from "@/tipos/metodoPago";
 import type { DatosEntrega } from "@/lib/entrega";
+import { pedidosApiConfigurados, crearPedidoEnApi } from "@/servicios/apiBackendServicio";
+import { obtenerApiToken } from "@/lib/api-token";
 
 export interface ItemPedidoRequest {
   id: string;
@@ -46,6 +48,21 @@ export async function crearPedidoOffline(
   entrega: DatosEntrega
 ): Promise<RespuestaCrearPedido> {
   try {
+    if (pedidosApiConfigurados()) {
+      const apiToken = obtenerApiToken();
+      if (!apiToken) {
+        return { ok: false, mensaje: "Debés iniciar sesión para confirmar el pedido." };
+      }
+
+      const pedido = await crearPedidoEnApi(items, metodoPago, entrega, apiToken);
+      return {
+        ok: true,
+        orderId: pedido.id,
+        total: pedido.totalPesos,
+        metodoPago: pedido.metodoPago as MetodoPago,
+      };
+    }
+
     const respuesta = await fetch("/api/pedidos", {
       method: "POST",
       headers: {

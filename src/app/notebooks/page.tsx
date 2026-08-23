@@ -1,10 +1,13 @@
 import ProductosListado from "@/componentes/ProductosListado";
-import { catalogoCompleto } from "@/datos/productos";
+import { obtenerCatalogo } from "@/servicios/catalogoServicio";
 import { filtrarProductosNotebooks } from "@/utils/productos";
 
-const notebooks = filtrarProductosNotebooks(catalogoCompleto);
+export const revalidate = 60;
 
-export default function NotebooksPage() {
+export default async function NotebooksPage() {
+  const catalogo = await obtenerCatalogo();
+  const notebooks = filtrarProductosNotebooks(catalogo);
+
   return (
     <ProductosListado
       productos={notebooks}

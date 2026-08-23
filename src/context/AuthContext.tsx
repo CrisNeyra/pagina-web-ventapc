@@ -17,6 +17,10 @@ import {
 } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 import { obtenerAuthFirebase } from "@/configuracion/firebase";
+import { apiConfigurada } from "@/lib/api-client";
+import { intercambiarTokenFirebase } from "@/servicios/apiBackendServicio";
+import { capturarError } from "@/lib/observabilidad";
+import { guardarApiToken, limpiarApiToken } from "@/lib/api-token";
 
 async function sincronizarCookieSesion(usuario: User | null) {
   try {
@@ -27,10 +31,20 @@ async function sincronizarCookieSesion(usuario: User | null) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ idToken }),
       });
+
+      if (apiConfigurada()) {
+        try {
+          const intercambio = await intercambiarTokenFirebase(idToken);
+          guardarApiToken(intercambio.token);
+        } catch {
+          // El backend API puede no estar disponible en local.
+        }
+      }
       return;
     }
 
     await fetch("/api/auth/session", { method: "DELETE" });
+    limpiarApiToken();
   } catch {
     // En local puede fallar si FIREBASE_SERVICE_ACCOUNT_JSON no está configurado.
   }
@@ -87,7 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         void sincronizarCookieSesion(usuarioActual);
       },
       (error) => {
-        console.error("Error al escuchar cambios de autenticacion:", error);
+        void capturarError(error, { contexto: "onAuthStateChanged" });
         setLoading(false);
       }
     );
@@ -104,7 +118,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await signInWithEmailAndPassword(auth, email, password);
         return null;
       } catch (error) {
-        console.error("Error de login en Firebase:", error);
+        void capturarError(error, { contexto: "signIn" });
         return mensajeAuthFirebase(error);
       }
     },
@@ -118,7 +132,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         await createUserWithEmailAndPassword(auth, email, password);
         return null;
       } catch (error) {
-        console.error("Error de registro en Firebase:", error);
+        void capturarError(error, { contexto: "signUp" });
         return mensajeAuthFirebase(error);
       }
     },
@@ -131,7 +145,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await cerrarSesionFirebase(auth);
       return null;
     } catch (error) {
-      console.error("Error al cerrar sesion en Firebase:", error);
+      void capturarError(error, { contexto: "signOut" });
       return mensajeAuthFirebase(error);
     }
   }, [auth]);

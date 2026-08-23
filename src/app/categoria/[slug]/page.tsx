@@ -1,7 +1,7 @@
 import Link from "next/link";
 import ProductCard from "@/componentes/ProductCard";
 import { categorias } from "@/datos/navegacion";
-import { catalogoCompleto } from "@/datos/productos";
+import { obtenerCatalogo } from "@/servicios/catalogoServicio";
 
 interface CategoriaPageProps {
   params: Promise<{ slug: string }>;
@@ -38,12 +38,15 @@ function resolverTituloCategoria(slug: string): string {
     .join(" ");
 }
 
+export const revalidate = 60;
+
 export default async function CategoriaPage({ params }: CategoriaPageProps) {
   const { slug } = await params;
   const slugNormalizado = normalizar(slug);
   const etiquetas = sinonimosPorSlug[slug] ?? [slugNormalizado.replace(/-/g, " ")];
 
-  const productos = catalogoCompleto.filter((producto) => {
+  const catalogo = await obtenerCatalogo();
+  const productos = catalogo.filter((producto) => {
     const categoriaNormalizada = normalizar(producto.categoria);
     return etiquetas.some((etiqueta) => categoriaNormalizada.includes(normalizar(etiqueta)));
   });

@@ -21,6 +21,10 @@ service cloud.firestore {
       allow read, write: if isOwner(uid);
     }
 
+    match /postulaciones/{id} {
+      allow read, write: if false;
+    }
+
     match /pedidos/{orderId} {
       allow read: if signedIn() && resource.data.uid == request.auth.uid;
       allow write: if false;

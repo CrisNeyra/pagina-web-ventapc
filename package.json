@@ -15,6 +15,11 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "catalogo:precios:sync": "tsx scripts/sync-catalogo-precios.ts",
+    "catalogo:export:api": "tsx scripts/export-catalog-for-api.ts",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "api:install": "npm install --prefix api",
+    "api:dev": "npm run start:dev --prefix api",
     "prepare": "husky",
     "firebase:users:import": "node scripts/firebase/import-users.mjs",
     "firebase:firestore:migrate": "node scripts/firebase/migrate-firestore.mjs",
@@ -22,6 +27,7 @@
     "firebase:functions:deploy": "npm --prefix functions run deploy"
   },
   "dependencies": {
+    "@sentry/nextjs": "^10.70.0",
     "@stripe/react-stripe-js": "^6.8.0",
     "@stripe/stripe-js": "^9.13.0",
     "firebase": "^12.13.0",

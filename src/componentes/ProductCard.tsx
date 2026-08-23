@@ -6,6 +6,7 @@ import Link from "next/link";
 import type { Producto } from "@/tipos/producto";
 import { formatearPrecio } from "@/utils/formato";
 import { useCartStore } from "@/store/cartStore";
+import { verificarStockProducto } from "@/servicios/catalogoServicio";
 import { toast } from "sonner";
 
 interface ProductCardProps {
@@ -24,23 +25,37 @@ export default function ProductCard({ producto }: ProductCardProps) {
   const [indiceImagen, setIndiceImagen] = useState(0);
   const imagenActual = rutasFallback[indiceImagen] ?? "/placeholder-producto.svg";
 
-  const agregarAlCarrito = () => {
+  const [validandoStock, setValidandoStock] = useState(false);
+
+  const agregarAlCarrito = async () => {
     if (!producto.enStock) {
       toast.error("Este producto no tiene stock disponible.");
       return;
     }
-    const agregado = addItem({
-      id: producto.id,
-      nombre: producto.nombre,
-      precio: producto.precio,
-      imagen: imagenPrincipal,
-      enStock: producto.enStock,
-    });
-    if (!agregado) {
-      toast.error("Este producto no tiene stock disponible.");
-      return;
+
+    setValidandoStock(true);
+    try {
+      const hayStock = await verificarStockProducto(producto.id, 1);
+      if (!hayStock) {
+        toast.error("Este producto no tiene stock disponible.");
+        return;
+      }
+
+      const agregado = addItem({
+        id: producto.id,
+        nombre: producto.nombre,
+        precio: producto.precio,
+        imagen: imagenPrincipal,
+        enStock: producto.enStock,
+      });
+      if (!agregado) {
+        toast.error("Este producto no tiene stock disponible.");
+        return;
+      }
+      toast.success(`✅ ${producto.nombre} agregado al carrito`);
+    } finally {
+      setValidandoStock(false);
     }
-    toast.success(`✅ ${producto.nombre} agregado al carrito`);
   };
 
   return (
@@ -96,10 +111,10 @@ export default function ProductCard({ producto }: ProductCardProps) {
       <button
         type="button"
         onClick={agregarAlCarrito}
-        disabled={!producto.enStock}
+        disabled={!producto.enStock || validandoStock}
         className="mt-3 w-full rounded-md border border-cyber-cyan-400/60 bg-cyber-cyan-500/10 px-3 py-2 text-sm font-bold text-cyber-cyan-300 transition-colors hover:bg-cyber-cyan-400 hover:text-oscuro-950 disabled:cursor-not-allowed disabled:border-oscuro-700 disabled:bg-oscuro-800 disabled:text-gray-500 disabled:hover:bg-oscuro-800 disabled:hover:text-gray-500"
       >
-        {producto.enStock ? "Agregar al carrito" : "Sin stock"}
+        {validandoStock ? "Verificando..." : producto.enStock ? "Agregar al carrito" : "Sin stock"}
       </button>
     </article>
   );

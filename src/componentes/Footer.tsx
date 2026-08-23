@@ -51,6 +51,12 @@ export default function Footer() {
               Botón de arrepentimiento
             </Link>
             <Link
+              href="/privacidad"
+              className="text-sm text-cyber-cyan-200/70 hover:text-azul-400 underline transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyber-cyan-400"
+            >
+              Política de privacidad
+            </Link>
+            <Link
               href="/terminos"
               className="text-sm text-cyber-cyan-200/70 hover:text-azul-400 underline transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyber-cyan-400"
             >

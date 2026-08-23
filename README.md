@@ -93,6 +93,39 @@ NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=
 
 **Importante:** `.env.local` no se sube a Git (está en `.gitignore`).
 
+### Backend API (Docker + PostgreSQL)
+
+El proyecto incluye un backend propio en `api/` (NestJS + Prisma + PostgreSQL + Redis + MinIO). Ver guía completa en [`docs/api-backend.md`](docs/api-backend.md).
+
+```bash
+# Exportar catálogo estático → seed de la API
+npm run catalogo:export:api
+
+# Levantar infraestructura (requiere Docker)
+docker compose up -d
+
+# Migrar y seed (primera vez)
+cd api && cp .env.example .env
+npm install && npx prisma migrate deploy && npm run prisma:seed
+npm run start:dev
+```
+
+Variables en `.env.local` del frontend:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:4000/api
+NEXT_PUBLIC_USE_API_CATALOG=true
+```
+
+Con `USE_API_CATALOG=true`, el catálogo, stock, pedidos, admin y postulaciones usan la API Nest. Sin API, el frontend sigue funcionando con Firebase y catálogo estático (fallback).
+
+Producción en VPS: `docker compose --profile production up -d` (incluye Caddy con HTTPS).
+
+Guías adicionales:
+- [Docker local (Windows)](docs/docker-local.md)
+- [Vercel + GitHub + VPS](docs/vercel-produccion.md)
+- [Migración pedidos Firestore → PG](docs/api-backend.md#migración-firestore--postgresql-pedidos)
+
 ### Stripe (checkout)
 Para habilitar pagos reales en `/checkout`:
 

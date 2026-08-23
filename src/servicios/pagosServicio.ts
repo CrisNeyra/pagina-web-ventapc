@@ -2,6 +2,9 @@ import { obtenerUrlPaymentIntent } from "@/configuracion/stripe";
 import { preciosCatalogo } from "@/datos/preciosCatalogo";
 import { validarItemsContraCatalogo } from "@/lib/validarItemsPago";
 import type { DatosEntrega } from "@/lib/entrega";
+import { apiConfigurada } from "@/lib/api-client";
+import { crearPaymentIntentEnApi } from "@/servicios/apiBackendServicio";
+import { obtenerApiToken } from "@/lib/api-token";
 
 export interface ItemPago {
   id: string;
@@ -79,6 +82,26 @@ export async function crearPaymentIntent(
   }
 
   try {
+    if (apiConfigurada()) {
+      const apiToken = obtenerApiToken();
+      if (!apiToken) {
+        return { ok: false, mensaje: "Debés iniciar sesión para pagar." };
+      }
+
+      const resultado = await crearPaymentIntentEnApi(items, apiToken, {
+        metodoPago: opciones.metodoPago ?? "debito",
+        cuotas: opciones.cuotas,
+        entrega: opciones.entrega ?? { tipo: "retiro" },
+      });
+
+      return {
+        ok: true,
+        orderId: resultado.orderId,
+        paymentIntentId: resultado.paymentIntentId,
+        clientSecret: resultado.clientSecret,
+      };
+    }
+
     const cuotas =
       opciones.metodoPago === "credito"
         ? Math.min(12, Math.max(1, opciones.cuotas ?? 1))

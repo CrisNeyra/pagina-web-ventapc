@@ -5,7 +5,7 @@ import Image from "next/image";
 import { FiX } from "react-icons/fi";
 import { useAuth } from "@/context/AuthContext";
 
-const STORAGE_KEY = "aurapro.bannerCuotas.visto";
+const STORAGE_KEY = "aurapro.bannerCuotas.sesion";
 const AUTO_CLOSE_MS = 3000;
 
 export default function WelcomeBannerModal() {
@@ -35,10 +35,10 @@ export default function WelcomeBannerModal() {
   };
 
   useEffect(() => {
-    const yaMostrado = window.localStorage.getItem(STORAGE_KEY) === "1";
+    const yaMostrado = window.sessionStorage.getItem(STORAGE_KEY) === "1";
 
     if (!yaMostrado) {
-      window.localStorage.setItem(STORAGE_KEY, "1");
+      window.sessionStorage.setItem(STORAGE_KEY, "1");
       window.setTimeout(() => abrirModal(), 0);
     }
   }, []);

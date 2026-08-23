@@ -1,0 +1,539 @@
+[
+  {
+    "id": "mon-001",
+    "nombre": "Monitor Gamer Curvo 27\" 165Hz 1ms QHD",
+    "descripcion": "Panel VA, 2560x1440, FreeSync Premium, HDR400\nMonitor Gamer Curvo 27\" 165Hz 1ms QHD.\nCategoría: Monitores con enfoque en rendimiento y calidad.\nComponentes y terminaciones seleccionadas para uso intensivo diario.",
+    "precio": 389999,
+    "categoria": "Monitores",
+    "enStock": true,
+    "imagenes": [
+      "/productos/mon-001-principal.jpg",
+      "/productos/mon-001-img2.jpg",
+      "/productos/mon-001-img3.jpg"
+    ]
+  },
+  {
+    "id": "mon-002",
+    "nombre": "Monitor IPS 24\" 144Hz Full HD",
+    "descripcion": "Panel IPS, 1920x1080, 1ms, AMD FreeSync\nMonitor IPS 24\" 144Hz Full HD.\nCategoría: Monitores con enfoque en rendimiento y calidad.\nComponentes y terminaciones seleccionadas para uso intensivo diario.",
+    "precio": 219999,
+    "categoria": "Monitores",
+    "enStock": true,
+    "imagenes": [
+      "/productos/mon-002-principal.jpg",
+      "/productos/mon-002-img2.jpg",
+      "/productos/mon-002-img3.jpg"
+    ]
+  },
+  {
+    "id": "mon-003",
+    "nombre": "Monitor 4K 28\" IPS 60Hz",
+    "descripcion": "Panel IPS, 3840x2160, 99% sRGB, HDR\nMonitor 4K 28\" IPS 60Hz.\nCategoría: Monitores con enfoque en rendimiento y calidad.\nComponentes y terminaciones seleccionadas para uso intensivo diario.",
+    "precio": 329999,
+    "categoria": "Monitores",
+    "enStock": false,
+    "imagenes": [
+      "/productos/mon-003-principal.jpg",
+      "/productos/mon-003-img2.jpg",
+      "/productos/mon-003-img3.jpg"
+    ]
+  },
+  {
+    "id": "note-001",
+    "nombre": "Notebook Lenovo Legion 5 15.6\" Ryzen 7 RTX 4060",
+    "descripcion": "16GB RAM, 1TB SSD NVMe, panel 165Hz y teclado RGB.\nNotebook Lenovo Legion 5 15.6\" Ryzen 7 RTX 4060.\nCategoría: Notebooks con enfoque en rendimiento y calidad.\nComponentes y terminaciones seleccionadas para uso intensivo diario.",
+    "precio": 2199999,
+    "categoria": "Notebooks",
+    "enStock": true,
+    "imagenes": [
+      "/productos/note-001-principal.jpg",
+      "/productos/note-001-img2.jpg",
+      "/productos/note-001-img3.jpg"
+    ]
+  },
+  {
+    "id": "note-002",
+    "nombre": "Notebook ASUS TUF Gaming F15 15.6\" Intel i7 RTX 4050",
+    "descripcion": "16GB RAM, 512GB SSD, chasis reforzado y pantalla 144Hz.\nNotebook ASUS TUF Gaming F15 15.6\" Intel i7 RTX 4050.\nCategoría: Notebooks con enfoque en rendimiento y calidad.\nComponentes y terminaciones seleccionadas para uso intensivo diario.",
+    "precio": 1999999,
+    "categoria": "Notebooks",
+    "enStock": true,
+    "imagenes": [
+      "/productos/note-002-principal.jpg",
+      "/productos/note-002-img2.jpg",
+      "/productos/note-002-img3.jpg"
+    ]
+  },
+  {
+    "id": "mother-001",
+    "nombre": "Mother ASUS Prime B660M-A",
+    "descripcion": "Motherboard mATX Intel B660 con socket LGA1700 para 12va y 13va Gen.\nSoporta memoria DDR4 hasta 128GB y perfiles XMP para mejor rendimiento.\nIncluye ranura M.2 PCIe 4.0, HDMI, DisplayPort y USB 3.2 de alta velocidad.\nIdeal para equipos gaming y productividad con excelente estabilidad térmica.",
+    "precio": 214999,
+    "categoria": "Mothers",
+    "enStock": true,
+    "imagenes": [
+      "/productos/mother-001-principal.jpg",
+      "/productos/mother-001-img2.jpg",
+      "/productos/mother-001-img3.jpg"
+    ]
+  },
+  {
+    "id": "mother-002",
+    "nombre": "Mother Gigabyte B650M DS3H",
+    "descripcion": "Placa madre AM5 con chipset B650 preparada para Ryzen serie 7000.\nCompatible con DDR5 y almacenamiento NVMe PCIe 4.0 para cargas ultrarrápidas.\nCuenta con VRM reforzado, LAN Gigabit y múltiples puertos USB para periféricos.\nExcelente opción para armar una PC moderna con gran relación precio/rendimiento.",
+    "precio": 289999,
+    "categoria": "Mothers",
+    "enStock": true,
+    "imagenes": [
+      "/productos/mother-002-principal.jpg",
+      "/productos/mother-002-img2.jpg",
+      "/productos/mother-002-img3.jpg"
+    ]
+  },
+  {
+    "id": "mother-003",
+    "nombre": "Mother MSI MAG B550 Tomahawk",
+    "descripcion": "Motherboard ATX AM4 con diseño robusto para procesadores Ryzen de alto desempeño.\nDispone de doble M.2, LAN 2.5G y audio premium para una experiencia completa.\nSistema de disipación extendida que mantiene temperaturas estables bajo carga.\nRecomendada para setups gamer exigentes y estaciones de trabajo avanzadas.",
+    "precio": 254999,
+    "categoria": "Mothers",
+    "enStock": true,
+    "imagenes": [
+      "/productos/mother-003-principal.jpg",
+      "/productos/mother-003-img2.jpg",
+      "/productos/mother-003-img3.jpg"
+    ]
+  },
+  {
+    "id": "fuente-001",
+    "nombre": "Fuente Corsair CV550 550W 80+ Bronze",
+    "descripcion": "Fuente ATX de 550W con certificación 80 Plus Bronze para mayor eficiencia.\nVentilador silencioso de 120mm con control térmico para menor ruido.\nProtecciones eléctricas completas contra sobrecarga, sobretensión y cortocircuitos.\nIdeal para PCs gamer de entrada y equipos de oficina de alto uso.",
+    "precio": 119999,
+    "categoria": "Fuentes",
+    "enStock": true,
+    "imagenes": [
+      "/productos/fuente-001-principal.jpg",
+      "/productos/fuente-001-img2.jpg",
+      "/productos/fuente-001-img3.jpg"
+    ]
+  },
+  {
+    "id": "fuente-002",
+    "nombre": "Fuente XPG Core Reactor 750W 80+ Gold",
+    "descripcion": "PSU de 750W full modular con certificación 80 Plus Gold de alta eficiencia.\nCapacitores japoneses y topología premium para voltajes estables y durabilidad.\nIncluye cables mallados y múltiples conectores para GPUs de nueva generación.\nPerfecta para builds de gama media/alta con margen para futuras actualizaciones.",
+    "precio": 214999,
+    "categoria": "Fuentes",
+    "enStock": true,
+    "imagenes": [
+      "/productos/fuente-002-principal.jpg",
+      "/productos/fuente-002-img2.jpg",
+      "/productos/fuente-002-img3.jpg"
+    ]
+  },
+  {
+    "id": "fuente-003",
+    "nombre": "Fuente Cooler Master MWE 850 V2 80+ Gold",
+    "descripcion": "Fuente de alimentación 850W diseñada para configuraciones gamer de alto consumo.\nCertificación Gold y línea de 12V estable para sostener CPU y GPU exigentes.\nModo de operación silencioso con ventilador HDB y excelente flujo térmico.\nCompatible con equipos de última generación y upgrades de largo plazo.",
+    "precio": 279999,
+    "categoria": "Fuentes",
+    "enStock": true,
+    "imagenes": [
+      "/productos/fuente-003-principal.jpg",
+      "/productos/fuente-003-img2.jpg",
+      "/productos/fuente-003-img3.jpg"
+    ]
+  },
+  {
+    "id": "silla-001",
+    "nombre": "Silla Gamer Corsair T3 Rush",
+    "descripcion": "Silla ergonómica premium con respaldo reclinable y almohadas cervical/lumbar.\nTapizado transpirable de alta calidad para sesiones largas de juego o trabajo.\nApoyabrazos 4D ajustables y base metálica reforzada para máxima estabilidad.\nPensada para confort prolongado con estética gamer profesional.",
+    "precio": 539999,
+    "categoria": "Sillas Gamers",
+    "enStock": true,
+    "imagenes": [
+      "/productos/silla-001-principal.jpg",
+      "/productos/silla-001-img2.jpg",
+      "/productos/silla-001-img3.jpg"
+    ]
+  },
+  {
+    "id": "silla-002",
+    "nombre": "Silla Gamer Redragon Metis Pro",
+    "descripcion": "Diseño deportivo con estructura robusta y espuma de alta densidad.\nRespaldo reclinable hasta 180 grados para descanso entre partidas intensas.\nIncluye apoyabrazos regulables y mecanismo de balanceo suave y estable.\nExcelente elección para escritorios gamer con gran relación costo-beneficio.",
+    "precio": 349999,
+    "categoria": "Sillas Gamers",
+    "enStock": true,
+    "imagenes": [
+      "/productos/silla-002-principal.jpg",
+      "/productos/silla-002-img2.jpg",
+      "/productos/silla-002-img3.jpg"
+    ]
+  },
+  {
+    "id": "silla-003",
+    "nombre": "Silla Gamer DXRacer Formula Series",
+    "descripcion": "Silla gamer icónica con estructura de acero y acabado premium duradero.\nSoporte lumbar ajustable y cabecera acolchada para postura saludable.\nRuedas silenciosas y pistón de clase 4 para ajuste de altura preciso.\nIdeal para streamers y usuarios que priorizan ergonomía y estilo.",
+    "precio": 589999,
+    "categoria": "Sillas Gamers",
+    "enStock": true,
+    "imagenes": [
+      "/productos/silla-003-principal.jpg",
+      "/productos/silla-003-img2.jpg",
+      "/productos/silla-003-img3.jpg"
+    ]
+  },
+  {
+    "id": "periferico-001",
+    "nombre": "Combo Periféricos Logitech MK345",
+    "descripcion": "Combo inalámbrico de teclado y mouse con conexión estable de largo alcance.\nTeclado tamaño completo con descanso para manos y teclas multimedia dedicadas.\nMouse ergonómico con sensor preciso para uso diario y productividad.\nSolución completa para oficina y home setup con gran autonomía de batería.",
+    "precio": 89999,
+    "categoria": "Periféricos",
+    "enStock": true,
+    "imagenes": [
+      "/productos/periferico-001-principal.jpg",
+      "/productos/periferico-001-img2.jpg",
+      "/productos/periferico-001-img3.jpg"
+    ]
+  },
+  {
+    "id": "periferico-002",
+    "nombre": "Teclado Mecánico HyperX Alloy Origins",
+    "descripcion": "Teclado mecánico compacto con switches lineales de respuesta rápida.\nEstructura de aluminio aeronáutico y retroiluminación RGB personalizable.\nCuenta con anti-ghosting completo y perfiles onboard para torneos.\nRecomendado para jugadores competitivos que buscan precisión y durabilidad.",
+    "precio": 164999,
+    "categoria": "Periféricos",
+    "enStock": true,
+    "imagenes": [
+      "/productos/periferico-002-principal.jpg",
+      "/productos/periferico-002-img2.jpg",
+      "/productos/periferico-002-img3.jpg"
+    ]
+  },
+  {
+    "id": "periferico-003",
+    "nombre": "Mouse Logitech G502 HERO",
+    "descripcion": "Mouse gamer con sensor HERO de alta precisión y peso configurable.\nIncluye 11 botones programables para macros en juegos y productividad.\nIluminación RGB LIGHTSYNC y switches mecánicos de larga vida útil.\nAgarre cómodo y control total para FPS, MOBA y uso intensivo.",
+    "precio": 129999,
+    "categoria": "Periféricos",
+    "enStock": true,
+    "imagenes": [
+      "/productos/periferico-003-principal.jpg",
+      "/productos/periferico-003-img2.jpg",
+      "/productos/periferico-003-img3.jpg"
+    ]
+  },
+  {
+    "id": "proc-001",
+    "nombre": "Procesador AMD Ryzen 7 7800X3D",
+    "descripcion": "8 Núcleos, 16 Hilos, 5.0GHz, AM5, 3D V-Cache\nProcesador AMD Ryzen 7 7800X3D.\nCategoría: Procesadores con enfoque en rendimiento y calidad.\nComponentes y terminaciones seleccionadas para uso intensivo diario.",
+    "precio": 459999,
+    "categoria": "Procesadores",
+    "enStock": true,
+    "imagenes": [
+      "/productos/proc-001-principal.jpg",
+      "/productos/proc-001-img2.jpg",
+      "/productos/proc-001-img3.jpg"
+    ]
+  },
+  {
+    "id": "proc-002",
+    "nombre": "Procesador Intel Core i7-14700K",
+    "descripcion": "20 Núcleos, 28 Hilos, 5.6GHz, LGA1700\nProcesador Intel Core i7-14700K.\nCategoría: Procesadores con enfoque en rendimiento y calidad.\nComponentes y terminaciones seleccionadas para uso intensivo diario.",
+    "precio": 489999,
+    "categoria": "Procesadores",
+    "enStock": true,
+    "imagenes": [
+      "/productos/proc-002-principal.jpg",
+      "/productos/proc-002-img2.jpg",
+      "/productos/proc-002-img3.jpg"
+    ]
+  },
+  {
+    "id": "proc-003",
+    "nombre": "Procesador AMD Ryzen 5 7600X",
+    "descripcion": "6 Núcleos, 12 Hilos, 5.3GHz, AM5\nProcesador AMD Ryzen 5 7600X.\nCategoría: Procesadores con enfoque en rendimiento y calidad.\nComponentes y terminaciones seleccionadas para uso intensivo diario.",
+    "precio": 269999,
+    "categoria": "Procesadores",
+    "enStock": true,
+    "imagenes": [
+      "/productos/proc-003-principal.jpg",
+      "/productos/proc-003-img2.jpg",
+      "/productos/proc-003-img3.jpg"
+    ]
+  },
+  {
+    "id": "proc-004",
+    "nombre": "Procesador Intel Core i5-14600KF",
+    "descripcion": "14 Núcleos, 20 Hilos, 5.3GHz, LGA1700\nProcesador Intel Core i5-14600KF.\nCategoría: Procesadores con enfoque en rendimiento y calidad.\nComponentes y terminaciones seleccionadas para uso intensivo diario.",
+    "precio": 349999,
+    "categoria": "Procesadores",
+    "enStock": true,
+    "imagenes": [
+      "/productos/proc-004-principal.jpg",
+      "/productos/proc-004-img2.jpg",
+      "/productos/proc-004-img3.jpg"
+    ]
+  },
+  {
+    "id": "gpu-001",
+    "nombre": "Placa de Video RX 7800 XT 16GB",
+    "descripcion": "GDDR6, FSR 3, Ray Tracing, Dual Fan\nPlaca de Video RX 7800 XT 16GB.\nCategoría: Placas de Video con enfoque en rendimiento y calidad.\nComponentes y terminaciones seleccionadas para uso intensivo diario.",
+    "precio": 749999,
+    "categoria": "Placas de Video",
+    "enStock": true,
+    "imagenes": [
+      "/productos/gpu-001-principal.jpg",
+      "/productos/gpu-001-img2.jpg",
+      "/productos/gpu-001-img3.jpg"
+    ]
+  },
+  {
+    "id": "gpu-002",
+    "nombre": "Placa de Video RTX 4060 8GB",
+    "descripcion": "GDDR6, DLSS 3, Ray Tracing, Dual Fan\nPlaca de Video RTX 4060 8GB.\nCategoría: Placas de Video con enfoque en rendimiento y calidad.\nComponentes y terminaciones seleccionadas para uso intensivo diario.",
+    "precio": 499999,
+    "categoria": "Placas de Video",
+    "enStock": true,
+    "imagenes": [
+      "/productos/gpu-002-principal.jpg",
+      "/productos/gpu-002-img2.jpg",
+      "/productos/gpu-002-img3.jpg"
+    ]
+  },
+  {
+    "id": "gpu-003",
+    "nombre": "Placa de Video RTX 4090 24GB",
+    "descripcion": "GDDR6X, DLSS 3.5, Ray Tracing, ADA Lovelace\nPlaca de Video RTX 4090 24GB.\nCategoría: Placas de Video con enfoque en rendimiento y calidad.\nComponentes y terminaciones seleccionadas para uso intensivo diario.",
+    "precio": 2499999,
+    "categoria": "Placas de Video",
+    "enStock": false,
+    "imagenes": [
+      "/productos/gpu-003-principal.jpg",
+      "/productos/gpu-003-img2.jpg",
+      "/productos/gpu-003-img3.jpg"
+    ]
+  },
+  {
+    "id": "ram-001",
+    "nombre": "Memoria RAM DDR5 32GB (2x16) 6000MHz RGB",
+    "descripcion": "CL30, XMP 3.0, Disipador Aluminio\nMemoria RAM DDR5 32GB (2x16) 6000MHz RGB.\nCategoría: Memorias RAM con enfoque en rendimiento y calidad.\nComponentes y terminaciones seleccionadas para uso intensivo diario.",
+    "precio": 129999,
+    "categoria": "Memorias RAM",
+    "enStock": true,
+    "imagenes": [
+      "/productos/ram-001-principal.jpg",
+      "/productos/ram-001-img2.jpg",
+      "/productos/ram-001-img3.jpg"
+    ]
+  },
+  {
+    "id": "ram-002",
+    "nombre": "Memoria RAM DDR5 16GB (2x8) 5600MHz",
+    "descripcion": "CL36, XMP 3.0, Perfil Bajo\nMemoria RAM DDR5 16GB (2x8) 5600MHz.\nCategoría: Memorias RAM con enfoque en rendimiento y calidad.\nComponentes y terminaciones seleccionadas para uso intensivo diario.",
+    "precio": 79999,
+    "categoria": "Memorias RAM",
+    "enStock": true,
+    "imagenes": [
+      "/productos/ram-002-principal.jpg",
+      "/productos/ram-002-img2.jpg",
+      "/productos/ram-002-img3.jpg"
+    ]
+  },
+  {
+    "id": "ram-003",
+    "nombre": "Memoria RAM DDR4 32GB (2x16) 3600MHz",
+    "descripcion": "CL18, XMP 2.0, RGB, Disipador\nMemoria RAM DDR4 32GB (2x16) 3600MHz.\nCategoría: Memorias RAM con enfoque en rendimiento y calidad.\nComponentes y terminaciones seleccionadas para uso intensivo diario.",
+    "precio": 89999,
+    "categoria": "Memorias RAM",
+    "enStock": true,
+    "imagenes": [
+      "/productos/ram-003-principal.jpg",
+      "/productos/ram-003-img2.jpg",
+      "/productos/ram-003-img3.jpg"
+    ]
+  },
+  {
+    "id": "ram-004",
+    "nombre": "Memoria RAM DDR5 64GB (2x32) 5200MHz",
+    "descripcion": "CL40, ECC, Para Workstation\nMemoria RAM DDR5 64GB (2x32) 5200MHz.\nCategoría: Memorias RAM con enfoque en rendimiento y calidad.\nComponentes y terminaciones seleccionadas para uso intensivo diario.",
+    "precio": 249999,
+    "categoria": "Memorias RAM",
+    "enStock": true,
+    "imagenes": [
+      "/productos/ram-004-principal.jpg",
+      "/productos/ram-004-img2.jpg",
+      "/productos/ram-004-img3.jpg"
+    ]
+  },
+  {
+    "id": "ssd-001",
+    "nombre": "SSD NVMe M.2 1TB Gen4 7000MB/s",
+    "descripcion": "PCIe 4.0, TLC NAND, Disipador incluido\nSSD NVMe M.2 1TB Gen4 7000MB/s.\nCategoría: Almacenamiento con enfoque en rendimiento y calidad.\nComponentes y terminaciones seleccionadas para uso intensivo diario.",
+    "precio": 109999,
+    "categoria": "Almacenamiento",
+    "enStock": true,
+    "imagenes": [
+      "/productos/ssd-001-principal.jpg",
+      "/productos/ssd-001-img2.jpg",
+      "/productos/ssd-001-img3.jpg"
+    ]
+  },
+  {
+    "id": "ssd-002",
+    "nombre": "SSD NVMe M.2 2TB Gen4 7400MB/s",
+    "descripcion": "PCIe 4.0, TLC NAND, PS5 Compatible\nSSD NVMe M.2 2TB Gen4 7400MB/s.\nCategoría: Almacenamiento con enfoque en rendimiento y calidad.\nComponentes y terminaciones seleccionadas para uso intensivo diario.",
+    "precio": 199999,
+    "categoria": "Almacenamiento",
+    "enStock": true,
+    "imagenes": [
+      "/productos/ssd-002-principal.jpg",
+      "/productos/ssd-002-img2.jpg",
+      "/productos/ssd-002-img3.jpg"
+    ]
+  },
+  {
+    "id": "ssd-003",
+    "nombre": "SSD SATA 1TB 560MB/s",
+    "descripcion": "SATA III, 2.5\", TLC NAND, 600 TBW\nSSD SATA 1TB 560MB/s.\nCategoría: Almacenamiento con enfoque en rendimiento y calidad.\nComponentes y terminaciones seleccionadas para uso intensivo diario.",
+    "precio": 69999,
+    "categoria": "Almacenamiento",
+    "enStock": true,
+    "imagenes": [
+      "/productos/ssd-003-principal.jpg",
+      "/productos/ssd-003-img2.jpg",
+      "/productos/ssd-003-img3.jpg"
+    ]
+  },
+  {
+    "id": "ssd-004",
+    "nombre": "SSD NVMe M.2 4TB Gen5 12400MB/s",
+    "descripcion": "PCIe 5.0, TLC NAND, Tope de gama\nSSD NVMe M.2 4TB Gen5 12400MB/s.\nCategoría: Almacenamiento con enfoque en rendimiento y calidad.\nComponentes y terminaciones seleccionadas para uso intensivo diario.",
+    "precio": 549999,
+    "categoria": "Almacenamiento",
+    "enStock": true,
+    "imagenes": [
+      "/productos/ssd-004-principal.jpg",
+      "/productos/ssd-004-img2.jpg",
+      "/productos/ssd-004-img3.jpg"
+    ]
+  },
+  {
+    "id": "pc-001",
+    "nombre": "PC AMD Ryzen 5 5600GT 16GB 512GB SSD WIFI",
+    "descripcion": "Ideal para oficina y gaming liviano\nPC AMD Ryzen 5 5600GT 16GB 512GB SSD WIFI.\nCategoría: PC Armadas con enfoque en rendimiento y calidad.\nComponentes y terminaciones seleccionadas para uso intensivo diario.",
+    "precio": 651116,
+    "categoria": "PC Armadas",
+    "enStock": true,
+    "imagenes": [
+      "/productos/pc-001-principal.jpg",
+      "/productos/pc-001-img2.jpg",
+      "/productos/pc-001-img3.jpg"
+    ],
+    "etiqueta": "PC ARMADA"
+  },
+  {
+    "id": "pc-002",
+    "nombre": "PC AMD Ryzen 7 5700G 16GB 512GB SSD WIFI",
+    "descripcion": "Potencia para multitarea y gaming\nPC AMD Ryzen 7 5700G 16GB 512GB SSD WIFI.\nCategoría: PC Armadas con enfoque en rendimiento y calidad.\nComponentes y terminaciones seleccionadas para uso intensivo diario.",
+    "precio": 702266,
+    "categoria": "PC Armadas",
+    "enStock": true,
+    "imagenes": [
+      "/productos/pc-002-principal.jpg",
+      "/productos/pc-002-img2.jpg",
+      "/productos/pc-002-img3.jpg"
+    ],
+    "etiqueta": "PC ARMADA"
+  },
+  {
+    "id": "pc-003",
+    "nombre": "PC Gamer AMD Ryzen 7 5700 RTX 3050 6GB 16GB 1TB SSD",
+    "descripcion": "Gaming 1080p en ultra, 4x Fans RGB\nPC Gamer AMD Ryzen 7 5700 RTX 3050 6GB 16GB 1TB SSD.\nCategoría: PC Armadas con enfoque en rendimiento y calidad.\nComponentes y terminaciones seleccionadas para uso intensivo diario.",
+    "precio": 1140317,
+    "categoria": "PC Armadas",
+    "enStock": true,
+    "imagenes": [
+      "/productos/pc-003-principal.jpg",
+      "/productos/pc-003-img2.jpg",
+      "/productos/pc-003-img3.jpg"
+    ],
+    "etiqueta": "PC ARMADA"
+  },
+  {
+    "id": "combo-001",
+    "nombre": "Gabinete Antec VCX200 ELITE RGB + Mouse Corsair M75",
+    "descripcion": "Mesh 5x120mm RGB, Vidrio Templado + Mouse Gaming\nGabinete Antec VCX200 ELITE RGB + Mouse Corsair M75.\nCategoría: Combos con enfoque en rendimiento y calidad.\nComponentes y terminaciones seleccionadas para uso intensivo diario.",
+    "precio": 218607,
+    "categoria": "Combos",
+    "enStock": true,
+    "imagenes": [
+      "/productos/combo-001-principal.jpg",
+      "/productos/combo-001-img2.jpg",
+      "/productos/combo-001-img3.jpg"
+    ],
+    "etiqueta": "COMBO"
+  },
+  {
+    "id": "rx-9070xt",
+    "nombre": "RX 9070 XT 16GB Ultra Power",
+    "descripcion": "Producto destacado en novedades (PLACAS DE VIDEO RADEON AMD).\nRX 9070 XT 16GB Ultra Power.\nCategoría: PLACAS DE VIDEO RADEON AMD con enfoque en rendimiento y calidad.\nComponentes y terminaciones seleccionadas para uso intensivo diario.",
+    "precio": 1187300,
+    "categoria": "PLACAS DE VIDEO RADEON AMD",
+    "enStock": true,
+    "imagenes": [
+      "/productos/rx-9070xt-principal.jpg",
+      "/productos/rx-9070xt-img2.jpg",
+      "/productos/rx-9070xt-img3.jpg"
+    ]
+  },
+  {
+    "id": "placa-red-ax3000",
+    "nombre": "AX3000: Velocidad real",
+    "descripcion": "Producto destacado en novedades (PLACAS DE RED INALÁMBRICAS).\nAX3000: Velocidad real.\nCategoría: PLACAS DE RED INALÁMBRICAS con enfoque en rendimiento y calidad.\nComponentes y terminaciones seleccionadas para uso intensivo diario.",
+    "precio": 45800,
+    "categoria": "PLACAS DE RED INALÁMBRICAS",
+    "enStock": true,
+    "imagenes": [
+      "/productos/placa-red-ax3000-principal.jpg",
+      "/productos/placa-red-ax3000-img2.jpg",
+      "/productos/placa-red-ax3000-img3.jpg"
+    ]
+  },
+  {
+    "id": "samsung-g9-49",
+    "nombre": "Samsung G9 49\" Potencia Total",
+    "descripcion": "Producto destacado en novedades (MONITORES Y PANTALLAS).\nSamsung G9 49\" Potencia Total.\nCategoría: MONITORES Y PANTALLAS con enfoque en rendimiento y calidad.\nComponentes y terminaciones seleccionadas para uso intensivo diario.",
+    "precio": 1758600,
+    "categoria": "MONITORES Y PANTALLAS",
+    "enStock": true,
+    "imagenes": [
+      "/productos/samsung-g9-49-principal.jpg",
+      "/productos/samsung-g9-49-img2.jpg",
+      "/productos/samsung-g9-49-img3.jpg"
+    ]
+  },
+  {
+    "id": "vivobook-15-r7",
+    "nombre": "Vivobook 15 R7 Potencia PRO",
+    "descripcion": "Producto destacado en novedades (NOTEBOOKS).\nVivobook 15 R7 Potencia PRO.\nCategoría: NOTEBOOKS con enfoque en rendimiento y calidad.\nComponentes y terminaciones seleccionadas para uso intensivo diario.",
+    "precio": 1372400,
+    "categoria": "NOTEBOOKS",
+    "enStock": true,
+    "imagenes": [
+      "/productos/vivobook-15-r7-principal.jpg",
+      "/productos/vivobook-15-r7-img2.jpg",
+      "/productos/vivobook-15-r7-img3.jpg"
+    ]
+  },
+  {
+    "id": "consola-ps5",
+    "nombre": "Jugá donde quieras",
+    "descripcion": "Producto destacado en novedades (CONSOLAS).\nJugá donde quieras.\nCategoría: CONSOLAS con enfoque en rendimiento y calidad.\nComponentes y terminaciones seleccionadas para uso intensivo diario.",
+    "precio": 1106800,
+    "categoria": "CONSOLAS",
+    "enStock": true,
+    "imagenes": [
+      "/productos/consola-ps5-principal.jpg",
+      "/productos/consola-ps5-img2.jpg",
+      "/productos/consola-ps5-img3.jpg"
+    ]
+  }
+]

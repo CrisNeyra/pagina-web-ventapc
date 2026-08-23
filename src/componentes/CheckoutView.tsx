@@ -27,11 +27,14 @@ import CheckoutPaymentForm from "@/componentes/CheckoutPaymentForm";
 import CheckoutEntrega from "@/componentes/CheckoutEntrega";
 import {
   costoEntrega,
+  cotizarEnvio,
   validarDatosEntrega,
   type DatosEntrega,
 } from "@/lib/entrega";
+import { apiConfigurada } from "@/lib/api-client";
+import { obtenerTransferenciaApi } from "@/servicios/apiBackendServicio";
 
-const DATOS_TRANSFERENCIA = {
+const DATOS_TRANSFERENCIA_DEFAULT = {
   banco: "Banco Galicia",
   titular: "Aura Pro S.A.",
   cbu: "0070 1234 0000 5678 9012 3456",
@@ -50,6 +53,8 @@ export default function CheckoutView() {
   const [cargandoPago, setCargandoPago] = useState(false);
   const [confirmandoPedido, setConfirmandoPedido] = useState(false);
   const [errorPago, setErrorPago] = useState("");
+  const [costoEnvioDinamico, setCostoEnvioDinamico] = useState(5000);
+  const [datosTransferencia, setDatosTransferencia] = useState(DATOS_TRANSFERENCIA_DEFAULT);
 
   const stripePromise = useMemo(() => {
     const key = obtenerStripePublishableKey();
@@ -72,7 +77,27 @@ export default function CheckoutView() {
     return calcularTotalCheckout(itemsPago, metodoPago);
   }, [itemsPago, metodoPago, subtotal]);
 
-  const costoEnvio = useMemo(() => costoEntrega(datosEntrega.tipo), [datosEntrega.tipo]);
+  const costoEnvio = useMemo(
+    () => costoEntrega(datosEntrega.tipo, costoEnvioDinamico),
+    [datosEntrega.tipo, costoEnvioDinamico]
+  );
+
+  useEffect(() => {
+    if (apiConfigurada()) {
+      void obtenerTransferenciaApi()
+        .then(setDatosTransferencia)
+        .catch(() => setDatosTransferencia(DATOS_TRANSFERENCIA_DEFAULT));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (datosEntrega.tipo !== "envio" || !datosEntrega.envio?.codigoPostal) {
+      setCostoEnvioDinamico(5000);
+      return;
+    }
+
+    void cotizarEnvio(datosEntrega.envio.codigoPostal).then(setCostoEnvioDinamico);
+  }, [datosEntrega.tipo, datosEntrega.envio?.codigoPostal]);
 
   const total = totalProductos + costoEnvio;
 
@@ -272,17 +297,17 @@ export default function CheckoutView() {
               </p>
               <div className="space-y-1 text-sm text-cyber-cyan-200/85">
                 <p>
-                  <span className="text-cyber-cyan-300">Banco:</span> {DATOS_TRANSFERENCIA.banco}
+                  <span className="text-cyber-cyan-300">Banco:</span> {datosTransferencia.banco}
                 </p>
                 <p>
                   <span className="text-cyber-cyan-300">Titular:</span>{" "}
-                  {DATOS_TRANSFERENCIA.titular}
+                  {datosTransferencia.titular}
                 </p>
                 <p>
-                  <span className="text-cyber-cyan-300">CBU:</span> {DATOS_TRANSFERENCIA.cbu}
+                  <span className="text-cyber-cyan-300">CBU:</span> {datosTransferencia.cbu}
                 </p>
                 <p>
-                  <span className="text-cyber-cyan-300">Alias:</span> {DATOS_TRANSFERENCIA.alias}
+                  <span className="text-cyber-cyan-300">Alias:</span> {datosTransferencia.alias}
                 </p>
               </div>
               <p className="text-xs text-cyber-cyan-200/65">

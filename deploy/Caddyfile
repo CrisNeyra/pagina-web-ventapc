@@ -1,0 +1,4 @@
+# Reemplazar api.tudominio.com por tu dominio real en producción
+api.tudominio.com {
+    reverse_proxy api:4000
+}

@@ -35,6 +35,22 @@ export function validarDatosEntrega(datos: DatosEntrega): { ok: true } | { ok: f
   return { ok: true };
 }
 
-export function costoEntrega(tipo: TipoEntrega): number {
-  return tipo === "envio" ? COSTO_ENVIO_PESOS : 0;
+export async function cotizarEnvio(codigoPostal?: string): Promise<number> {
+  if (!codigoPostal?.trim()) return COSTO_ENVIO_PESOS;
+
+  if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_API_URL) {
+    try {
+      const { cotizarEnvioApi } = await import("@/servicios/apiBackendServicio");
+      const cotizacion = await cotizarEnvioApi(codigoPostal);
+      return cotizacion.costo;
+    } catch {
+      return COSTO_ENVIO_PESOS;
+    }
+  }
+
+  return COSTO_ENVIO_PESOS;
+}
+
+export function costoEntrega(tipo: TipoEntrega, costoDinamico = COSTO_ENVIO_PESOS): number {
+  return tipo === "envio" ? costoDinamico : 0;
 }
