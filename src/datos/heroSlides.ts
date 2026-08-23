@@ -8,20 +8,17 @@ export interface HeroSlide {
 export const HERO_SLIDES: HeroSlide[] = [
   {
     mp4: "/videos/habitacion-ciberpunk-con-pc-gamer.mp4",
-    webm: "/videos/habitacion-ciberpunk-con-pc-gamer.webm",
-    poster: "/productos/pc-001-principal.jpg",
+    poster: "/videos/habitacion-ciberpunk-con-pc-gamer-poster.jpg",
     titulo: "Setup gamer ciberpunk",
   },
   {
     mp4: "/videos/video-con-tematica-de-videojuego.mp4",
-    webm: "/videos/video-con-tematica-de-videojuego.webm",
-    poster: "/productos/gpu-001-principal.jpg",
+    poster: "/videos/video-con-tematica-de-videojuego-poster.jpg",
     titulo: "Temática gaming",
   },
   {
     mp4: "/videos/habitacion-ciberpunk-con-letrero-luminoso.mp4",
-    webm: "/videos/habitacion-ciberpunk-con-letrero-luminoso.webm",
-    poster: "/productos/mon-001-principal.jpg",
+    poster: "/videos/habitacion-ciberpunk-con-letrero-luminoso-poster.jpg",
     titulo: "Habitación RGB",
   },
 ];

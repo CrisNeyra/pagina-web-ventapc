@@ -13,6 +13,7 @@ export default function HeroVideos() {
   const [activo, setActivo] = useState(0);
   const [visible, setVisible] = useState(false);
   const [videoListo, setVideoListo] = useState(false);
+  const [posterRoto, setPosterRoto] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const contenedorRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef(0);
@@ -22,11 +23,13 @@ export default function HeroVideos() {
   const siguiente = useCallback(() => {
     setActivo((prev) => (prev + 1) % HERO_SLIDES.length);
     setVideoListo(false);
+    setPosterRoto(false);
   }, []);
 
   const anterior = useCallback(() => {
     setActivo((prev) => (prev - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
     setVideoListo(false);
+    setPosterRoto(false);
   }, []);
 
   useEffect(() => {
@@ -74,16 +77,23 @@ export default function HeroVideos() {
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
-        <Image
-          src={slide.poster}
-          alt={slide.titulo}
-          fill
-          priority
-          sizes="(max-width: 768px) 100vw, 60vw"
-          className={`object-cover object-center transition-opacity duration-500 ${
-            visible && videoListo ? "opacity-0" : "opacity-100"
-          }`}
-        />
+        {/* Fondo neutro: evita el flash de “imagen no disponible” si falla el poster. */}
+        <div className="absolute inset-0 bg-oscuro-900" aria-hidden />
+
+        {!posterRoto && (
+          <Image
+            key={slide.poster}
+            src={slide.poster}
+            alt={slide.titulo}
+            fill
+            priority={activo === 0}
+            sizes="(max-width: 768px) 100vw, 60vw"
+            className={`object-cover object-center transition-opacity duration-500 ${
+              visible && videoListo ? "opacity-0" : "opacity-100"
+            }`}
+            onError={() => setPosterRoto(true)}
+          />
+        )}
 
         <AnimatePresence mode="sync">
           {visible && !reducedMotion && (
@@ -100,9 +110,10 @@ export default function HeroVideos() {
                 muted
                 loop
                 playsInline
-                preload="none"
-                poster={slide.poster}
+                preload="metadata"
+                poster={posterRoto ? undefined : slide.poster}
                 aria-label={`Video promocional: ${slide.titulo}`}
+                onLoadedData={() => setVideoListo(true)}
                 onCanPlay={() => setVideoListo(true)}
                 className="h-full w-full scale-[1.15] object-cover object-center"
               >
@@ -139,6 +150,7 @@ export default function HeroVideos() {
               onClick={() => {
                 setActivo(i);
                 setVideoListo(false);
+                setPosterRoto(false);
               }}
               aria-label={`Video ${i + 1}`}
               className={`h-2 rounded-full transition-all duration-300 ${
