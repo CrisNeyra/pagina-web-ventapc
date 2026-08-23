@@ -49,6 +49,7 @@ Cuando tengas la API en un VPS con HTTPS:
 |----------|---------------|----------|
 | `NEXT_PUBLIC_API_URL` | `https://api.tudominio.com/api` | Production, Preview |
 | `NEXT_PUBLIC_USE_API_CATALOG` | `true` | Production, Preview |
+| `NEXT_PUBLIC_AUTH_MODE` | `nest` (JWT API) o `firebase` (legado + exchange) | Production, Preview |
 | `NEXT_PUBLIC_SITE_URL` | `https://pagina-web-ventapc.vercel.app` | Production |
 | `NEXT_PUBLIC_SENTRY_DSN` | `https://...@sentry.io/...` | Production (opcional) |
 
@@ -57,6 +58,9 @@ Cuando tengas la API en un VPS con HTTPS:
 ```env
 CORS_ORIGINS=https://pagina-web-ventapc.vercel.app,http://localhost:3000
 JWT_SECRET=tu_secreto_largo
+ADMIN_EMAILS=admin@tudominio.com
+# Con AUTH_MODE=nest en Vercel, apagá el puente:
+DISABLE_FIREBASE_EXCHANGE=true
 STRIPE_SECRET_KEY=sk_live_...
 STRIPE_WEBHOOK_SECRET=whsec_...
 ```
@@ -71,13 +75,12 @@ docker compose --profile production up -d
 
 5. **Redeploy** en Vercel (Deployments → ⋯ → Redeploy) para que tome las nuevas variables.
 
-### Variables que siguen en Vercel (Firebase)
+### Variables Firebase en Vercel
 
-Mientras dure la migración gradual, mantené también:
+Con `NEXT_PUBLIC_AUTH_MODE=nest`, Firebase Auth ya no es el camino de login. Podés dejar:
 
-- `NEXT_PUBLIC_FIREBASE_*`
-- `FIREBASE_SERVICE_ACCOUNT_JSON`
 - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
+- `NEXT_PUBLIC_FIREBASE_*` / `FIREBASE_SERVICE_ACCOUNT_JSON` solo si aún usás Storage/Firestore o `AUTH_MODE=firebase`
 
 ## Checklist post-push
 

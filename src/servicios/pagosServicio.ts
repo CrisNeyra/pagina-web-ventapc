@@ -60,15 +60,6 @@ export async function crearPaymentIntent(
   idToken: string,
   opciones: OpcionesPaymentIntent = {}
 ): Promise<RespuestaPaymentIntent> {
-  const url = obtenerUrlPaymentIntent();
-  if (!url) {
-    return {
-      ok: false,
-      mensaje:
-        "Pagos no configurados. Agregá NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY y la URL de la Cloud Function.",
-    };
-  }
-
   if (items.length === 0) {
     return { ok: false, mensaje: "El carrito está vacío." };
   }
@@ -82,6 +73,7 @@ export async function crearPaymentIntent(
   }
 
   try {
+    // Nest API: no exige Cloud Function ni URL de Stripe en el frontend.
     if (apiConfigurada()) {
       const apiToken = obtenerApiToken();
       if (!apiToken) {
@@ -99,6 +91,15 @@ export async function crearPaymentIntent(
         orderId: resultado.orderId,
         paymentIntentId: resultado.paymentIntentId,
         clientSecret: resultado.clientSecret,
+      };
+    }
+
+    const url = obtenerUrlPaymentIntent();
+    if (!url) {
+      return {
+        ok: false,
+        mensaje:
+          "Pagos no configurados. Agregá NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY y la URL de la Cloud Function, o NEXT_PUBLIC_API_URL.",
       };
     }
 

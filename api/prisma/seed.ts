@@ -3,6 +3,29 @@ import { resolve } from "node:path";
 import { PrismaClient, UserRole } from "@prisma/client";
 import bcrypt from "bcrypt";
 
+/** Prisma CLI carga .env solo; tsx no. Cargamos DATABASE_URL antes del client. */
+function cargarEnv() {
+  const envPath = resolve(__dirname, "../.env");
+  if (!existsSync(envPath)) return;
+  for (const linea of readFileSync(envPath, "utf-8").split(/\r?\n/)) {
+    const trimmed = linea.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const eq = trimmed.indexOf("=");
+    if (eq <= 0) continue;
+    const key = trimmed.slice(0, eq).trim();
+    let value = trimmed.slice(eq + 1).trim();
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    }
+    if (!(key in process.env)) process.env[key] = value;
+  }
+}
+
+cargarEnv();
+
 const prisma = new PrismaClient();
 
 interface SeedProduct {
@@ -29,7 +52,7 @@ async function main() {
   const seedPath = resolve(__dirname, "seed-data.json");
   if (!existsSync(seedPath)) {
     throw new Error(
-      "Falta api/prisma/seed-data.json. Ejecutá: npm run catalogo:export:api"
+      "Falta api/prisma/seed-data.json. Desde la raíz del proyecto ejecutá: npm run catalogo:export:api"
     );
   }
 

@@ -15,7 +15,8 @@
     "prisma:migrate:dev": "prisma migrate dev",
     "prisma:seed": "tsx prisma/seed.ts",
     "db:setup": "prisma migrate deploy && tsx prisma/seed.ts",
-    "orders:import": "node scripts/import-orders-from-json.mjs"
+    "orders:import": "node scripts/import-orders-from-json.mjs",
+    "users:migrate-firebase": "tsx scripts/migrate-firebase-users-to-pg.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.787.0",

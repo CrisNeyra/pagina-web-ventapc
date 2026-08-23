@@ -3,11 +3,11 @@
 import Link from "next/link";
 import { FiUser, FiShoppingCart, FiLogOut } from "react-icons/fi";
 import { enlacesNavegacion } from "@/datos/navegacion";
-import type { User } from "firebase/auth";
+import type { AuthUser } from "@/tipos/auth-user";
 
 interface NavbarMenuProps {
   menuAbierto: boolean;
-  user: User | null;
+  user: AuthUser | null;
   onCerrarMenu: () => void;
   onAbrirAuth: () => void;
   onAbrirCarrito: () => void;

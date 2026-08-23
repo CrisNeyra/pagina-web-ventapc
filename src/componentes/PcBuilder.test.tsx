@@ -30,9 +30,10 @@ describe("PcBuilder", () => {
       user: null,
       loading: false,
       configured: true,
-      login: vi.fn(),
-      register: vi.fn(),
-      logout: vi.fn(),
+      authMode: "firebase",
+      signIn: vi.fn(),
+      signUp: vi.fn(),
+      signOut: vi.fn(),
     });
   });
 
@@ -54,12 +55,13 @@ describe("PcBuilder", () => {
   it("muestra mensaje si no hay componentes seleccionados", async () => {
     const user = userEvent.setup();
     vi.mocked(useAuth).mockReturnValue({
-      user: { uid: "user-123", email: "test@test.com" } as never,
+      user: { uid: "user-123", email: "test@test.com" },
       loading: false,
       configured: true,
-      login: vi.fn(),
-      register: vi.fn(),
-      logout: vi.fn(),
+      authMode: "firebase",
+      signIn: vi.fn(),
+      signUp: vi.fn(),
+      signOut: vi.fn(),
     });
 
     render(<PcBuilder />);
@@ -74,12 +76,13 @@ describe("PcBuilder", () => {
   it("guarda la configuración cuando hay usuario y componentes", async () => {
     const user = userEvent.setup();
     vi.mocked(useAuth).mockReturnValue({
-      user: { uid: "user-123", email: "test@test.com" } as never,
+      user: { uid: "user-123", email: "test@test.com" },
       loading: false,
       configured: true,
-      login: vi.fn(),
-      register: vi.fn(),
-      logout: vi.fn(),
+      authMode: "firebase",
+      signIn: vi.fn(),
+      signUp: vi.fn(),
+      signOut: vi.fn(),
     });
     vi.mocked(guardarBuildConReintentos).mockResolvedValue({
       ok: true,

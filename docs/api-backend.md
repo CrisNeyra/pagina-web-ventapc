@@ -33,9 +33,18 @@ La API queda en `http://localhost:4000/api`.
 | POST | `/payments/stripe/webhook` | Webhook Stripe |
 | GET | `/shipping/quote?cp=` | Cotizar envío por CP |
 | GET | `/site-config/transferencia` | Datos bancarios |
-| POST | `/auth/firebase-exchange` | Puente Firebase → JWT |
+| POST | `/auth/register` | Registro email/password (JWT) |
+| POST | `/auth/login` | Login Nest (JWT) |
+| GET | `/auth/me` | Usuario actual (JWT) |
+| POST | `/auth/firebase-exchange` | Puente Firebase → JWT (legacy; apagar con `DISABLE_FIREBASE_EXCHANGE=true`) |
 | GET | `/admin/orders` | Pedidos pendientes (admin) |
 | PATCH | `/admin/orders/:id` | Actualizar estado pedido |
+
+## Auth Nest vs Firebase
+
+- Frontend: `NEXT_PUBLIC_AUTH_MODE=nest` (default si hay `NEXT_PUBLIC_API_URL`) usa register/login/me.
+- `NEXT_PUBLIC_AUTH_MODE=firebase` mantiene Auth Firebase + exchange a JWT.
+- Migrar emails Firebase → PG (sin password): `cd api && npm run users:migrate-firebase` (`--dry-run` opcional).
 
 ## Producción (VPS)
 

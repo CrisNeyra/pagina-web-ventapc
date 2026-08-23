@@ -75,6 +75,8 @@ En `.env.local` (raíz):
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:4000/api
 NEXT_PUBLIC_USE_API_CATALOG=true
+# nest (default con API) | firebase (login Firebase + exchange JWT)
+NEXT_PUBLIC_AUTH_MODE=nest
 ```
 
 ```powershell

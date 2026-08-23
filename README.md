@@ -115,9 +115,12 @@ Variables en `.env.local` del frontend:
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:4000/api
 NEXT_PUBLIC_USE_API_CATALOG=true
+NEXT_PUBLIC_AUTH_MODE=nest
 ```
 
 Con `USE_API_CATALOG=true`, el catálogo, stock, pedidos, admin y postulaciones usan la API Nest. Sin API, el frontend sigue funcionando con Firebase y catálogo estático (fallback).
+
+`NEXT_PUBLIC_AUTH_MODE=nest` autentica con JWT Nest (`/auth/register|login|me`). Usá `firebase` solo para el puente legacy (Auth Firebase + `firebase-exchange`). Checklist: [`docs/prueba-login-checkout-api.md`](docs/prueba-login-checkout-api.md).
 
 Producción en VPS: `docker compose --profile production up -d` (incluye Caddy con HTTPS).
 

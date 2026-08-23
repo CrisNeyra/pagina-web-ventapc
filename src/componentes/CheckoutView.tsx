@@ -32,7 +32,19 @@ import {
   type DatosEntrega,
 } from "@/lib/entrega";
 import { apiConfigurada } from "@/lib/api-client";
+import { obtenerApiToken } from "@/lib/api-token";
 import { obtenerTransferenciaApi } from "@/servicios/apiBackendServicio";
+
+async function obtenerIdTokenOpcional(): Promise<string> {
+  if (apiConfigurada() && obtenerApiToken()) {
+    return "";
+  }
+  const auth = obtenerAuthFirebase();
+  if (!auth?.currentUser) {
+    throw new Error("SIN_SESION");
+  }
+  return auth.currentUser.getIdToken();
+}
 
 const DATOS_TRANSFERENCIA_DEFAULT = {
   banco: "Banco Galicia",
@@ -128,31 +140,31 @@ export default function CheckoutView() {
       setCargandoPago(true);
       setErrorPago("");
 
-      const auth = obtenerAuthFirebase();
-      if (!auth?.currentUser) {
-        setErrorPago("No se pudo obtener la sesión del usuario.");
+      try {
+        const idToken = await obtenerIdTokenOpcional();
+        const resultado = await crearPaymentIntent(itemsPago, idToken, {
+          metodoPago: metodoPago === "credito" ? "credito" : "debito",
+          cuotas: metodoPago === "credito" ? cuotas : 1,
+          entrega: datosEntrega,
+        });
+
+        if (cancelado) return;
+
+        if (!resultado.ok) {
+          setErrorPago(resultado.mensaje);
+          setCargandoPago(false);
+          return;
+        }
+
+        setClientSecret(resultado.clientSecret);
+        setOrderId(resultado.orderId);
         setCargandoPago(false);
-        return;
+      } catch {
+        if (!cancelado) {
+          setErrorPago("No se pudo obtener la sesión del usuario.");
+          setCargandoPago(false);
+        }
       }
-
-      const idToken = await auth.currentUser.getIdToken();
-      const resultado = await crearPaymentIntent(itemsPago, idToken, {
-        metodoPago: metodoPago === "credito" ? "credito" : "debito",
-        cuotas: metodoPago === "credito" ? cuotas : 1,
-        entrega: datosEntrega,
-      });
-
-      if (cancelado) return;
-
-      if (!resultado.ok) {
-        setErrorPago(resultado.mensaje);
-        setCargandoPago(false);
-        return;
-      }
-
-      setClientSecret(resultado.clientSecret);
-      setOrderId(resultado.orderId);
-      setCargandoPago(false);
     }
 
     iniciarPago();
@@ -184,26 +196,24 @@ export default function CheckoutView() {
     setConfirmandoPedido(true);
     setErrorPago("");
 
-    const auth = obtenerAuthFirebase();
-    if (!auth?.currentUser) {
+    try {
+      const idToken = await obtenerIdTokenOpcional();
+      const resultado = await crearPedidoOffline(itemsPago, metodoPago, idToken, datosEntrega);
+
+      if (!resultado.ok) {
+        setErrorPago(resultado.mensaje);
+        setConfirmandoPedido(false);
+        return;
+      }
+
+      clearCart();
+      router.push(
+        `/checkout/exito?orderId=${resultado.orderId}&metodo=${resultado.metodoPago}`
+      );
+    } catch {
       setErrorPago("No se pudo obtener la sesión del usuario.");
       setConfirmandoPedido(false);
-      return;
     }
-
-    const idToken = await auth.currentUser.getIdToken();
-    const resultado = await crearPedidoOffline(itemsPago, metodoPago, idToken, datosEntrega);
-
-    if (!resultado.ok) {
-      setErrorPago(resultado.mensaje);
-      setConfirmandoPedido(false);
-      return;
-    }
-
-    clearCart();
-    router.push(
-      `/checkout/exito?orderId=${resultado.orderId}&metodo=${resultado.metodoPago}`
-    );
   };
 
   if (items.length === 0) {

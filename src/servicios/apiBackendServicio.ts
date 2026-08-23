@@ -81,6 +81,24 @@ export async function intercambiarTokenFirebase(idToken: string) {
   );
 }
 
+export async function registrarUsuarioApi(email: string, password: string) {
+  return apiFetch<{ token: string; user: { id: string; email: string; role: string } }>(
+    "/auth/register",
+    { method: "POST", body: JSON.stringify({ email, password }) }
+  );
+}
+
+export async function loginUsuarioApi(email: string, password: string) {
+  return apiFetch<{ token: string; user: { id: string; email: string; role: string } }>(
+    "/auth/login",
+    { method: "POST", body: JSON.stringify({ email, password }) }
+  );
+}
+
+export async function obtenerUsuarioApi(token: string) {
+  return apiFetch<{ id: string; email: string; role: string }>("/auth/me", { token });
+}
+
 export async function obtenerPedidosAdminApi(token: string) {
   return apiFetch<
     {

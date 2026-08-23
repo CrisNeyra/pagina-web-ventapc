@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { FiUser, FiShoppingCart, FiLogOut, FiMenu, FiX } from "react-icons/fi";
-import type { User } from "firebase/auth";
+import type { AuthUser } from "@/tipos/auth-user";
 
 interface NavbarActionsProps {
-  user: User | null;
+  user: AuthUser | null;
   totalItems: number;
   menuAbierto: boolean;
   onAbrirAuth: () => void;

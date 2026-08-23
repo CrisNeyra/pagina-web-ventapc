@@ -18,7 +18,9 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService
   ) {
-    const json = process.env.FIREBASE_SERVICE_ACCOUNT_JSON?.trim();
+    const json =
+      process.env.FIREBASE_SERVICE_ACCOUNT_JSON?.trim() ||
+      process.env.FIREBASE_SERVICE_ACCOUNT_JSON?.trim();
     if (json && !admin.apps.length) {
       try {
         this.firebaseApp = admin.initializeApp({
@@ -67,6 +69,10 @@ export class AuthService {
   }
 
   async intercambiarFirebase(idToken: string) {
+    if (process.env.DISABLE_FIREBASE_EXCHANGE === "true") {
+      throw new BadRequestException("FIREBASE_EXCHANGE_DESHABILITADO");
+    }
+
     if (!this.firebaseApp) throw new BadRequestException("FIREBASE_NO_CONFIGURADO");
 
     const decoded = await admin.auth(this.firebaseApp).verifyIdToken(idToken);
