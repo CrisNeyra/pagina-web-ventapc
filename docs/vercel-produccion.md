@@ -39,6 +39,17 @@ Sin `NEXT_PUBLIC_API_URL` en Vercel, el sitio usa:
 
 Esto es seguro: el push a GitHub no rompe producción.
 
+### Demo portfolio (recomendado): Vercel + Railway + Neon
+
+Para que un reclutador vea **frontend y backend** sin que tu PC esté encendida, seguí [`docs/demo-cloud.md`](demo-cloud.md):
+
+1. Neon → `DATABASE_URL`
+2. Railway (Root Directory `api`) → deploy Nest
+3. Vercel → `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_USE_API_CATALOG=true`, `NEXT_PUBLIC_AUTH_MODE=nest`
+4. Redeploy Vercel
+
+Docker en local **no** reemplaza este paso.
+
 ### Modo con API en VPS
 
 Cuando tengas la API en un VPS con HTTPS:

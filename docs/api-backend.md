@@ -45,6 +45,7 @@ La API queda en `http://localhost:4000/api`.
 - Frontend: `NEXT_PUBLIC_AUTH_MODE=nest` (default si hay `NEXT_PUBLIC_API_URL`) usa register/login/me.
 - `NEXT_PUBLIC_AUTH_MODE=firebase` mantiene Auth Firebase + exchange a JWT.
 - Migrar emails Firebase → PG (sin password): `cd api && npm run users:migrate-firebase` (`--dry-run` opcional).
+- **Demo cloud (Vercel + Railway + Neon):** [`docs/demo-cloud.md`](demo-cloud.md). Health OK solo requiere Postgres; Redis/MinIO opcionales.
 
 ## Producción (VPS)
 

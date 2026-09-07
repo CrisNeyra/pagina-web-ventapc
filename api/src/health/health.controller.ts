@@ -24,8 +24,10 @@ export class HealthController {
     const redis = await this.redis.ping();
     const minio = await this.storage.ping();
     const stripe = Boolean(process.env.STRIPE_SECRET_KEY?.trim());
+    const redisConfigured = Boolean(process.env.REDIS_URL?.trim());
 
-    const ok = postgres && redis;
+    // Demo cloud: basta Postgres. Redis/MinIO son opcionales.
+    const ok = postgres && (!redisConfigured || redis);
 
     return {
       ok,

@@ -88,7 +88,8 @@ async function main() {
   }
 
   const adminEmail = process.env.ADMIN_EMAIL ?? "admin@aurapro.com";
-  const adminPassword = process.env.ADMIN_PASSWORD ?? "Admin1234ab";
+  // 4 dígitos + 2 letras (mismo formato que el AuthModal del front)
+  const adminPassword = process.env.ADMIN_PASSWORD ?? "1234ab";
   const passwordHash = await bcrypt.hash(adminPassword, 10);
 
   await prisma.user.upsert({

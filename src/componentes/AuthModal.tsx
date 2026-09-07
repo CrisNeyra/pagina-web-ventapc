@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FiX } from "react-icons/fi";
+import { FiEye, FiEyeOff, FiX } from "react-icons/fi";
 import { validarPassword, MENSAJE_REQUISITOS_PASSWORD } from "@/lib/auth";
 import { useAuth } from "@/context/AuthContext";
 
@@ -24,6 +24,7 @@ export default function AuthModal({
   const [error, setError] = useState("");
   const [ok, setOk] = useState("");
   const [cargando, setCargando] = useState(false);
+  const [mostrarPassword, setMostrarPassword] = useState(false);
   const { configured, authMode, signIn, signUp } = useAuth();
 
   if (!abierto) return null;
@@ -37,6 +38,7 @@ export default function AuthModal({
     resetMensajes();
     setEmail("");
     setPassword("");
+    setMostrarPassword(false);
     onCerrar();
   };
 
@@ -177,17 +179,27 @@ export default function AuthModal({
             <span className="mb-1 block text-xs font-medium text-cyber-cyan-200">
               Contraseña
             </span>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              minLength={6}
-              maxLength={6}
-              required
-              autoComplete={modo === "login" ? "current-password" : "new-password"}
-              className="w-full rounded-md border border-cyber-purple-500/45 bg-oscuro-950 px-3 py-2 text-sm text-cyber-cyan-100 outline-none focus:border-cyber-cyan-400 focus:ring-2 focus:ring-cyber-cyan-500/40"
-              placeholder="Ej: 1234ab"
-            />
+            <div className="relative">
+              <input
+                type={mostrarPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                minLength={6}
+                maxLength={6}
+                required
+                autoComplete={modo === "login" ? "current-password" : "new-password"}
+                className="w-full rounded-md border border-cyber-purple-500/45 bg-oscuro-950 px-3 py-2 pr-10 text-sm text-cyber-cyan-100 outline-none focus:border-cyber-cyan-400 focus:ring-2 focus:ring-cyber-cyan-500/40"
+                placeholder="Ej: 1234ab"
+              />
+              <button
+                type="button"
+                onClick={() => setMostrarPassword((prev) => !prev)}
+                aria-label={mostrarPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-cyber-cyan-200/80 hover:text-cyber-cyan-100"
+              >
+                {mostrarPassword ? <FiEyeOff size={16} /> : <FiEye size={16} />}
+              </button>
+            </div>
           </label>
 
           {error && (

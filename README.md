@@ -6,6 +6,17 @@ Plataforma de e-commerce ficticia orientada a hardware gamer y componentes de PC
 
 **Demo (producción):** [pagina-web-ventapc.vercel.app](https://pagina-web-ventapc.vercel.app)
 
+### Para reclutadores
+
+| Qué | Dónde |
+|-----|--------|
+| Sitio live | [pagina-web-ventapc.vercel.app](https://pagina-web-ventapc.vercel.app) |
+| Código | Este repo (Next.js + NestJS en `/api`) |
+| Frontend | Vercel |
+| Backend | NestJS + Prisma + PostgreSQL (cloud: Railway + Neon; local: Docker) |
+
+Guía para publicar front+API 24/7 (sin dejar Docker en tu PC): [`docs/demo-cloud.md`](docs/demo-cloud.md).
+
 ---
 
 ## Stack tecnológico
@@ -122,9 +133,12 @@ Con `USE_API_CATALOG=true`, el catálogo, stock, pedidos, admin y postulaciones 
 
 `NEXT_PUBLIC_AUTH_MODE=nest` autentica con JWT Nest (`/auth/register|login|me`). Usá `firebase` solo para el puente legacy (Auth Firebase + `firebase-exchange`). Checklist: [`docs/prueba-login-checkout-api.md`](docs/prueba-login-checkout-api.md).
 
+**Demo pública (recomendado para portfolio):** frontend en Vercel + API en Railway + Postgres en Neon. Docker en la PC solo es para desarrollo local. Guía paso a paso: [`docs/demo-cloud.md`](docs/demo-cloud.md).
+
 Producción en VPS: `docker compose --profile production up -d` (incluye Caddy con HTTPS).
 
 Guías adicionales:
+- [Demo cloud Neon + Railway + Vercel](docs/demo-cloud.md)
 - [Docker local (Windows)](docs/docker-local.md)
 - [Vercel + GitHub + VPS](docs/vercel-produccion.md)
 - [Migración pedidos Firestore → PG](docs/api-backend.md#migración-firestore--postgresql-pedidos)
