@@ -1,101 +1,28 @@
-# Vercel + GitHub + Backend VPS
-
-Cómo se relacionan el frontend (Vercel), el código (GitHub) y el backend Docker (VPS o local).
-
-## Arquitectura
+# Vercel + GitHub + Backend cloud
 
 ```
-GitHub (repo) ──push main──► GitHub Actions (CI: lint, test, build)
-                │
-                └──auto-deploy──► Vercel (Next.js frontend)
-                                        │
-                                        │ NEXT_PUBLIC_API_URL
-                                        ▼
-                                 VPS Docker (NestJS + PostgreSQL)
+GitHub ──push──► Vercel (Next.js)
+                     │
+                     │ NEXT_PUBLIC_API_URL
+                     ▼
+              Railway (Nest) ──► Neon (PostgreSQL)
 ```
 
-| Componente | Dónde corre | Se despliega con push a GitHub? |
-|------------|-------------|----------------------------------|
-| Next.js (`src/`) | Vercel | Sí — automático si el repo está conectado |
-| API NestJS (`api/`) | Docker en VPS o PC local | No — deploy manual en el servidor |
-| PostgreSQL, Redis, MinIO | Docker | No |
+Guía paso a paso: [`demo-cloud.md`](demo-cloud.md).
 
-## GitHub
+## Variables Vercel (Production / Preview)
 
-- **Repo:** https://github.com/CrisNeyra/pagina-web-ventapc
-- **CI:** [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) corre en cada push/PR a `main`
-- El CI **no** levanta Docker ni la API; solo valida el frontend y Functions
+| Variable | Ejemplo |
+|----------|---------|
+| `NEXT_PUBLIC_API_URL` | `https://tu-api.up.railway.app/api` |
+| `NEXT_PUBLIC_USE_API_CATALOG` | `true` |
+| `NEXT_PUBLIC_SITE_URL` | `https://pagina-web-ventapc.vercel.app` |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | `pk_live_...` / `pk_test_...` |
 
-## Vercel (frontend)
+Tras cambiar vars: Redeploy.
 
-**URL producción:** https://pagina-web-ventapc.vercel.app
+## API (Railway)
 
-### Modo actual (sin API en producción)
+`DATABASE_URL`, `JWT_SECRET`, `CORS_ORIGINS=https://pagina-web-ventapc.vercel.app`, `ADMIN_EMAILS`, opcional Stripe/MinIO/Redis.
 
-Sin `NEXT_PUBLIC_API_URL` en Vercel, el sitio usa:
-- Firebase Auth
-- Firestore (pedidos, builds)
-- Catálogo estático (fallback)
-
-Esto es seguro: el push a GitHub no rompe producción.
-
-### Demo portfolio (recomendado): Vercel + Railway + Neon
-
-Para que un reclutador vea **frontend y backend** sin que tu PC esté encendida, seguí [`docs/demo-cloud.md`](demo-cloud.md):
-
-1. Neon → `DATABASE_URL`
-2. Railway (Root Directory `api`) → deploy Nest
-3. Vercel → `NEXT_PUBLIC_API_URL`, `NEXT_PUBLIC_USE_API_CATALOG=true`, `NEXT_PUBLIC_AUTH_MODE=nest`
-4. Redeploy Vercel
-
-Docker en local **no** reemplaza este paso.
-
-### Modo con API en VPS
-
-Cuando tengas la API en un VPS con HTTPS:
-
-1. **Vercel → Project → Settings → Environment Variables**
-
-| Variable | Valor ejemplo | Entornos |
-|----------|---------------|----------|
-| `NEXT_PUBLIC_API_URL` | `https://api.tudominio.com/api` | Production, Preview |
-| `NEXT_PUBLIC_USE_API_CATALOG` | `true` | Production, Preview |
-| `NEXT_PUBLIC_AUTH_MODE` | `nest` (JWT API) o `firebase` (legado + exchange) | Production, Preview |
-| `NEXT_PUBLIC_SITE_URL` | `https://pagina-web-ventapc.vercel.app` | Production |
-| `NEXT_PUBLIC_SENTRY_DSN` | `https://...@sentry.io/...` | Production (opcional) |
-
-2. **En el VPS** (`api/.env`):
-
-```env
-CORS_ORIGINS=https://pagina-web-ventapc.vercel.app,http://localhost:3000
-JWT_SECRET=tu_secreto_largo
-ADMIN_EMAILS=admin@tudominio.com
-# Con AUTH_MODE=nest en Vercel, apagá el puente:
-DISABLE_FIREBASE_EXCHANGE=true
-STRIPE_SECRET_KEY=sk_live_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-```
-
-3. Editá [`deploy/Caddyfile`](../deploy/Caddyfile) con tu dominio real.
-
-4. En el VPS:
-
-```bash
-docker compose --profile production up -d
-```
-
-5. **Redeploy** en Vercel (Deployments → ⋯ → Redeploy) para que tome las nuevas variables.
-
-### Variables Firebase en Vercel
-
-Con `NEXT_PUBLIC_AUTH_MODE=nest`, Firebase Auth ya no es el camino de login. Podés dejar:
-
-- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
-- `NEXT_PUBLIC_FIREBASE_*` / `FIREBASE_SERVICE_ACCOUNT_JSON` solo si aún usás Storage/Firestore o `AUTH_MODE=firebase`
-
-## Checklist post-push
-
-1. GitHub Actions en verde
-2. Vercel deployment exitoso
-3. Si agregaste `NEXT_PUBLIC_API_URL`, verificá `/api/health` desde el navegador de la API
-4. Probar `/productos` y `/admin` en producción
+Sin `NEXT_PUBLIC_API_URL` el front no autentica ni hace pedidos (Nest es obligatorio).

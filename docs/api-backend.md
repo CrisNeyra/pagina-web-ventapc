@@ -1,17 +1,12 @@
 # Backend API — Aura Pro
 
-API NestJS + PostgreSQL + Redis + MinIO para catálogo, pedidos, stock, admin y postulaciones.
+API NestJS + PostgreSQL (+ Redis/MinIO opcionales) para catálogo, auth JWT, pedidos, stock, admin y postulaciones.
 
 ## Desarrollo local
 
 ```bash
-# 1. Exportar catálogo desde Next.js
 npm run catalogo:export:api
-
-# 2. Levantar infraestructura
 docker compose up -d postgres redis minio
-
-# 3. Instalar y migrar API
 cd api
 cp .env.example .env
 npm install
@@ -20,63 +15,38 @@ npm run prisma:seed
 npm run start:dev
 ```
 
-La API queda en `http://localhost:4000/api`.
+API: `http://localhost:4000/api`.
 
 ## Endpoints principales
 
 | Método | Ruta | Descripción |
 |--------|------|-------------|
-| GET | `/health` | Estado de postgres, redis, minio, stripe |
-| GET | `/products` | Catálogo con filtros |
-| POST | `/orders` | Crear pedido offline (JWT) |
+| GET | `/health` | Estado (ok si Postgres OK; storageMode local\|minio) |
+| GET | `/products` | Catálogo |
+| POST | `/orders` | Pedido offline (JWT) |
+| GET | `/orders/me` | Pedidos del usuario |
 | POST | `/payments/stripe/intent` | PaymentIntent Stripe |
 | POST | `/payments/stripe/webhook` | Webhook Stripe |
-| GET | `/shipping/quote?cp=` | Cotizar envío por CP |
-| GET | `/site-config/transferencia` | Datos bancarios |
-| POST | `/auth/register` | Registro email/password (JWT) |
-| POST | `/auth/login` | Login Nest (JWT) |
-| GET | `/auth/me` | Usuario actual (JWT) |
-| POST | `/auth/firebase-exchange` | Puente Firebase → JWT (legacy; apagar con `DISABLE_FIREBASE_EXCHANGE=true`) |
-| GET | `/admin/orders` | Pedidos pendientes (admin) |
-| PATCH | `/admin/orders/:id` | Actualizar estado pedido |
+| POST | `/auth/register` | Registro |
+| POST | `/auth/login` | Login |
+| GET | `/auth/me` | Usuario actual |
+| POST | `/pc-builds` | Guardar build (JWT) |
+| GET | `/pc-builds/me` | Builds del usuario |
+| GET | `/admin/orders` | Pedidos admin |
+| GET | `/admin/postulaciones/:id/cv` | Descargar CV (PDF, JWT admin) |
+| POST | `/postulaciones` | Postulación + CV |
 
-## Auth Nest vs Firebase
+## Auth
 
-- Frontend: `NEXT_PUBLIC_AUTH_MODE=nest` (default si hay `NEXT_PUBLIC_API_URL`) usa register/login/me.
-- `NEXT_PUBLIC_AUTH_MODE=firebase` mantiene Auth Firebase + exchange a JWT.
-- Migrar emails Firebase → PG (sin password): `cd api && npm run users:migrate-firebase` (`--dry-run` opcional).
-- **Demo cloud (Vercel + Railway + Neon):** [`docs/demo-cloud.md`](demo-cloud.md). Health OK solo requiere Postgres; Redis/MinIO opcionales.
+Solo JWT Nest. Rate limit global (Throttler 60/min) + Redis en rutas sensibles.
 
-## Producción (VPS)
+## Emails
 
-```bash
-docker compose --profile production up -d
-```
+Con `RESEND_API_KEY` + `EMAIL_FROM`: confirmación de pedido (offline + Stripe paid) y postulación.
 
-Configurá `deploy/Caddyfile` con tu dominio y variables en `.env`.
+## Docs relacionadas
 
-## Backup Postgres
-
-```bash
-docker compose exec postgres pg_dump -U aurapro aurapro > backup.sql
-```
-
-## Migración Firestore → PostgreSQL (pedidos)
-
-### 1. Exportar desde Firestore
-
-```bash
-# Desde la raíz del proyecto (con FIREBASE_SERVICE_ACCOUNT_JSON configurada)
-node scripts/export-firestore-orders.mjs > orders-export.json
-```
-
-### 2. Importar a PostgreSQL
-
-```bash
-cd api
-npm run orders:import -- ../orders-export.json --dry-run   # vista previa
-npm run orders:import -- ../orders-export.json             # import real
-```
-
-El import omite pedidos duplicados y aquellos cuyos `product_id` no existan en el catálogo PG (corré el seed antes).
-
+- [`demo-cloud.md`](demo-cloud.md)
+- [`storage-cloud.md`](storage-cloud.md)
+- [`seguridad-api.md`](seguridad-api.md)
+- [`observabilidad.md`](observabilidad.md)

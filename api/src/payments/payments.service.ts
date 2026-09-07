@@ -6,6 +6,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { ProductsService } from "../products/products.service";
 import { ShippingService } from "../shipping/shipping.service";
 import { RedisService } from "../redis/redis.service";
+import { EmailService } from "../email/email.service";
 import { EntregaDto, ItemPedidoDto } from "../orders/orders.service";
 
 @Injectable()
@@ -16,7 +17,8 @@ export class PaymentsService {
     private readonly prisma: PrismaService,
     private readonly productsService: ProductsService,
     private readonly shippingService: ShippingService,
-    private readonly redis: RedisService
+    private readonly redis: RedisService,
+    private readonly email: EmailService
   ) {
     const key = process.env.STRIPE_SECRET_KEY?.trim();
     if (key) {
@@ -162,6 +164,22 @@ export class PaymentsService {
         where: { stripePaymentIntentId: pi.id },
         data: { estado: OrderStatus.paid },
       });
+      const pedido = await this.prisma.order.findFirst({
+        where: { stripePaymentIntentId: pi.id },
+      });
+      if (pedido?.email) {
+        void this.email.confirmacionPedido({
+          email: pedido.email,
+          orderId: pedido.id,
+          metodoPago: pedido.metodoPago ?? "tarjeta",
+          total: pedido.totalPesos,
+        });
+        void this.email.notificarAdminPedido({
+          orderId: pedido.id,
+          email: pedido.email,
+          metodoPago: pedido.metodoPago ?? "tarjeta",
+        });
+      }
     }
 
     if (event.type === "payment_intent.payment_failed") {

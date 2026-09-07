@@ -19,6 +19,15 @@ import { useAuth } from "@/context/AuthContext";
 
 const productoCpu = builderProducts.find((p) => p.categoria === "procesador")!;
 
+const authMock = {
+  user: null as { uid: string; email: string } | null,
+  loading: false,
+  configured: true,
+  signIn: vi.fn(),
+  signUp: vi.fn(),
+  signOut: vi.fn(),
+};
+
 describe("PcBuilder", () => {
   beforeEach(() => {
     useBuilderStore.setState({
@@ -26,15 +35,8 @@ describe("PcBuilder", () => {
       seleccion: {},
     });
     vi.clearAllMocks();
-    vi.mocked(useAuth).mockReturnValue({
-      user: null,
-      loading: false,
-      configured: true,
-      authMode: "firebase",
-      signIn: vi.fn(),
-      signUp: vi.fn(),
-      signOut: vi.fn(),
-    });
+    authMock.user = null;
+    vi.mocked(useAuth).mockReturnValue({ ...authMock });
   });
 
   it("muestra mensaje si intenta guardar sin estar autenticado", async () => {
@@ -55,13 +57,8 @@ describe("PcBuilder", () => {
   it("muestra mensaje si no hay componentes seleccionados", async () => {
     const user = userEvent.setup();
     vi.mocked(useAuth).mockReturnValue({
+      ...authMock,
       user: { uid: "user-123", email: "test@test.com" },
-      loading: false,
-      configured: true,
-      authMode: "firebase",
-      signIn: vi.fn(),
-      signUp: vi.fn(),
-      signOut: vi.fn(),
     });
 
     render(<PcBuilder />);
@@ -76,13 +73,8 @@ describe("PcBuilder", () => {
   it("guarda la configuración cuando hay usuario y componentes", async () => {
     const user = userEvent.setup();
     vi.mocked(useAuth).mockReturnValue({
+      ...authMock,
       user: { uid: "user-123", email: "test@test.com" },
-      loading: false,
-      configured: true,
-      authMode: "firebase",
-      signIn: vi.fn(),
-      signUp: vi.fn(),
-      signOut: vi.fn(),
     });
     vi.mocked(guardarBuildConReintentos).mockResolvedValue({
       ok: true,

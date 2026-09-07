@@ -74,13 +74,6 @@ export async function obtenerTransferenciaApi() {
   }>("/site-config/transferencia");
 }
 
-export async function intercambiarTokenFirebase(idToken: string) {
-  return apiFetch<{ token: string; user: { id: string; email: string; role: string } }>(
-    "/auth/firebase-exchange",
-    { method: "POST", body: JSON.stringify({ idToken }) }
-  );
-}
-
 export async function registrarUsuarioApi(email: string, password: string) {
   return apiFetch<{ token: string; user: { id: string; email: string; role: string } }>(
     "/auth/register",
@@ -97,6 +90,28 @@ export async function loginUsuarioApi(email: string, password: string) {
 
 export async function obtenerUsuarioApi(token: string) {
   return apiFetch<{ id: string; email: string; role: string }>("/auth/me", { token });
+}
+
+export async function guardarBuildPcApi(
+  token: string,
+  body: { subtotal: number; items: unknown[] }
+) {
+  return apiFetch<{ id: string }>("/pc-builds", {
+    method: "POST",
+    token,
+    body: JSON.stringify(body),
+  });
+}
+
+export async function obtenerBuildsUsuarioApi(token: string) {
+  return apiFetch<
+    {
+      id: string;
+      subtotal: number;
+      items: unknown;
+      createdAt: string;
+    }[]
+  >("/pc-builds/me", { token });
 }
 
 export async function obtenerPedidosAdminApi(token: string) {
@@ -138,7 +153,14 @@ export async function obtenerPostulacionesAdminApi(token: string) {
 }
 
 export async function obtenerCvAdminApi(token: string, postulacionId: string) {
-  return apiFetch<{ url: string }>(`/admin/postulaciones/${postulacionId}/cv`, { token });
+  const base = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ?? "http://localhost:4000/api";
+  const respuesta = await fetch(`${base}/admin/postulaciones/${postulacionId}/cv`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!respuesta.ok) {
+    throw new Error(`API_ERROR_${respuesta.status}`);
+  }
+  return respuesta.blob();
 }
 
 export async function enviarPostulacionApi(formData: FormData) {

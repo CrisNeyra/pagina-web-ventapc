@@ -1,12 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
-const verifyIdToken = vi.fn();
+const fetchMock = vi.fn();
 
-vi.mock("@/lib/firebase-admin", () => ({
-  obtenerFirebaseAuthAdmin: vi.fn(() => ({
-    verifyIdToken,
-  })),
-}));
+vi.stubGlobal("fetch", fetchMock);
 
 import { obtenerEmailsAdmin, verificarAdminRequest } from "./admin-auth";
 
@@ -32,22 +28,27 @@ describe("obtenerEmailsAdmin", () => {
 });
 
 describe("verificarAdminRequest", () => {
-  const original = process.env.ADMIN_EMAILS;
+  const originalEmails = process.env.ADMIN_EMAILS;
+  const originalApi = process.env.NEXT_PUBLIC_API_URL;
 
   beforeEach(() => {
     vi.clearAllMocks();
     process.env.ADMIN_EMAILS = "admin@aurapro.com";
+    process.env.NEXT_PUBLIC_API_URL = "http://localhost:4000/api";
   });
 
   afterEach(() => {
-    process.env.ADMIN_EMAILS = original;
+    process.env.ADMIN_EMAILS = originalEmails;
+    process.env.NEXT_PUBLIC_API_URL = originalApi;
   });
 
-  it("rechaza si no hay admins configurados", async () => {
-    delete process.env.ADMIN_EMAILS;
+  it("rechaza sin API configurada", async () => {
+    delete process.env.NEXT_PUBLIC_API_URL;
 
     const resultado = await verificarAdminRequest(
-      new Request("http://localhost/api/admin/pedidos")
+      new Request("http://localhost/api/admin/pedidos", {
+        headers: { authorization: "Bearer token" },
+      })
     );
 
     expect(resultado).toEqual({ ok: false, status: 503 });
@@ -61,10 +62,15 @@ describe("verificarAdminRequest", () => {
     expect(resultado).toEqual({ ok: false, status: 401 });
   });
 
-  it("rechaza token de usuario no admin", async () => {
-    verifyIdToken.mockResolvedValue({
-      uid: "user-1",
-      email: "cliente@test.com",
+  it("rechaza usuario no admin", async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        id: "user-1",
+        email: "cliente@test.com",
+        role: "user",
+      }),
     });
 
     const resultado = await verificarAdminRequest(
@@ -76,10 +82,15 @@ describe("verificarAdminRequest", () => {
     expect(resultado).toEqual({ ok: false, status: 403 });
   });
 
-  it("acepta token de admin", async () => {
-    verifyIdToken.mockResolvedValue({
-      uid: "admin-1",
-      email: "admin@aurapro.com",
+  it("acepta admin por rol", async () => {
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        id: "admin-1",
+        email: "otro@test.com",
+        role: "admin",
+      }),
     });
 
     const resultado = await verificarAdminRequest(
@@ -90,7 +101,7 @@ describe("verificarAdminRequest", () => {
 
     expect(resultado).toEqual({
       ok: true,
-      email: "admin@aurapro.com",
+      email: "otro@test.com",
       uid: "admin-1",
     });
   });

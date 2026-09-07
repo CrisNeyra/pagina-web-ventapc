@@ -7,6 +7,7 @@ import {
   Req,
   UseGuards,
 } from "@nestjs/common";
+import { SkipThrottle } from "@nestjs/throttler";
 import { Request } from "express";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { CurrentUser } from "../auth/current-user.decorator";
@@ -52,6 +53,7 @@ export class PaymentsController {
   }
 
   @Post("stripe/webhook")
+  @SkipThrottle()
   webhook(
     @Req() req: RawBodyRequest<Request>,
     @Headers("stripe-signature") signature: string

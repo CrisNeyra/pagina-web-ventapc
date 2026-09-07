@@ -1,4 +1,3 @@
-import { obtenerUrlPaymentIntent } from "@/configuracion/stripe";
 import { preciosCatalogo } from "@/datos/preciosCatalogo";
 import { validarItemsContraCatalogo } from "@/lib/validarItemsPago";
 import type { DatosEntrega } from "@/lib/entrega";
@@ -40,8 +39,6 @@ function mapearErrorHttp(status: number, error?: string): string {
       return "Los precios del carrito no coinciden con el catálogo. Actualizá la página.";
     case "RATE_LIMITED":
       return "Demasiados intentos de pago. Esperá un minuto e intentá de nuevo.";
-    case "METHOD_NOT_ALLOWED":
-      return "Método de solicitud no permitido.";
     default:
       if (status === 401) return "Debés iniciar sesión para pagar.";
       if (status >= 500) return "El servidor de pagos no está disponible. Intentá más tarde.";
@@ -57,7 +54,7 @@ export interface OpcionesPaymentIntent {
 
 export async function crearPaymentIntent(
   items: ItemPago[],
-  idToken: string,
+  _idToken: string,
   opciones: OpcionesPaymentIntent = {}
 ): Promise<RespuestaPaymentIntent> {
   if (items.length === 0) {
@@ -72,84 +69,31 @@ export async function crearPaymentIntent(
     };
   }
 
-  try {
-    // Nest API: no exige Cloud Function ni URL de Stripe en el frontend.
-    if (apiConfigurada()) {
-      const apiToken = obtenerApiToken();
-      if (!apiToken) {
-        return { ok: false, mensaje: "Debés iniciar sesión para pagar." };
-      }
-
-      const resultado = await crearPaymentIntentEnApi(items, apiToken, {
-        metodoPago: opciones.metodoPago ?? "debito",
-        cuotas: opciones.cuotas,
-        entrega: opciones.entrega ?? { tipo: "retiro" },
-      });
-
-      return {
-        ok: true,
-        orderId: resultado.orderId,
-        paymentIntentId: resultado.paymentIntentId,
-        clientSecret: resultado.clientSecret,
-      };
-    }
-
-    const url = obtenerUrlPaymentIntent();
-    if (!url) {
-      return {
-        ok: false,
-        mensaje:
-          "Pagos no configurados. Agregá NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY y la URL de la Cloud Function, o NEXT_PUBLIC_API_URL.",
-      };
-    }
-
-    const cuotas =
-      opciones.metodoPago === "credito"
-        ? Math.min(12, Math.max(1, opciones.cuotas ?? 1))
-        : 1;
-
-    const respuesta = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${idToken}`,
-      },
-      body: JSON.stringify({
-        items,
-        currency: "ars",
-        metodoPago: opciones.metodoPago ?? "debito",
-        cuotas,
-        entrega: opciones.entrega ?? { tipo: "retiro" },
-        metadata: {
-          metodoPago: opciones.metodoPago ?? "debito",
-          cuotas: String(cuotas),
-        },
-      }),
-    });
-
-    const datos = (await respuesta.json().catch(() => ({}))) as {
-      error?: string;
-      orderId?: string;
-      paymentIntentId?: string;
-      clientSecret?: string;
+  if (!apiConfigurada()) {
+    return {
+      ok: false,
+      mensaje:
+        "Pagos no configurados. Definí NEXT_PUBLIC_API_URL y NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY.",
     };
+  }
 
-    if (!respuesta.ok) {
-      return {
-        ok: false,
-        mensaje: mapearErrorHttp(respuesta.status, datos.error),
-      };
+  try {
+    const apiToken = obtenerApiToken();
+    if (!apiToken) {
+      return { ok: false, mensaje: "Debés iniciar sesión para pagar." };
     }
 
-    if (!datos.clientSecret || !datos.orderId || !datos.paymentIntentId) {
-      return { ok: false, mensaje: "Respuesta inválida del servidor de pagos." };
-    }
+    const resultado = await crearPaymentIntentEnApi(items, apiToken, {
+      metodoPago: opciones.metodoPago ?? "debito",
+      cuotas: opciones.cuotas,
+      entrega: opciones.entrega ?? { tipo: "retiro" },
+    });
 
     return {
       ok: true,
-      orderId: datos.orderId,
-      paymentIntentId: datos.paymentIntentId,
-      clientSecret: datos.clientSecret,
+      orderId: resultado.orderId,
+      paymentIntentId: resultado.paymentIntentId,
+      clientSecret: resultado.clientSecret,
     };
   } catch {
     return {

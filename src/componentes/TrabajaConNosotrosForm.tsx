@@ -35,22 +35,11 @@ export default function TrabajaConNosotrosForm() {
     const formData = new FormData(formulario);
 
     try {
-      if (apiConfigurada()) {
-        await enviarPostulacionApi(formData);
-      } else {
-        const respuesta = await fetch("/api/postulaciones", {
-          method: "POST",
-          body: formData,
-        });
-
-        const datos = (await respuesta.json().catch(() => ({}))) as { error?: string };
-
-        if (!respuesta.ok) {
-          toast.error(mapearError(datos.error ?? "ERROR_INTERNO"));
-          return;
-        }
+      if (!apiConfigurada()) {
+        toast.error("Las postulaciones requieren la API Nest (NEXT_PUBLIC_API_URL).");
+        return;
       }
-
+      await enviarPostulacionApi(formData);
       toast.success("¡Postulación enviada! Te contactaremos pronto.");
       formulario.reset();
       setArchivoNombre("");

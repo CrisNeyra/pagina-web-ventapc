@@ -4,8 +4,10 @@ import {
   Get,
   Param,
   Patch,
+  Res,
   UseGuards,
 } from "@nestjs/common";
+import type { Response } from "express";
 import { OrderStatus } from "@prisma/client";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { AdminGuard } from "../auth/admin.guard";
@@ -41,8 +43,14 @@ export class AdminController {
   }
 
   @Get("postulaciones/:id/cv")
-  cv(@Param("id") id: string) {
-    return this.postulacionesService.urlCv(id);
+  async cv(@Param("id") id: string, @Res() res: Response) {
+    const { buffer, nombre } = await this.postulacionesService.obtenerCv(id);
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `inline; filename="${encodeURIComponent(nombre)}"`
+    );
+    res.send(buffer);
   }
 
   @Patch("products/:id/stock")

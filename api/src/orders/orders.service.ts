@@ -9,6 +9,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { ProductsService } from "../products/products.service";
 import { ShippingService } from "../shipping/shipping.service";
 import { RedisService } from "../redis/redis.service";
+import { EmailService } from "../email/email.service";
 
 export interface ItemPedidoDto {
   id: string;
@@ -33,7 +34,8 @@ export class OrdersService {
     private readonly prisma: PrismaService,
     private readonly productsService: ProductsService,
     private readonly shippingService: ShippingService,
-    private readonly redis: RedisService
+    private readonly redis: RedisService,
+    private readonly email: EmailService
   ) {}
 
   private validarEntrega(entrega: EntregaDto) {
@@ -131,7 +133,7 @@ export class OrdersService {
       totalPesos += costoEnvio;
     }
 
-    return this.prisma.$transaction(async (tx) => {
+    const pedido = await this.prisma.$transaction(async (tx) => {
       await this.productsService.reservarStock(
         tx,
         itemsValidados.map((i) => ({ productId: i.productId, cantidad: i.cantidad }))
@@ -154,6 +156,22 @@ export class OrdersService {
         include: { items: true },
       });
     });
+
+    if (pedido.email) {
+      void this.email.confirmacionPedido({
+        email: pedido.email,
+        orderId: pedido.id,
+        metodoPago: pedido.metodoPago ?? opciones.metodoPago,
+        total: pedido.totalPesos,
+      });
+      void this.email.notificarAdminPedido({
+        orderId: pedido.id,
+        email: pedido.email,
+        metodoPago: pedido.metodoPago ?? opciones.metodoPago,
+      });
+    }
+
+    return pedido;
   }
 
   async listarPorUsuario(userId: string) {

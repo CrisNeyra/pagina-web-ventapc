@@ -23,11 +23,13 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Sync catalog prices
-        run: npm run catalogo:precios:sync
-
-      - name: Build Cloud Functions
-        run: npm run build --prefix functions
+      - name: Guard against Firebase reintroduction
+        run: |
+          if grep -RInE 'from ["'\'']firebase|from ["'\'']firebase-admin|firebase-admin' src api/src --include='*.ts' --include='*.tsx' | grep -v node_modules; then
+            echo "Firebase imports found — Nest-only stack required"
+            exit 1
+          fi
+          echo "OK: no Firebase imports in src/ or api/src/"
 
       - name: Lint
         run: npm run lint
@@ -38,7 +40,7 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          NEXT_PUBLIC_FIREBASE_PROJECT_ID: aurapro-27727
+          NEXT_PUBLIC_API_URL: http://localhost:4000/api
 
   e2e:
     runs-on: ubuntu-latest
@@ -63,7 +65,7 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          NEXT_PUBLIC_FIREBASE_PROJECT_ID: aurapro-27727
+          NEXT_PUBLIC_API_URL: http://localhost:4000/api
 
       - name: E2E tests
         run: npm run test:e2e

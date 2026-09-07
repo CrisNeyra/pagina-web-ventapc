@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
-import { firebaseAdminConfigurado } from "@/lib/firebase-admin";
 import { apiConfigurada } from "@/lib/api-client";
 
 export async function GET() {
   let apiOk = false;
-  let apiServices: Record<string, boolean> | null = null;
+  let apiServices: Record<string, boolean | string> | null = null;
 
   if (apiConfigurada()) {
     try {
@@ -13,7 +12,7 @@ export async function GET() {
       if (respuesta.ok) {
         const datos = (await respuesta.json()) as {
           ok: boolean;
-          services: Record<string, boolean>;
+          services: Record<string, boolean | string>;
         };
         apiOk = datos.ok;
         apiServices = datos.services;
@@ -24,9 +23,8 @@ export async function GET() {
   }
 
   return NextResponse.json({
-    ok: apiOk || firebaseAdminConfigurado(),
+    ok: apiOk,
     nextjs: true,
-    firebaseAdmin: firebaseAdminConfigurado(),
     api: apiConfigurada(),
     apiOk,
     apiServices,

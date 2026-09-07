@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
+import { APP_GUARD } from "@nestjs/core";
 import { ConfigModule } from "@nestjs/config";
-import { ThrottlerModule } from "@nestjs/throttler";
+import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { PrismaModule } from "./prisma/prisma.module";
 import { RedisModule } from "./redis/redis.module";
 import { HealthModule } from "./health/health.module";
@@ -14,6 +15,7 @@ import { AdminModule } from "./admin/admin.module";
 import { PostulacionesModule } from "./postulaciones/postulaciones.module";
 import { PcBuildsModule } from "./pc-builds/pc-builds.module";
 import { StorageModule } from "./storage/storage.module";
+import { EmailModule } from "./email/email.module";
 
 @Module({
   imports: [
@@ -27,6 +29,7 @@ import { StorageModule } from "./storage/storage.module";
     PrismaModule,
     RedisModule,
     StorageModule,
+    EmailModule,
     HealthModule,
     ProductsModule,
     OrdersModule,
@@ -37,6 +40,12 @@ import { StorageModule } from "./storage/storage.module";
     AdminModule,
     PostulacionesModule,
     PcBuildsModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
   ],
 })
 export class AppModule {}

@@ -25,7 +25,7 @@ export default function AuthModal({
   const [ok, setOk] = useState("");
   const [cargando, setCargando] = useState(false);
   const [mostrarPassword, setMostrarPassword] = useState(false);
-  const { configured, authMode, signIn, signUp } = useAuth();
+  const { configured, signIn, signUp } = useAuth();
 
   if (!abierto) return null;
 
@@ -47,11 +47,7 @@ export default function AuthModal({
     resetMensajes();
 
     if (!configured) {
-      setError(
-        authMode === "nest"
-          ? "Falta configurar la API. Definí NEXT_PUBLIC_API_URL en .env.local."
-          : "Falta configurar Firebase. Cargá las variables NEXT_PUBLIC_FIREBASE_* en .env.local."
-      );
+      setError("Falta configurar la API. Definí NEXT_PUBLIC_API_URL en .env.local.");
       return;
     }
 
@@ -74,11 +70,7 @@ export default function AuthModal({
           return;
         }
 
-        setOk(
-          authMode === "nest"
-            ? "Registro exitoso. Sesión iniciada con la API."
-            : "Registro exitoso. Iniciás sesión automáticamente."
-        );
+        setOk("Registro exitoso. Sesión iniciada con la API.");
         onAutenticado?.();
         window.setTimeout(() => cerrar(), 350);
         return;

@@ -2,18 +2,21 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  NotFoundException,
 } from "@nestjs/common";
 import { randomUUID } from "crypto";
 import { PrismaService } from "../prisma/prisma.service";
 import { StorageService } from "../storage/storage.service";
 import { RedisService } from "../redis/redis.service";
+import { EmailService } from "../email/email.service";
 
 @Injectable()
 export class PostulacionesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly storage: StorageService,
-    private readonly redis: RedisService
+    private readonly redis: RedisService,
+    private readonly email: EmailService
   ) {}
 
   async crear(
@@ -49,7 +52,7 @@ export class PostulacionesService {
 
     await this.storage.subirArchivo(cvPath, buffer, "application/pdf");
 
-    return this.prisma.postulacion.create({
+    const postulacion = await this.prisma.postulacion.create({
       data: {
         id,
         nombre: datos.nombre,
@@ -60,6 +63,14 @@ export class PostulacionesService {
         cvNombre,
       },
     });
+
+    void this.email.confirmacionPostulacion({
+      email: postulacion.email,
+      nombre: postulacion.nombre,
+      postulacionId: postulacion.id,
+    });
+
+    return postulacion;
   }
 
   async listarRecibidas() {
@@ -70,10 +81,10 @@ export class PostulacionesService {
     });
   }
 
-  async urlCv(id: string) {
+  async obtenerCv(id: string) {
     const postulacion = await this.prisma.postulacion.findUnique({ where: { id } });
-    if (!postulacion) throw new BadRequestException("POSTULACION_NO_ENCONTRADA");
-    const url = await this.storage.urlFirmada(postulacion.cvPath, 900);
-    return { url };
+    if (!postulacion) throw new NotFoundException("POSTULACION_NO_ENCONTRADA");
+    const buffer = await this.storage.leerArchivo(postulacion.cvPath);
+    return { buffer, nombre: postulacion.cvNombre };
   }
 }

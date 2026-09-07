@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { useAuth } from "@/context/AuthContext";
-import { obtenerAuthFirebase } from "@/configuracion/firebase";
 import {
   obtenerStripePublishableKey,
   pagosConfigurados,
@@ -31,19 +30,16 @@ import {
   validarDatosEntrega,
   type DatosEntrega,
 } from "@/lib/entrega";
-import { apiConfigurada } from "@/lib/api-client";
 import { obtenerApiToken } from "@/lib/api-token";
+import { apiConfigurada } from "@/lib/api-client";
 import { obtenerTransferenciaApi } from "@/servicios/apiBackendServicio";
 
-async function obtenerIdTokenOpcional(): Promise<string> {
-  if (apiConfigurada() && obtenerApiToken()) {
-    return "";
-  }
-  const auth = obtenerAuthFirebase();
-  if (!auth?.currentUser) {
+async function obtenerTokenSesion(): Promise<string> {
+  const token = obtenerApiToken();
+  if (!token) {
     throw new Error("SIN_SESION");
   }
-  return auth.currentUser.getIdToken();
+  return token;
 }
 
 const DATOS_TRANSFERENCIA_DEFAULT = {
@@ -141,7 +137,7 @@ export default function CheckoutView() {
       setErrorPago("");
 
       try {
-        const idToken = await obtenerIdTokenOpcional();
+        const idToken = await obtenerTokenSesion();
         const resultado = await crearPaymentIntent(itemsPago, idToken, {
           metodoPago: metodoPago === "credito" ? "credito" : "debito",
           cuotas: metodoPago === "credito" ? cuotas : 1,
@@ -197,7 +193,7 @@ export default function CheckoutView() {
     setErrorPago("");
 
     try {
-      const idToken = await obtenerIdTokenOpcional();
+      const idToken = await obtenerTokenSesion();
       const resultado = await crearPedidoOffline(itemsPago, metodoPago, idToken, datosEntrega);
 
       if (!resultado.ok) {

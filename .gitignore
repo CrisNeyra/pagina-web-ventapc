@@ -57,3 +57,6 @@ exports/
 firebase-debug.log
 functions/node_modules/
 functions/lib/
+
+# Uploads locales de CVs (Nest sin MinIO)
+api/uploads/

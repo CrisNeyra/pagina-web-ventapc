@@ -1,5 +1,5 @@
-import { addDoc, collection, serverTimestamp } from "firebase/firestore";
-import { obtenerFirestoreDb } from "@/configuracion/firebase";
+import { apiConfigurada, apiFetch } from "@/lib/api-client";
+import { obtenerApiToken } from "@/lib/api-token";
 
 interface ItemBuild {
   id: string;
@@ -23,14 +23,35 @@ async function esperar(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+export async function guardarBuildEnApi(
+  token: string,
+  datos: { subtotal: number; items: ItemBuild[] }
+) {
+  return apiFetch<{ id: string }>("/pc-builds", {
+    method: "POST",
+    token,
+    body: JSON.stringify({
+      subtotal: datos.subtotal,
+      items: datos.items,
+    }),
+  });
+}
+
 export async function guardarBuildConReintentos(
   datosBuild: DatosBuild
 ): Promise<ResultadoGuardadoBuild> {
-  const db = obtenerFirestoreDb();
-  if (!db) {
+  if (!apiConfigurada()) {
     return {
       ok: false,
-      mensaje: "Configura Firebase para guardar builds en base de datos real.",
+      mensaje: "Configurá NEXT_PUBLIC_API_URL para guardar builds en la API.",
+    };
+  }
+
+  const token = obtenerApiToken();
+  if (!token) {
+    return {
+      ok: false,
+      mensaje: "Iniciá sesión para guardar esta configuración.",
     };
   }
 
@@ -38,9 +59,9 @@ export async function guardarBuildConReintentos(
 
   for (let intento = 1; intento <= maximoIntentos; intento += 1) {
     try {
-      await addDoc(collection(db, "pc_builds"), {
-        ...datosBuild,
-        created_at: serverTimestamp(),
+      await guardarBuildEnApi(token, {
+        subtotal: datosBuild.subtotal,
+        items: datosBuild.items,
       });
       return {
         ok: true,
@@ -52,7 +73,7 @@ export async function guardarBuildConReintentos(
         return {
           ok: false,
           mensaje:
-            "No se pudo guardar la build. Verifica Firestore, reglas de seguridad y variables de entorno.",
+            "No se pudo guardar la build. Verificá que la API esté activa y que tengas sesión.",
         };
       }
     }

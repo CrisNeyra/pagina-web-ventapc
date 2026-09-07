@@ -3,16 +3,9 @@ export function obtenerStripePublishableKey(): string | null {
   return key || null;
 }
 
-export function obtenerUrlPaymentIntent(): string | null {
-  const urlExplicita = process.env.NEXT_PUBLIC_CREATE_PAYMENT_INTENT_URL?.trim();
-  if (urlExplicita) return urlExplicita;
-
-  const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID?.trim();
-  if (!projectId) return null;
-
-  return `https://southamerica-east1-${projectId}.cloudfunctions.net/createStripePaymentIntent`;
-}
-
+/** Stripe Elements + API Nest (`NEXT_PUBLIC_API_URL`). */
 export function pagosConfigurados(): boolean {
-  return Boolean(obtenerStripePublishableKey() && obtenerUrlPaymentIntent());
+  return Boolean(
+    obtenerStripePublishableKey() && process.env.NEXT_PUBLIC_API_URL?.trim()
+  );
 }

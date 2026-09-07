@@ -10,12 +10,11 @@ export default function DevConfigBanner() {
 
     void fetch("/api/health")
       .then((r) => r.json())
-      .then((datos: { firebaseAdmin?: boolean; api?: boolean; apiOk?: boolean }) => {
+      .then((datos: { api?: boolean; apiOk?: boolean }) => {
         const avisos: string[] = [];
-        if (!datos.firebaseAdmin) {
-          avisos.push("FIREBASE_SERVICE_ACCOUNT_JSON no configurado (sesión/admin limitados).");
-        }
-        if (datos.api && !datos.apiOk) {
+        if (!datos.api) {
+          avisos.push("Falta NEXT_PUBLIC_API_URL (API Nest).");
+        } else if (!datos.apiOk) {
           avisos.push("NEXT_PUBLIC_API_URL configurada pero la API no responde.");
         }
         if (avisos.length > 0) setMensaje(avisos.join(" "));

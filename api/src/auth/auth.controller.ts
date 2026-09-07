@@ -17,11 +17,6 @@ export class AuthController {
     return this.authService.login(body.email.toLowerCase(), body.password);
   }
 
-  @Post("firebase-exchange")
-  firebaseExchange(@Body() body: { idToken: string }) {
-    return this.authService.intercambiarFirebase(body.idToken);
-  }
-
   @Get("me")
   @UseGuards(JwtAuthGuard)
   me(@CurrentUser() user: { sub: string }) {

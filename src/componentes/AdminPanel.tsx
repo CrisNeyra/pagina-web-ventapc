@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
-import { obtenerAuthFirebase } from "@/configuracion/firebase";
 import { formatearPrecio } from "@/utils/formato";
 import { etiquetaEstadoPedido, etiquetaMetodoPago } from "@/servicios/pedidosServicio";
 import { apiConfigurada } from "@/lib/api-client";
@@ -46,75 +45,43 @@ export default function AdminPanel() {
 
     const apiToken = obtenerApiToken();
 
-    if (apiConfigurada() && apiToken) {
-      try {
-        const [datosPedidos, datosPostulaciones] = await Promise.all([
-          obtenerPedidosAdminApi(apiToken),
-          obtenerPostulacionesAdminApi(apiToken),
-        ]);
-        setPedidos(
-          datosPedidos.map((p) => ({
-            id: p.id,
-            email: p.email,
-            estado: p.estado,
-            metodoPago: p.metodoPago,
-            totalPesos: p.totalPesos,
-            createdAt: p.createdAt,
-          }))
-        );
-        setPostulaciones(
-          datosPostulaciones.map((p) => ({
-            id: p.id,
-            nombre: p.nombre,
-            email: p.email,
-            telefono: p.telefono,
-            cvNombre: p.cvNombre,
-            createdAt: p.createdAt,
-          }))
-        );
-      } catch {
-        setError("No se pudieron cargar los datos de administración.");
-      } finally {
-        setCargando(false);
-      }
-      return;
-    }
-
-    const auth = obtenerAuthFirebase();
-    if (!auth?.currentUser) {
-      setError("Debés iniciar sesión.");
+    if (!apiConfigurada() || !apiToken) {
+      setError(
+        !apiConfigurada()
+          ? "Configurá NEXT_PUBLIC_API_URL para el panel admin."
+          : "Debés iniciar sesión."
+      );
       setCargando(false);
       return;
     }
 
-    const idToken = await auth.currentUser.getIdToken();
-    const headers = { Authorization: `Bearer ${idToken}` };
-
     try {
-      const [respPedidos, respPostulaciones] = await Promise.all([
-        fetch("/api/admin/pedidos", { headers }),
-        fetch("/api/admin/postulaciones", { headers }),
+      const [datosPedidos, datosPostulaciones] = await Promise.all([
+        obtenerPedidosAdminApi(apiToken),
+        obtenerPostulacionesAdminApi(apiToken),
       ]);
-
-      if (respPedidos.status === 403 || respPostulaciones.status === 403) {
-        setError("No tenés permisos de administrador.");
-        return;
-      }
-
-      if (!respPedidos.ok || !respPostulaciones.ok) {
-        setError("No se pudieron cargar los datos de administración.");
-        return;
-      }
-
-      const datosPedidos = (await respPedidos.json()) as { pedidos: PedidoAdmin[] };
-      const datosPostulaciones = (await respPostulaciones.json()) as {
-        postulaciones: PostulacionAdmin[];
-      };
-
-      setPedidos(datosPedidos.pedidos ?? []);
-      setPostulaciones(datosPostulaciones.postulaciones ?? []);
+      setPedidos(
+        datosPedidos.map((p) => ({
+          id: p.id,
+          email: p.email,
+          estado: p.estado,
+          metodoPago: p.metodoPago,
+          totalPesos: p.totalPesos,
+          createdAt: p.createdAt,
+        }))
+      );
+      setPostulaciones(
+        datosPostulaciones.map((p) => ({
+          id: p.id,
+          nombre: p.nombre,
+          email: p.email,
+          telefono: p.telefono,
+          cvNombre: p.cvNombre,
+          createdAt: p.createdAt,
+        }))
+      );
     } catch {
-      setError("Error de red al cargar el panel.");
+      setError("No se pudieron cargar los datos de administración.");
     } finally {
       setCargando(false);
     }
@@ -135,8 +102,10 @@ export default function AdminPanel() {
     const apiToken = obtenerApiToken();
     if (!apiConfigurada() || !apiToken) return;
     try {
-      const { url } = await obtenerCvAdminApi(apiToken, postulacionId);
+      const blob = await obtenerCvAdminApi(apiToken, postulacionId);
+      const url = URL.createObjectURL(blob);
       window.open(url, "_blank", "noopener,noreferrer");
+      window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
     } catch {
       setError("No se pudo obtener el CV.");
     }
