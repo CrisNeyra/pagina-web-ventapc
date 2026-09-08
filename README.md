@@ -51,7 +51,9 @@ cp .env.local.example .env.local   # NEXT_PUBLIC_API_URL=http://localhost:4000/a
 npm run dev
 ```
 
-Guías: [API](docs/api-backend.md) · [Docker](docs/docker-local.md) · [Demo cloud](docs/demo-cloud.md) · [Seguridad](docs/seguridad-api.md) · [Storage CVs](docs/storage-cloud.md) · [Observabilidad](docs/observabilidad.md) · [Login/checkout](docs/prueba-login-checkout-api.md)
+Guías: [API](docs/api-backend.md) · [Docker](docs/docker-local.md) · [Demo cloud](docs/demo-cloud.md) · [Seguridad](docs/seguridad-api.md) · [Storage CVs](docs/storage-cloud.md) · [Observabilidad](docs/observabilidad.md) · [Login/checkout](docs/prueba-login-checkout-api.md) · [Auditoría](docs/auditoria-2026-09.md)
+
+Si `npm run dev` deja de responder a los clicks, paralo, borrá la carpeta `.next` y volvé a correr `npm run dev` (cache de Turbopack).
 
 ### Variables front (`.env.local`)
 

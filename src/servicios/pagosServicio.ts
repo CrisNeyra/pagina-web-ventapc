@@ -95,10 +95,17 @@ export async function crearPaymentIntent(
       paymentIntentId: resultado.paymentIntentId,
       clientSecret: resultado.clientSecret,
     };
-  } catch {
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : "";
+    if (msg.includes("PRICE_MISMATCH") || msg.includes("UNKNOWN_PRODUCT") || msg.includes("SIN_STOCK")) {
+      return { ok: false, mensaje: mapearErrorHttp(400, msg) };
+    }
+    if (msg.includes("API no respondió") || msg.includes("No se pudo conectar")) {
+      return { ok: false, mensaje: msg };
+    }
     return {
       ok: false,
-      mensaje: "Error de red al conectar con el servidor de pagos.",
+      mensaje: msg || "Error de red al conectar con el servidor de pagos.",
     };
   }
 }

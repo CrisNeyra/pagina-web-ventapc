@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import AuthModal from "@/componentes/AuthModal";
 import CartDrawer from "@/componentes/CartDrawer";
 import NavbarActions from "@/componentes/NavbarActions";
@@ -13,12 +14,18 @@ import { useCartStore } from "@/store/cartStore";
 import { useBusquedaStore } from "@/store/busquedaStore";
 import { toast } from "sonner";
 
+function esRedirectInterno(valor: string | null): valor is string {
+  return Boolean(valor && valor.startsWith("/") && !valor.startsWith("//"));
+}
+
 export default function Navbar() {
+  const router = useRouter();
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [authModalAbierto, setAuthModalAbierto] = useState(false);
   const [drawerAbierto, setDrawerAbierto] = useState(false);
   const [sugerenciasDesktopAbiertas, setSugerenciasDesktopAbiertas] = useState(false);
   const [sugerenciasMobileAbiertas, setSugerenciasMobileAbiertas] = useState(false);
+  const redirectTrasAuthRef = useRef<string | null>(null);
   const desktopBusquedaRef = useRef<HTMLDivElement | null>(null);
   const mobileBusquedaRef = useRef<HTMLFormElement | null>(null);
 
@@ -67,6 +74,11 @@ export default function Navbar() {
     const params = new URLSearchParams(window.location.search);
     if (params.get("auth") !== "required") return;
 
+    const redirect = params.get("redirect");
+    if (esRedirectInterno(redirect)) {
+      redirectTrasAuthRef.current = redirect;
+    }
+
     setAuthModalAbierto(true);
     toast.error("Iniciá sesión para continuar.");
 
@@ -75,6 +87,15 @@ export default function Navbar() {
     url.searchParams.delete("redirect");
     window.history.replaceState({}, "", url.pathname + url.search);
   }, []);
+
+  const alAutenticarse = () => {
+    setAuthModalAbierto(false);
+    const destino = redirectTrasAuthRef.current;
+    redirectTrasAuthRef.current = null;
+    if (destino) {
+      router.push(destino);
+    }
+  };
 
   const cerrarSesion = async () => {
     const error = await signOut();
@@ -153,7 +174,7 @@ export default function Navbar() {
       <AuthModal
         abierto={authModalAbierto}
         onCerrar={() => setAuthModalAbierto(false)}
-        onAutenticado={() => setAuthModalAbierto(false)}
+        onAutenticado={alAutenticarse}
       />
       <CartDrawer abierto={drawerAbierto} onCerrar={() => setDrawerAbierto(false)} />
     </header>

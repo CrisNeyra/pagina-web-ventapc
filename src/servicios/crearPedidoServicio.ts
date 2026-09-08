@@ -50,7 +50,29 @@ export async function crearPedidoOffline(
       total: pedido.totalPesos,
       metodoPago: pedido.metodoPago as MetodoPago,
     };
-  } catch {
-    return { ok: false, mensaje: "No se pudo crear el pedido. Intentá nuevamente." };
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : "";
+    if (msg.includes("SIN_STOCK")) {
+      return { ok: false, mensaje: "Alguno de los productos no tiene stock suficiente." };
+    }
+    if (msg.includes("PRICE_MISMATCH")) {
+      return {
+        ok: false,
+        mensaje: "Los precios del carrito no coinciden. Actualizá la página e intentá de nuevo.",
+      };
+    }
+    if (msg.includes("UNKNOWN_PRODUCT")) {
+      return { ok: false, mensaje: "Un producto del carrito ya no está en el catálogo." };
+    }
+    if (msg.includes("RATE_LIMITED")) {
+      return { ok: false, mensaje: "Demasiados intentos. Esperá un minuto e intentá de nuevo." };
+    }
+    if (msg.includes("API no respondió") || msg.includes("No se pudo conectar")) {
+      return { ok: false, mensaje: msg };
+    }
+    return {
+      ok: false,
+      mensaje: msg || "No se pudo crear el pedido. Intentá nuevamente.",
+    };
   }
 }

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import ProductDetailView, { type ProductDetailData } from "@/componentes/ProductDetailView";
-import { productosDestacados, productosRebajados, ultimasNovedades } from "@/datos/productos";
+import { catalogoCompleto } from "@/datos/productos";
 import { obtenerProductoDesdeApi, usarCatalogoApi } from "@/servicios/catalogoServicio";
 
 interface ProductoPageProps {
@@ -18,32 +18,17 @@ function crearImagenesDesdeId(id: string): string[] {
 }
 
 function construirProductoDetalleEstatico(id: string): ProductDetailData | null {
-  const catalogo = [...productosDestacados, ...productosRebajados];
-  const productoCatalogo = catalogo.find((p) => p.id === id);
+  const productoCatalogo = catalogoCompleto.find((p) => p.id === id);
 
-  if (productoCatalogo) {
-    return {
-      ...productoCatalogo,
-      sku: `SKU-${productoCatalogo.id.toUpperCase()}`,
-      imagenes:
-        productoCatalogo.imagenes.length > 0
-          ? productoCatalogo.imagenes.slice(0, 3)
-          : crearImagenesDesdeId(productoCatalogo.id),
-    };
-  }
-
-  const novedad = ultimasNovedades.find((n) => n.enlace === `/producto/${id}` || n.id === id);
-  if (!novedad) return null;
+  if (!productoCatalogo) return null;
 
   return {
-    id,
-    nombre: novedad.titulo,
-    descripcion: `Producto destacado en novedades (${novedad.categoria}).`,
-    categoria: novedad.categoria,
-    precio: novedad.precio,
-    enStock: true,
-    sku: `SKU-${id.toUpperCase()}`,
-    imagenes: crearImagenesDesdeId(id),
+    ...productoCatalogo,
+    sku: `SKU-${productoCatalogo.id.toUpperCase()}`,
+    imagenes:
+      productoCatalogo.imagenes.length > 0
+        ? productoCatalogo.imagenes
+        : crearImagenesDesdeId(productoCatalogo.id),
   };
 }
 
@@ -79,7 +64,7 @@ export default async function ProductoPage({ params }: ProductoPageProps) {
         sku: `SKU-${desdeApi.id.toUpperCase()}`,
         imagenes:
           desdeApi.imagenes.length > 0
-            ? desdeApi.imagenes.slice(0, 3)
+            ? desdeApi.imagenes
             : crearImagenesDesdeId(desdeApi.id),
       };
     }

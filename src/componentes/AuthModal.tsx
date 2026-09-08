@@ -51,8 +51,13 @@ export default function AuthModal({
       return;
     }
 
-    if (!validarPassword(password)) {
+    if (modo === "registro" && !validarPassword(password)) {
       setError(MENSAJE_REQUISITOS_PASSWORD);
+      return;
+    }
+
+    if (!password.trim()) {
+      setError("Ingresá tu contraseña.");
       return;
     }
 

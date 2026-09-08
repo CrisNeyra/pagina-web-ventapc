@@ -86,7 +86,9 @@ export async function verificarStockProducto(id: string, cantidad: number): Prom
   if (!usarCatalogoApi()) return true;
   try {
     const producto = await obtenerProductoDesdeApi(id);
-    if (!producto?.enStock) return false;
+    // Si la API falla o timeout → no bloquear el carrito
+    if (!producto) return true;
+    if (!producto.enStock) return false;
     if (typeof producto.stock === "number") return producto.stock >= cantidad;
     return true;
   } catch {

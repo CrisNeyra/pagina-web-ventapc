@@ -54,6 +54,12 @@ export default function CheckoutPaymentForm({
       return;
     }
 
+    const estado = resultado.paymentIntent?.status;
+    setError(
+      estado
+        ? `El pago quedó en estado "${estado}". Si el cobro no se completó, probá de nuevo o usá otro método.`
+        : "No se pudo confirmar el pago. Intentá de nuevo."
+    );
     setProcesando(false);
   };
 

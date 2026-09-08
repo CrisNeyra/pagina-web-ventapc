@@ -91,8 +91,18 @@ export default function WelcomeBannerModal() {
     <div
       className="fixed inset-0 z-[120] flex items-center justify-center bg-black/55 px-4 backdrop-blur-[2px]"
       role="presentation"
+      onClick={cerrarModal}
+      onKeyDown={(event) => {
+        if (event.key === "Escape") cerrarModal();
+      }}
     >
-      <div className="relative w-full max-w-[820px] overflow-hidden rounded-2xl border border-cyber-purple-500/45 bg-oscuro-900 shadow-[0_0_35px_rgba(109,40,217,0.35)]">
+      <div
+        className="relative w-full max-w-[820px] overflow-hidden rounded-2xl border border-cyber-purple-500/45 bg-oscuro-900 shadow-[0_0_35px_rgba(109,40,217,0.35)]"
+        onClick={(event) => event.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Promoción de cuotas"
+      >
         <button
           type="button"
           onClick={cerrarModal}

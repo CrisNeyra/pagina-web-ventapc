@@ -127,7 +127,11 @@ export default function CheckoutView() {
     setOrderId(null);
     setErrorPago("");
 
-    if (!metodoPago || !requiereStripe || !stripeDisponible || !entregaValida) return;
+    if (!metodoPago || !requiereStripe || !stripeDisponible) return;
+    if (!entregaValida) {
+      setErrorPago("Completá los datos de entrega para pagar con tarjeta.");
+      return;
+    }
     if (authLoading || !user || itemsPago.length === 0) return;
 
     let cancelado = false;
@@ -276,7 +280,7 @@ export default function CheckoutView() {
           </h2>
           <CheckoutMetodosPago seleccionado={metodoPago} onSeleccionar={setMetodoPago} />
 
-          {metodoPago === "efectivo" && entregaValida && (
+          {metodoPago === "efectivo" && (
             <div className="mt-6 space-y-4 rounded-xl border border-cyber-purple-500/30 bg-oscuro-800/70 p-4">
               <p className="text-sm text-cyber-cyan-200/85">
                 Tu pedido quedará reservado por 48 horas. Podés abonar en efectivo al retirar en
@@ -285,10 +289,15 @@ export default function CheckoutView() {
               <p className="text-xs text-cyber-cyan-200/65">
                 Dirección: Av. Corrientes 1234, CABA
               </p>
+              {!entregaValida && (
+                <p className="text-sm text-cyber-pink-300">
+                  Completá los datos de entrega (arriba) para confirmar el pedido.
+                </p>
+              )}
               <button
                 type="button"
                 onClick={() => void confirmarPedidoOffline()}
-                disabled={confirmandoPedido}
+                disabled={confirmandoPedido || !entregaValida}
                 className="rounded-md bg-cyber-cyan-500 px-4 py-3 text-sm font-bold text-oscuro-950 hover:bg-cyber-cyan-400 disabled:opacity-60"
               >
                 {confirmandoPedido ? "Confirmando..." : "Confirmar pedido en efectivo"}
@@ -296,7 +305,7 @@ export default function CheckoutView() {
             </div>
           )}
 
-          {metodoPago === "transferencia" && entregaValida && (
+          {metodoPago === "transferencia" && (
             <div className="mt-6 space-y-4 rounded-xl border border-cyber-purple-500/30 bg-oscuro-800/70 p-4">
               <p className="text-sm font-bold text-cyber-lime-400">
                 ¡10% de descuento aplicado! Ahorrás {formatearPrecio(descuentoTransferencia)}
@@ -319,10 +328,15 @@ export default function CheckoutView() {
               <p className="text-xs text-cyber-cyan-200/65">
                 Enviá el comprobante a pagos@aurapro.com indicando tu número de pedido.
               </p>
+              {!entregaValida && (
+                <p className="text-sm text-cyber-pink-300">
+                  Completá los datos de entrega (arriba) para confirmar el pedido.
+                </p>
+              )}
               <button
                 type="button"
                 onClick={() => void confirmarPedidoOffline()}
-                disabled={confirmandoPedido}
+                disabled={confirmandoPedido || !entregaValida}
                 className="rounded-md bg-cyber-cyan-500 px-4 py-3 text-sm font-bold text-oscuro-950 hover:bg-cyber-cyan-400 disabled:opacity-60"
               >
                 {confirmandoPedido ? "Confirmando..." : "Confirmar pedido por transferencia"}

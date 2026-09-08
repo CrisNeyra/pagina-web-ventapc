@@ -18,19 +18,26 @@ import {
 } from "@/servicios/apiBackendServicio";
 import type { AuthUser } from "@/tipos/auth-user";
 
-async function sincronizarCookieJwt(token: string | null) {
-  try {
+async function sincronizarCookieJwt(token: string | null): Promise<boolean> {
+  const intentar = async () => {
     if (token) {
-      await fetch("/api/auth/api-session", {
+      const respuesta = await fetch("/api/auth/api-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token }),
       });
-      return;
+      return respuesta.ok;
     }
-    await fetch("/api/auth/api-session", { method: "DELETE" });
+    const respuesta = await fetch("/api/auth/api-session", { method: "DELETE" });
+    return respuesta.ok;
+  };
+
+  try {
+    if (await intentar()) return true;
+    await new Promise((r) => setTimeout(r, 200));
+    return await intentar();
   } catch {
-    // Ignorar en local si la ruta falla.
+    return false;
   }
 }
 
@@ -49,6 +56,9 @@ function mensajeAuthNest(error: unknown) {
     msg.includes("Unauthorized")
   ) {
     return "Email o contraseña incorrectos.";
+  }
+  if (msg.includes("API no respondió") || msg.includes("No se pudo conectar")) {
+    return msg;
   }
   return msg || "Error de autenticación.";
 }
