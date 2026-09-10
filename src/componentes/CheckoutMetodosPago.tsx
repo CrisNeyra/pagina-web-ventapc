@@ -44,7 +44,7 @@ export default function CheckoutMetodosPago({
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-2">
                 <Icono className="text-cyber-cyan-400" size={18} />
-                <h3 className="text-sm font-bold text-white">{metodo.titulo}</h3>
+                <h3 className="text-sm font-bold text-foreground">{metodo.titulo}</h3>
               </div>
               {metodo.badge && (
                 <span className="rounded-full bg-cyber-lime-400/20 px-2 py-0.5 text-[10px] font-bold uppercase text-cyber-lime-400">

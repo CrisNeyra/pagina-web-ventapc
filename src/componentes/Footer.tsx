@@ -38,14 +38,14 @@ export default function Footer() {
           <div className="flex flex-col items-center md:items-start gap-3">
             <Link
               href="/ayuda"
-              className="border border-oscuro-700 text-cyber-cyan-200/80 hover:bg-oscuro-800 hover:text-white
+              className="border border-oscuro-700 text-cyber-cyan-200/80 hover:bg-oscuro-800 hover:text-foreground
                          px-6 py-2 rounded text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyber-cyan-400"
             >
               Ayuda
             </Link>
             <Link
               href="/arrepentimiento"
-              className="border border-oscuro-700 text-cyber-cyan-200/80 hover:bg-oscuro-800 hover:text-white
+              className="border border-oscuro-700 text-cyber-cyan-200/80 hover:bg-oscuro-800 hover:text-foreground
                          px-6 py-2 rounded text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyber-cyan-400"
             >
               Botón de arrepentimiento
@@ -79,7 +79,7 @@ export default function Footer() {
                     rel="noopener noreferrer"
                     aria-label={red.label}
                     className="w-10 h-10 flex items-center justify-center rounded-full 
-                               bg-oscuro-800 text-white hover:bg-gradient-to-r hover:from-azul-600 hover:to-oro-500 transition-colors duration-200
+                               bg-oscuro-800 text-cyber-purple-500 hover:bg-gradient-to-r hover:from-azul-600 hover:to-oro-500 hover:text-white transition-colors duration-200
                                focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyber-cyan-400"
                   >
                     <Icono size={20} />

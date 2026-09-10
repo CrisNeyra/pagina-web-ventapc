@@ -59,7 +59,7 @@ export default function ProductCard({ producto }: ProductCardProps) {
   };
 
   return (
-    <article className="group rounded-xl border border-cyber-purple-500/30 bg-oscuro-900/80 p-4 transition-all duration-200 hover:border-cyber-cyan-400/70 hover:shadow-[0_0_24px_rgba(34,211,238,0.18)]">
+    <article className="group rounded-xl border border-cyber-purple-500/25 bg-oscuro-900 p-4 shadow-sm transition-all duration-200 hover:border-cyber-cyan-400/80 hover:shadow-md">
       <Link href={`/producto/${producto.id}`} className="block">
         <div className="relative mb-4 h-44 w-full overflow-hidden rounded-xl bg-oscuro-800">
           <Image
@@ -90,7 +90,7 @@ export default function ProductCard({ producto }: ProductCardProps) {
           </span>
         </div>
 
-        <h3 className="line-clamp-2 min-h-[3rem] text-sm font-semibold text-white">
+        <h3 className="line-clamp-2 min-h-[3rem] text-sm font-semibold text-foreground">
           {producto.nombre}
         </h3>
         <p className="mt-1 line-clamp-2 min-h-[2.5rem] text-xs text-cyber-cyan-100/75">
@@ -112,7 +112,7 @@ export default function ProductCard({ producto }: ProductCardProps) {
         type="button"
         onClick={agregarAlCarrito}
         disabled={!producto.enStock || validandoStock}
-        className="mt-3 w-full rounded-md border border-cyber-cyan-400/60 bg-cyber-cyan-500/10 px-3 py-2 text-sm font-bold text-cyber-cyan-300 transition-colors hover:bg-cyber-cyan-400 hover:text-oscuro-950 disabled:cursor-not-allowed disabled:border-oscuro-700 disabled:bg-oscuro-800 disabled:text-gray-500 disabled:hover:bg-oscuro-800 disabled:hover:text-gray-500"
+        className="mt-3 w-full rounded-md border border-cyber-cyan-400/60 bg-cyber-cyan-500/10 px-3 py-2 text-sm font-bold text-cyber-cyan-300 transition-colors hover:bg-cyber-cyan-400 hover:text-white disabled:cursor-not-allowed disabled:border-oscuro-700 disabled:bg-oscuro-800 disabled:text-gray-500 disabled:hover:bg-oscuro-800 disabled:hover:text-gray-500"
       >
         {validandoStock ? "Verificando..." : producto.enStock ? "Agregar al carrito" : "Sin stock"}
       </button>

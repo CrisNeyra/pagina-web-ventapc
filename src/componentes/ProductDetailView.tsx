@@ -150,7 +150,7 @@ export default function ProductDetailView({ producto }: ProductDetailViewProps) 
         <span>/</span>
         <span className="text-cyber-cyan-200/85">{producto.categoria}</span>
         <span>/</span>
-        <span className="line-clamp-1 text-white/80">{producto.nombre}</span>
+        <span className="line-clamp-1 text-foreground/80">{producto.nombre}</span>
       </nav>
 
       <div className="grid gap-6 lg:grid-cols-[72px_minmax(0,1fr)_340px]">
@@ -200,7 +200,7 @@ export default function ProductDetailView({ producto }: ProductDetailViewProps) 
           <p className="text-xs font-semibold uppercase tracking-wide text-cyber-cyan-300/85">
             Nuevo · {producto.categoria}
           </p>
-          <h1 className="mt-1 text-2xl font-bold leading-tight text-white md:text-3xl">
+          <h1 className="mt-1 text-2xl font-bold leading-tight text-foreground md:text-3xl">
             {producto.nombre}
           </h1>
 
@@ -340,7 +340,7 @@ export default function ProductDetailView({ producto }: ProductDetailViewProps) 
                 value={cantidad}
                 disabled={!producto.enStock}
                 onChange={(evento) => setCantidad(Number(evento.target.value))}
-                className="w-full rounded-md border border-cyber-purple-500/35 bg-oscuro-800 px-3 py-2 text-sm text-white disabled:opacity-50"
+                className="w-full rounded-md border border-cyber-purple-500/35 bg-oscuro-800 px-3 py-2 text-sm text-foreground disabled:opacity-50"
               >
                 {Array.from({ length: maxCantidad }, (_, i) => i + 1).map((n) => (
                   <option key={n} value={n}>
@@ -354,7 +354,7 @@ export default function ProductDetailView({ producto }: ProductDetailViewProps) 
               type="button"
               disabled={!producto.enStock || procesando}
               onClick={() => void agregar(true)}
-              className="mt-4 w-full rounded-md bg-cyber-cyan-500 px-4 py-3 text-sm font-bold text-oscuro-950 transition-colors hover:bg-cyber-cyan-400 disabled:cursor-not-allowed disabled:opacity-50"
+              className="mt-4 w-full rounded-md bg-cyber-cyan-500 px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-cyber-cyan-400 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {procesando ? "Procesando..." : "Comprar ahora"}
             </button>
@@ -362,7 +362,7 @@ export default function ProductDetailView({ producto }: ProductDetailViewProps) 
               type="button"
               disabled={!producto.enStock || procesando}
               onClick={() => void agregar(false)}
-              className="mt-2 w-full rounded-md border border-cyber-cyan-400/70 bg-cyber-cyan-500/10 px-4 py-3 text-sm font-bold text-cyber-cyan-300 transition-colors hover:bg-cyber-cyan-400 hover:text-oscuro-950 disabled:cursor-not-allowed disabled:opacity-50"
+              className="mt-2 w-full rounded-md border border-cyber-cyan-400/70 bg-cyber-cyan-500/10 px-4 py-3 text-sm font-bold text-cyber-cyan-300 transition-colors hover:bg-cyber-cyan-400 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
             >
               Agregar al carrito
             </button>

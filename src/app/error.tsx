@@ -14,7 +14,7 @@ export default function PaginaError({ error, reset }: PaginaErrorProps) {
         <p className="text-xs font-semibold uppercase tracking-wide text-cyber-pink-400">
           Error inesperado
         </p>
-        <h1 className="mt-2 text-2xl font-black text-white">
+        <h1 className="mt-2 text-2xl font-black text-foreground">
           Ocurrió un problema al cargar la página
         </h1>
         <p className="mt-3 text-sm text-cyber-cyan-200/85">
@@ -24,7 +24,7 @@ export default function PaginaError({ error, reset }: PaginaErrorProps) {
         <button
           type="button"
           onClick={reset}
-          className="mt-5 rounded-md bg-cyber-cyan-500 px-5 py-2.5 text-sm font-bold text-oscuro-950 hover:bg-cyber-cyan-400"
+          className="mt-5 rounded-md bg-cyber-cyan-500 px-5 py-2.5 text-sm font-bold text-white hover:bg-cyber-cyan-400"
         >
           Reintentar
         </button>

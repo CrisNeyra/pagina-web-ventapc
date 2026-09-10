@@ -78,7 +78,7 @@ export default function HomeProductos({
     <>
       {(!hayBusqueda || destacadosFiltrados.length > 0) && (
         <section id="productos-destacados" className="mx-auto mt-10 mb-10 max-w-7xl px-4">
-          <h2 className="mb-5 text-xl font-bold text-white sm:text-2xl">
+          <h2 className="mb-5 text-xl font-bold text-foreground sm:text-2xl">
             Productos Destacados
           </h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -91,7 +91,7 @@ export default function HomeProductos({
 
       {(!hayBusqueda || productosFiltrados.length > 0) && (
         <section className="mx-auto my-10 max-w-7xl px-4">
-          <h2 className="mb-5 text-xl font-bold text-white sm:text-2xl">Productos</h2>
+          <h2 className="mb-5 text-xl font-bold text-foreground sm:text-2xl">Productos</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {productosVisibles.map((producto) => (
               <ProductCard key={producto.id} producto={producto} />
@@ -102,7 +102,7 @@ export default function HomeProductos({
               <button
                 type="button"
                 onClick={() => setMostrarTodosProductos((previo) => !previo)}
-                className="rounded-md border border-cyber-cyan-400/60 bg-cyber-cyan-500/10 px-6 py-2 text-sm font-bold text-cyber-cyan-300 transition-colors hover:bg-cyber-cyan-400 hover:text-oscuro-950"
+                className="rounded-md border border-cyber-cyan-400/60 bg-cyber-cyan-500/10 px-6 py-2 text-sm font-bold text-cyber-cyan-300 transition-colors hover:bg-cyber-cyan-400 hover:text-white"
               >
                 {mostrarTodosProductos ? "Ver menos" : "Ver más"}
               </button>

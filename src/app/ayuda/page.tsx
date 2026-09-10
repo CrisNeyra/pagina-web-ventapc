@@ -39,7 +39,7 @@ export default function AyudaPage() {
   return (
     <main className="min-h-screen bg-oscuro-950">
       <section className="mx-auto max-w-4xl px-4 py-8">
-        <h1 className="mb-4 text-3xl font-black text-white">Centro de Ayuda</h1>
+        <h1 className="mb-4 text-3xl font-black text-foreground">Centro de Ayuda</h1>
         <p className="mb-6 text-sm text-cyber-cyan-200/85">
           Horario de atención: Lun a Vie de 9:00 a 18:00. También podés escribirnos por WhatsApp.
         </p>
@@ -49,7 +49,7 @@ export default function AyudaPage() {
               key={faq.pregunta}
               className="rounded-xl border border-cyber-purple-500/35 bg-oscuro-900/85 p-4"
             >
-              <summary className="cursor-pointer font-semibold text-white">{faq.pregunta}</summary>
+              <summary className="cursor-pointer font-semibold text-foreground">{faq.pregunta}</summary>
               <p className="mt-3 text-sm text-cyber-cyan-200/80">{faq.respuesta}</p>
             </details>
           ))}

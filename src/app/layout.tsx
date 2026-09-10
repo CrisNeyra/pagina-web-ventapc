@@ -46,7 +46,7 @@ export default function RootLayout({
       lang="es"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-oscuro-950 text-cyber-cyan-100">
+      <body className="flex min-h-full flex-col bg-oscuro-950 text-cyber-cyan-100">
         <AuthProvider>
           <DevConfigBanner />
           <Navbar />
@@ -54,7 +54,7 @@ export default function RootLayout({
           <Footer />
           <FloatingWhatsApp />
           <WelcomeBannerModal />
-          <Toaster position="bottom-center" richColors theme="dark" />
+          <Toaster position="bottom-center" richColors theme="light" />
         </AuthProvider>
       </body>
     </html>

@@ -72,7 +72,7 @@ export default function NavbarActions({
 
       <button
         onClick={onToggleMenu}
-        className="p-1 text-white md:hidden"
+        className="p-1 text-foreground md:hidden"
         aria-label="Abrir menú"
       >
         {menuAbierto ? <FiX size={24} /> : <FiMenu size={24} />}

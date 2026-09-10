@@ -58,7 +58,7 @@ export default function TrabajaConNosotrosForm() {
           <input
             name="nombre"
             required
-            className="w-full rounded-lg border border-cyber-purple-500/35 bg-oscuro-800/80 px-3 py-2.5 text-sm text-white outline-none focus:border-cyber-cyan-400"
+            className="w-full rounded-lg border border-cyber-purple-500/35 bg-oscuro-800/80 px-3 py-2.5 text-sm text-foreground outline-none focus:border-cyber-cyan-400"
             placeholder="Tu nombre"
           />
         </label>
@@ -68,7 +68,7 @@ export default function TrabajaConNosotrosForm() {
             name="email"
             type="email"
             required
-            className="w-full rounded-lg border border-cyber-purple-500/35 bg-oscuro-800/80 px-3 py-2.5 text-sm text-white outline-none focus:border-cyber-cyan-400"
+            className="w-full rounded-lg border border-cyber-purple-500/35 bg-oscuro-800/80 px-3 py-2.5 text-sm text-foreground outline-none focus:border-cyber-cyan-400"
             placeholder="tu@email.com"
           />
         </label>
@@ -79,7 +79,7 @@ export default function TrabajaConNosotrosForm() {
         <input
           name="telefono"
           required
-          className="w-full rounded-lg border border-cyber-purple-500/35 bg-oscuro-800/80 px-3 py-2.5 text-sm text-white outline-none focus:border-cyber-cyan-400"
+          className="w-full rounded-lg border border-cyber-purple-500/35 bg-oscuro-800/80 px-3 py-2.5 text-sm text-foreground outline-none focus:border-cyber-cyan-400"
           placeholder="+54 9 11 0000-0000"
         />
       </label>
@@ -89,7 +89,7 @@ export default function TrabajaConNosotrosForm() {
         <textarea
           name="mensaje"
           rows={4}
-          className="w-full resize-y rounded-lg border border-cyber-purple-500/35 bg-oscuro-800/80 px-3 py-2.5 text-sm text-white outline-none focus:border-cyber-cyan-400"
+          className="w-full resize-y rounded-lg border border-cyber-purple-500/35 bg-oscuro-800/80 px-3 py-2.5 text-sm text-foreground outline-none focus:border-cyber-cyan-400"
           placeholder="Contanos sobre tu experiencia y el puesto que te interesa."
         />
       </label>
@@ -111,7 +111,7 @@ export default function TrabajaConNosotrosForm() {
           <div className="flex items-center gap-3 rounded-lg border border-dashed border-cyber-purple-500/45 bg-oscuro-800/60 px-4 py-4">
             <FiUpload className="shrink-0 text-cyber-cyan-400" size={20} />
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-white">
+              <p className="text-sm font-semibold text-foreground">
                 {archivoNombre || "Seleccioná tu CV en PDF"}
               </p>
               <p className="text-xs text-cyber-cyan-200/70">Máximo {MAX_CV_MB} MB</p>
@@ -123,7 +123,7 @@ export default function TrabajaConNosotrosForm() {
       <button
         type="submit"
         disabled={enviando}
-        className="inline-flex items-center gap-2 rounded-md bg-cyber-cyan-500 px-5 py-3 text-sm font-bold text-oscuro-950 transition-colors hover:bg-cyber-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex items-center gap-2 rounded-md bg-cyber-cyan-500 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-cyber-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
       >
         <FiSend size={16} />
         {enviando ? "Enviando..." : "Enviar postulación"}

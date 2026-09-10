@@ -67,7 +67,7 @@ export default async function CategoriaPage({ params }: CategoriaPageProps) {
           &gt; <span className="text-cyber-cyan-100">{tituloCategoria}</span>
         </nav>
 
-        <h1 className="mb-6 text-3xl font-black text-white">{tituloCategoria}</h1>
+        <h1 className="mb-6 text-3xl font-black text-foreground">{tituloCategoria}</h1>
 
         {productos.length > 0 ? (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

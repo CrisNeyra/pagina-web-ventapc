@@ -18,20 +18,20 @@ export default function CartDrawer({ abierto, onCerrar }: CartDrawerProps) {
   return (
     <>
       <div
-        className={`fixed inset-0 z-[75] bg-black/60 transition-opacity ${
+        className={`fixed inset-0 z-[75] bg-black/40 transition-opacity ${
           abierto ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
         }`}
         onClick={onCerrar}
         aria-hidden="true"
       />
       <aside
-        className={`fixed right-0 top-0 z-[80] flex h-screen w-full md:max-w-md flex-col border-l border-cyber-purple-500/35 bg-oscuro-900 shadow-[-10px_0_30px_rgba(0,0,0,0.45)] transition-transform ${
+        className={`fixed right-0 top-0 z-[80] flex h-screen w-full flex-col border-l border-cyber-purple-500/25 bg-oscuro-900 shadow-xl transition-transform md:max-w-md ${
           abierto ? "translate-x-0" : "translate-x-full"
         }`}
         aria-label="Carrito de compras"
       >
         <header className="flex items-center justify-between border-b border-cyber-purple-500/30 px-4 py-4">
-          <h3 className="text-lg font-bold text-white">Tu carrito</h3>
+          <h3 className="text-lg font-bold text-foreground">Tu carrito</h3>
           <button
             type="button"
             onClick={onCerrar}
@@ -65,7 +65,7 @@ export default function CartDrawer({ abierto, onCerrar }: CartDrawerProps) {
                       />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="line-clamp-2 text-sm font-semibold text-white">
+                      <p className="line-clamp-2 text-sm font-semibold text-foreground">
                         {item.producto.nombre}
                       </p>
                       <p className="mt-1 text-sm font-bold text-cyber-cyan-300">
@@ -86,7 +86,7 @@ export default function CartDrawer({ abierto, onCerrar }: CartDrawerProps) {
                       >
                         <FiMinus size={14} />
                       </button>
-                      <span className="min-w-8 text-center text-sm font-bold text-white">
+                      <span className="min-w-8 text-center text-sm font-bold text-foreground">
                         {item.cantidad}
                       </span>
                       <button
@@ -133,7 +133,7 @@ export default function CartDrawer({ abierto, onCerrar }: CartDrawerProps) {
             <Link
               href="/checkout"
               onClick={onCerrar}
-              className="flex-1 rounded-md bg-cyber-cyan-500 px-3 py-2 text-center text-sm font-bold text-oscuro-950 hover:bg-cyber-cyan-400"
+              className="flex-1 rounded-md bg-cyber-cyan-500 px-3 py-2 text-center text-sm font-bold text-white hover:bg-cyber-cyan-400"
             >
               Finalizar compra
             </Link>

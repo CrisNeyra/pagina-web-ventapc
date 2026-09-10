@@ -12,7 +12,7 @@ export default function CheckoutErrorPage() {
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Link
             href="/checkout"
-            className="rounded-md bg-cyber-cyan-500 px-5 py-2 text-sm font-bold text-oscuro-950 hover:bg-cyber-cyan-400"
+            className="rounded-md bg-cyber-cyan-500 px-5 py-2 text-sm font-bold text-white hover:bg-cyber-cyan-400"
           >
             Reintentar checkout
           </Link>

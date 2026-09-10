@@ -17,7 +17,7 @@ export default function GrillaCategorias() {
         {/* Encabezado */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl md:text-2xl text-gray-400">
-            Explorá nuestras <span className="font-bold text-white">categorías</span>
+            Explorá nuestras <span className="font-bold text-foreground">categorías</span>
           </h2>
           <div className="flex gap-2">
             <button

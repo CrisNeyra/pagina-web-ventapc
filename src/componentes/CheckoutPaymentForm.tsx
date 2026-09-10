@@ -82,7 +82,7 @@ export default function CheckoutPaymentForm({
       <button
         type="submit"
         disabled={!stripe || !elements || procesando}
-        className="w-full rounded-md bg-cyber-cyan-500 px-4 py-3 text-sm font-bold text-oscuro-950 transition-colors hover:bg-cyber-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
+        className="w-full rounded-md bg-cyber-cyan-500 px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-cyber-cyan-400 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {procesando ? "Procesando pago..." : etiquetaBoton}
       </button>

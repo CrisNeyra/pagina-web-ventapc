@@ -5,7 +5,7 @@ export default function BrandsGrid() {
   return (
     <section className="mx-auto my-12 max-w-7xl px-4">
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-white">Marcas destacadas</h2>
+        <h2 className="text-2xl font-bold text-foreground">Marcas destacadas</h2>
         <span className="text-xs uppercase tracking-wider text-cyber-cyan-300/80">Partners oficiales</span>
       </div>
 

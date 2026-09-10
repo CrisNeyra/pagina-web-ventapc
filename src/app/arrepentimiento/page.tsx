@@ -10,7 +10,7 @@ export default function ArrepentimientoPage() {
   return (
     <main className="min-h-screen bg-oscuro-950">
       <section className="mx-auto max-w-3xl px-4 py-10">
-        <h1 className="text-3xl font-black text-white">Botón de arrepentimiento</h1>
+        <h1 className="text-3xl font-black text-foreground">Botón de arrepentimiento</h1>
         <p className="mt-3 text-sm text-cyber-cyan-200/80">
           De acuerdo con la Ley 24.240 de Defensa del Consumidor, tenés derecho a revocar la
           aceptación de tu compra dentro de los <strong className="text-cyber-cyan-300">10 días
@@ -20,7 +20,7 @@ export default function ArrepentimientoPage() {
 
         <div className="mt-8 space-y-6 rounded-2xl border border-cyber-purple-500/35 bg-oscuro-900/85 p-6">
           <div>
-            <h2 className="text-lg font-bold text-white">¿Cómo ejercer el arrepentimiento?</h2>
+            <h2 className="text-lg font-bold text-foreground">¿Cómo ejercer el arrepentimiento?</h2>
             <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-cyber-cyan-200/85">
               <li>Enviá un email a <strong className="text-cyber-cyan-300">arrepentimiento@aurapro.com</strong> con tu número de pedido.</li>
               <li>Indicá el producto o productos que deseás devolver.</li>
@@ -30,7 +30,7 @@ export default function ArrepentimientoPage() {
           </div>
 
           <div>
-            <h2 className="text-lg font-bold text-white">Condiciones de la devolución</h2>
+            <h2 className="text-lg font-bold text-foreground">Condiciones de la devolución</h2>
             <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-cyber-cyan-200/85">
               <li>El producto no debe haber sido usado ni presentar daños.</li>
               <li>Debe incluir factura o comprobante de compra.</li>
@@ -40,7 +40,7 @@ export default function ArrepentimientoPage() {
           </div>
 
           <div>
-            <h2 className="text-lg font-bold text-white">Excepciones</h2>
+            <h2 className="text-lg font-bold text-foreground">Excepciones</h2>
             <p className="mt-3 text-sm text-cyber-cyan-200/85">
               No aplica el derecho de arrepentimiento en productos personalizados, software
               abierto, bienes perecederos o aquellos excluidos por normativa vigente.

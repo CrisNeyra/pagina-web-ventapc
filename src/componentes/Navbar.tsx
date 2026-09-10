@@ -108,7 +108,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full shadow-[0_0_24px_rgba(168,85,247,0.18)]">
-      <div className="border-b border-cyber-purple-500/35 bg-oscuro-950/95 backdrop-blur-md">
+      <div className="border-b border-cyber-purple-500/20 bg-oscuro-900/90 shadow-sm backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-4">
           <div className="flex min-w-0 flex-1 items-center gap-4">
             <Link

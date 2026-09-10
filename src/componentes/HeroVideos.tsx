@@ -139,7 +139,7 @@ export default function HeroVideos() {
 
           <Link
             href="/productos"
-            className="mt-5 inline-block rounded-md border border-cyber-cyan-400 px-8 py-3 text-sm font-extrabold uppercase tracking-wider text-cyber-cyan-300 shadow-[0_0_20px_rgba(168,85,247,0.45)] transition-all duration-200 hover:bg-cyber-cyan-400 hover:text-oscuro-950 sm:text-base"
+            className="mt-5 inline-block rounded-md border border-cyber-cyan-400 px-8 py-3 text-sm font-extrabold uppercase tracking-wider text-cyber-cyan-300 shadow-[0_0_20px_rgba(168,85,247,0.45)] transition-all duration-200 hover:bg-cyber-cyan-400 hover:text-white sm:text-base"
           >
             VER PRODUCTOS →
           </Link>

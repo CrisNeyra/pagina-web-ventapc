@@ -124,7 +124,7 @@ export default function AdminPanel() {
   if (!user) {
     return (
       <div className="rounded-2xl border border-cyber-purple-500/35 bg-oscuro-900/85 p-6 text-center">
-        <h1 className="text-2xl font-black text-white">Panel de administración</h1>
+        <h1 className="text-2xl font-black text-foreground">Panel de administración</h1>
         <p className="mt-3 text-sm text-cyber-cyan-200/85">
           Iniciá sesión con una cuenta de administrador para continuar.
         </p>
@@ -142,7 +142,7 @@ export default function AdminPanel() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-black text-white">Panel de administración</h1>
+          <h1 className="text-2xl font-black text-foreground">Panel de administración</h1>
           <p className="mt-1 text-sm text-cyber-cyan-200/75">
             Sesión: {user.email}
           </p>
@@ -151,7 +151,7 @@ export default function AdminPanel() {
           type="button"
           onClick={() => void cargarDatos()}
           disabled={cargando}
-          className="rounded-md border border-cyber-cyan-400/55 bg-cyber-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyber-cyan-300 hover:bg-cyber-cyan-400 hover:text-oscuro-950 disabled:opacity-60"
+          className="rounded-md border border-cyber-cyan-400/55 bg-cyber-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyber-cyan-300 hover:bg-cyber-cyan-400 hover:text-white disabled:opacity-60"
         >
           {cargando ? "Actualizando..." : "Actualizar"}
         </button>
@@ -164,7 +164,7 @@ export default function AdminPanel() {
       )}
 
       <section className="rounded-2xl border border-cyber-purple-500/35 bg-oscuro-900/85 p-5">
-        <h2 className="text-lg font-bold text-white">
+        <h2 className="text-lg font-bold text-foreground">
           Pedidos pendientes ({pedidos.length})
         </h2>
         {pedidos.length === 0 ? (
@@ -181,7 +181,7 @@ export default function AdminPanel() {
                   <span className="text-cyber-cyan-200">{pedido.email ?? "—"}</span>
                   <span>{etiquetaEstadoPedido(pedido.estado)}</span>
                   <span>{etiquetaMetodoPago(pedido.metodoPago ?? undefined)}</span>
-                  <span className="font-bold text-white">
+                  <span className="font-bold text-foreground">
                     {formatearPrecio(pedido.totalPesos)}
                   </span>
                 </div>
@@ -217,7 +217,7 @@ export default function AdminPanel() {
       </section>
 
       <section className="rounded-2xl border border-cyber-purple-500/35 bg-oscuro-900/85 p-5">
-        <h2 className="text-lg font-bold text-white">
+        <h2 className="text-lg font-bold text-foreground">
           Postulaciones recibidas ({postulaciones.length})
         </h2>
         {postulaciones.length === 0 ? (
@@ -229,7 +229,7 @@ export default function AdminPanel() {
                 key={postulacion.id}
                 className="rounded-lg border border-cyber-purple-500/25 bg-oscuro-800/80 px-3 py-2 text-sm"
               >
-                <p className="font-semibold text-white">{postulacion.nombre}</p>
+                <p className="font-semibold text-foreground">{postulacion.nombre}</p>
                 <p className="text-cyber-cyan-200">{postulacion.email}</p>
                 <p className="text-cyber-cyan-200/70">{postulacion.telefono}</p>
                 {postulacion.cvNombre && (

@@ -7,7 +7,7 @@ export default function PrivacidadPage() {
   return (
     <main className="min-h-screen bg-oscuro-950">
       <section className="mx-auto max-w-3xl px-4 py-10">
-        <h1 className="text-3xl font-black text-white">Política de privacidad</h1>
+        <h1 className="text-3xl font-black text-foreground">Política de privacidad</h1>
         <div className="mt-6 space-y-4 text-sm leading-relaxed text-cyber-cyan-200/85">
           <p>
             Aura Pro respeta la Ley 25.326 de Protección de Datos Personales de Argentina.

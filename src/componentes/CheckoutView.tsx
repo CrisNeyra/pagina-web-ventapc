@@ -220,13 +220,13 @@ export default function CheckoutView() {
     return (
       <main className="min-h-screen bg-oscuro-950">
         <section className="mx-auto max-w-4xl px-4 py-8">
-          <h1 className="mb-4 text-2xl font-black text-white sm:text-3xl">Checkout</h1>
+          <h1 className="mb-4 text-2xl font-black text-foreground sm:text-3xl">Checkout</h1>
           <p className="rounded-xl border border-cyber-purple-500/35 bg-oscuro-900/85 p-4 text-sm text-cyber-cyan-200/80">
             Tu carrito está vacío. Agregá productos antes de finalizar la compra.
           </p>
           <Link
             href="/productos"
-            className="mt-4 inline-block rounded-md border border-cyber-cyan-400/55 bg-cyber-cyan-500/10 px-4 py-2 text-sm font-bold text-cyber-cyan-300 hover:bg-cyber-cyan-400 hover:text-oscuro-950"
+            className="mt-4 inline-block rounded-md border border-cyber-cyan-400/55 bg-cyber-cyan-500/10 px-4 py-2 text-sm font-bold text-cyber-cyan-300 hover:bg-cyber-cyan-400 hover:text-white"
           >
             Ver productos
           </Link>
@@ -249,13 +249,13 @@ export default function CheckoutView() {
     return (
       <main className="min-h-screen bg-oscuro-950">
         <section className="mx-auto max-w-4xl px-4 py-8">
-          <h1 className="mb-4 text-2xl font-black text-white sm:text-3xl">Checkout</h1>
+          <h1 className="mb-4 text-2xl font-black text-foreground sm:text-3xl">Checkout</h1>
           <p className="rounded-xl border border-cyber-purple-500/35 bg-oscuro-900/85 p-4 text-sm text-cyber-cyan-200/80">
             Iniciá sesión para completar tu compra de forma segura.
           </p>
           <Link
             href="/"
-            className="mt-4 inline-block rounded-md border border-cyber-cyan-400/55 bg-cyber-cyan-500/10 px-4 py-2 text-sm font-bold text-cyber-cyan-300 hover:bg-cyber-cyan-400 hover:text-oscuro-950"
+            className="mt-4 inline-block rounded-md border border-cyber-cyan-400/55 bg-cyber-cyan-500/10 px-4 py-2 text-sm font-bold text-cyber-cyan-300 hover:bg-cyber-cyan-400 hover:text-white"
           >
             Volver al inicio e iniciar sesión
           </Link>
@@ -268,7 +268,7 @@ export default function CheckoutView() {
     <main className="min-h-screen bg-oscuro-950">
       <section className="mx-auto grid max-w-5xl gap-6 px-4 py-8 lg:grid-cols-[1fr_360px]">
         <div>
-          <h1 className="mb-2 text-2xl font-black text-white sm:text-3xl">Checkout</h1>
+          <h1 className="mb-2 text-2xl font-black text-foreground sm:text-3xl">Checkout</h1>
           <p className="mb-6 text-sm text-cyber-cyan-200/75">
             Elegí cómo querés recibir y pagar tu pedido.
           </p>
@@ -298,7 +298,7 @@ export default function CheckoutView() {
                 type="button"
                 onClick={() => void confirmarPedidoOffline()}
                 disabled={confirmandoPedido || !entregaValida}
-                className="rounded-md bg-cyber-cyan-500 px-4 py-3 text-sm font-bold text-oscuro-950 hover:bg-cyber-cyan-400 disabled:opacity-60"
+                className="rounded-md bg-cyber-cyan-500 px-4 py-3 text-sm font-bold text-white hover:bg-cyber-cyan-400 disabled:opacity-60"
               >
                 {confirmandoPedido ? "Confirmando..." : "Confirmar pedido en efectivo"}
               </button>
@@ -337,7 +337,7 @@ export default function CheckoutView() {
                 type="button"
                 onClick={() => void confirmarPedidoOffline()}
                 disabled={confirmandoPedido || !entregaValida}
-                className="rounded-md bg-cyber-cyan-500 px-4 py-3 text-sm font-bold text-oscuro-950 hover:bg-cyber-cyan-400 disabled:opacity-60"
+                className="rounded-md bg-cyber-cyan-500 px-4 py-3 text-sm font-bold text-white hover:bg-cyber-cyan-400 disabled:opacity-60"
               >
                 {confirmandoPedido ? "Confirmando..." : "Confirmar pedido por transferencia"}
               </button>
@@ -353,7 +353,7 @@ export default function CheckoutView() {
                 <select
                   value={cuotas}
                   onChange={(evento) => setCuotas(Number(evento.target.value))}
-                  className="w-full rounded-md border border-cyber-purple-500/35 bg-oscuro-900 px-3 py-2 text-sm text-white"
+                  className="w-full rounded-md border border-cyber-purple-500/35 bg-oscuro-900 px-3 py-2 text-sm text-foreground"
                 >
                   {Array.from({ length: CUOTAS_MAXIMAS }, (_, indice) => indice + 1).map(
                     (cantidad) => (
@@ -422,7 +422,7 @@ export default function CheckoutView() {
         </div>
 
         <aside className="h-fit rounded-2xl border border-cyber-purple-500/35 bg-oscuro-900/85 p-5">
-          <h2 className="text-lg font-bold text-white">Resumen del pedido</h2>
+          <h2 className="text-lg font-bold text-foreground">Resumen del pedido</h2>
           <ul className="mt-4 space-y-3">
             {items.map((item) => (
               <li

@@ -100,7 +100,7 @@ export default function AuthModal({
 
   return (
     <div
-      className="fixed inset-0 z-[90] flex items-center justify-center bg-black/60 px-4"
+      className="fixed inset-0 z-[90] flex items-center justify-center bg-black/40 px-4"
       role="dialog"
       aria-modal="true"
       aria-label="Autenticación"
@@ -108,7 +108,7 @@ export default function AuthModal({
       <div className="w-full max-w-md rounded-2xl border border-cyber-purple-500/40 bg-oscuro-900 p-5 shadow-[0_0_30px_rgba(168,85,247,0.25)]">
         <div className="mb-4 flex items-start justify-between">
           <div>
-            <h3 className="text-xl font-bold text-white">
+            <h3 className="text-xl font-bold text-foreground">
               {modo === "login" ? "Iniciar sesión" : "Crear cuenta"}
             </h3>
             <p className="mt-1 text-xs text-cyber-cyan-200/80">
@@ -213,7 +213,7 @@ export default function AuthModal({
           <button
             type="submit"
             disabled={cargando}
-            className="mt-1 w-full rounded-md bg-cyber-cyan-500 px-4 py-2.5 text-sm font-bold text-oscuro-950 transition-colors hover:bg-cyber-cyan-400 disabled:cursor-not-allowed disabled:opacity-65"
+            className="mt-1 w-full rounded-md bg-cyber-cyan-500 px-4 py-2.5 text-sm font-bold text-white transition-colors hover:bg-cyber-cyan-400 disabled:cursor-not-allowed disabled:opacity-65"
           >
             {cargando
               ? "Procesando..."

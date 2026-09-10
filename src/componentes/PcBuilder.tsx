@@ -83,7 +83,7 @@ export default function PcBuilder() {
     <section className="mx-auto my-8 grid max-w-7xl gap-4 px-4 lg:grid-cols-[320px_1fr]">
       <aside className="rounded-2xl border border-cyber-purple-500/35 bg-oscuro-900/85 p-4">
         <div className="mb-3 flex items-center justify-between">
-          <h1 className="text-xl font-black text-white">Armá tu PC</h1>
+          <h1 className="text-xl font-black text-foreground">Armá tu PC</h1>
           <span className="rounded-md border border-cyber-cyan-400/40 bg-cyber-cyan-500/10 px-2 py-1 text-[11px] font-bold text-cyber-cyan-200">
             {categoriasCompletadas}/{builderCategories.length}
           </span>
@@ -175,7 +175,7 @@ export default function PcBuilder() {
             </button>
             <Link
               href="/checkout"
-              className="rounded-md bg-cyber-cyan-500 px-3 py-2 text-center text-xs font-bold uppercase tracking-wide text-oscuro-950 hover:bg-cyber-cyan-400"
+              className="rounded-md bg-cyber-cyan-500 px-3 py-2 text-center text-xs font-bold uppercase tracking-wide text-white hover:bg-cyber-cyan-400"
             >
               Siguiente paso
             </Link>
@@ -196,7 +196,7 @@ export default function PcBuilder() {
 
       <div className="rounded-2xl border border-cyber-purple-500/35 bg-oscuro-900/85 p-4">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-lg font-bold text-white">
+          <h2 className="text-lg font-bold text-foreground">
             Elegí {categoriaActivaMeta?.nombre}
           </h2>
           <p className="text-xs text-cyber-cyan-200/75">
@@ -238,7 +238,7 @@ export default function PcBuilder() {
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h3 className="line-clamp-2 text-sm font-semibold text-white">
+                    <h3 className="line-clamp-2 text-sm font-semibold text-foreground">
                       {producto.nombre}
                     </h3>
                     <p className="mt-1 line-clamp-2 text-xs text-cyber-cyan-200/75">

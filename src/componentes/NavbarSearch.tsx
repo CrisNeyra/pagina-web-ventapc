@@ -60,7 +60,7 @@ function ListaSugerencias({
               />
             </div>
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-white">{producto.nombre}</p>
+              <p className="truncate text-sm font-semibold text-foreground">{producto.nombre}</p>
               <p className="text-xs font-semibold text-cyber-cyan-300">
                 {formatearPrecio(producto.precio)}
               </p>

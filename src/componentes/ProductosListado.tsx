@@ -20,7 +20,7 @@ export default function ProductosListado({
   return (
     <main className="min-h-screen bg-oscuro-950">
       <section className="mx-auto max-w-7xl px-4 py-8">
-        <h1 className="mb-5 text-3xl font-black text-white">{titulo}</h1>
+        <h1 className="mb-5 text-3xl font-black text-foreground">{titulo}</h1>
         {productosFiltrados.length > 0 ? (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {productosFiltrados.map((producto) => (
