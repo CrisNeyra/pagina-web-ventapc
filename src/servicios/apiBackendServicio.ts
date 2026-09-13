@@ -92,28 +92,6 @@ export async function obtenerUsuarioApi(token: string) {
   return apiFetch<{ id: string; email: string; role: string }>("/auth/me", { token });
 }
 
-export async function guardarBuildPcApi(
-  token: string,
-  body: { subtotal: number; items: unknown[] }
-) {
-  return apiFetch<{ id: string }>("/pc-builds", {
-    method: "POST",
-    token,
-    body: JSON.stringify(body),
-  });
-}
-
-export async function obtenerBuildsUsuarioApi(token: string) {
-  return apiFetch<
-    {
-      id: string;
-      subtotal: number;
-      items: unknown;
-      createdAt: string;
-    }[]
-  >("/pc-builds/me", { token });
-}
-
 export async function obtenerPedidosAdminApi(token: string) {
   return apiFetch<
     {
@@ -153,10 +131,13 @@ export async function obtenerPostulacionesAdminApi(token: string) {
 }
 
 export async function obtenerCvAdminApi(token: string, postulacionId: string) {
-  const base = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ?? "http://localhost:4000/api";
-  const respuesta = await fetch(`${base}/admin/postulaciones/${postulacionId}/cv`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const { obtenerApiUrl } = await import("@/lib/api-client");
+  const respuesta = await fetch(
+    `${obtenerApiUrl()}/admin/postulaciones/${postulacionId}/cv`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    }
+  );
   if (!respuesta.ok) {
     throw new Error(`API_ERROR_${respuesta.status}`);
   }
@@ -164,8 +145,11 @@ export async function obtenerCvAdminApi(token: string, postulacionId: string) {
 }
 
 export async function enviarPostulacionApi(formData: FormData) {
-  const url = `${process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ?? "http://localhost:4000/api"}/postulaciones`;
-  const respuesta = await fetch(url, { method: "POST", body: formData });
+  const { obtenerApiUrl } = await import("@/lib/api-client");
+  const respuesta = await fetch(`${obtenerApiUrl()}/postulaciones`, {
+    method: "POST",
+    body: formData,
+  });
   if (!respuesta.ok) {
     const datos = (await respuesta.json().catch(() => ({}))) as { message?: string };
     throw new Error(datos.message ?? "ERROR_POSTULACION");

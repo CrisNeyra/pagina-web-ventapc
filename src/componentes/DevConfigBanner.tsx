@@ -10,15 +10,30 @@ export default function DevConfigBanner() {
 
     void fetch("/api/health")
       .then((r) => r.json())
-      .then((datos: { api?: boolean; apiOk?: boolean }) => {
-        const avisos: string[] = [];
-        if (!datos.api) {
-          avisos.push("Falta NEXT_PUBLIC_API_URL (API Nest).");
-        } else if (!datos.apiOk) {
-          avisos.push("NEXT_PUBLIC_API_URL configurada pero la API no responde.");
+      .then(
+        (datos: {
+          database?: boolean;
+          databaseOk?: boolean;
+          api?: boolean;
+          apiOk?: boolean;
+          mode?: string;
+        }) => {
+          const avisos: string[] = [];
+          if (!datos.database) {
+            avisos.push(
+              "Falta DATABASE_URL (Neon). Pegá la connection string en .env.local."
+            );
+          } else if (!datos.databaseOk) {
+            avisos.push(
+              "DATABASE_URL configurada pero no hay conexión a Postgres/Neon."
+            );
+          }
+          if (datos.mode === "external-nest" && datos.api && !datos.apiOk) {
+            avisos.push("NEXT_PUBLIC_API_URL apunta a Nest pero no responde.");
+          }
+          if (avisos.length > 0) setMensaje(avisos.join(" "));
         }
-        if (avisos.length > 0) setMensaje(avisos.join(" "));
-      })
+      )
       .catch(() => {});
   }, []);
 

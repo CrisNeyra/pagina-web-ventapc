@@ -59,7 +59,7 @@ export default function ProductCard({ producto }: ProductCardProps) {
   };
 
   return (
-    <article className="group rounded-xl border border-cyber-purple-500/25 bg-oscuro-900 p-4 shadow-sm transition-all duration-200 hover:border-cyber-cyan-400/80 hover:shadow-md">
+    <article className="group rounded-xl border border-cyber-purple-500/25 bg-oscuro-900 p-4 shadow-sm transition-all duration-200 hover:border-cyber-cyan-400/80 hover:shadow-[0_0_12px_rgb(74_0_224_/_0.16),0_0_1px_rgb(6_182_212_/_0.45)]">
       <Link href={`/producto/${producto.id}`} className="block">
         <div className="relative mb-4 h-44 w-full overflow-hidden rounded-xl bg-oscuro-800">
           <Image
@@ -76,14 +76,14 @@ export default function ProductCard({ producto }: ProductCardProps) {
           />
         </div>
         <div className="mb-2 flex items-center justify-between gap-2">
-          <span className="rounded-md border border-cyber-cyan-500/30 bg-cyber-cyan-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-cyber-cyan-300">
+          <span className="rounded-md border border-ink-cyan/30 bg-ink-cyan/10 px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-wide text-ink-cyan">
             {producto.categoria}
           </span>
           <span
-            className={`rounded-md px-2 py-1 text-[10px] font-bold uppercase tracking-wide ${
+            className={`rounded-md border px-2 py-1 font-mono text-[10px] font-bold uppercase tracking-wide ${
               producto.enStock
-                ? "bg-cyber-lime-400/20 text-cyber-lime-400"
-                : "bg-cyber-pink-500/20 text-cyber-pink-400"
+                ? "border-ink-lime/35 bg-ink-lime/10 text-ink-lime"
+                : "border-ink-magenta/35 bg-ink-magenta/10 text-ink-magenta"
             }`}
           >
             {producto.enStock ? "En stock" : "Sin stock"}
@@ -93,16 +93,16 @@ export default function ProductCard({ producto }: ProductCardProps) {
         <h3 className="line-clamp-2 min-h-[3rem] text-sm font-semibold text-foreground">
           {producto.nombre}
         </h3>
-        <p className="mt-1 line-clamp-2 min-h-[2.5rem] text-xs text-cyber-cyan-100/75">
+        <p className="mt-1 line-clamp-2 min-h-[2.5rem] text-xs text-muted">
           {producto.descripcion}
         </p>
 
         <div className="mt-3 flex items-end gap-2">
-          <span className="text-lg font-extrabold text-cyber-cyan-300">
+          <span className="font-mono text-lg font-extrabold text-ink-cyan">
             {formatearPrecio(producto.precio)}
           </span>
           {producto.precioAnterior && (
-            <span className="text-xs text-gray-400 line-through">
+            <span className="font-mono text-xs text-muted line-through">
               {formatearPrecio(producto.precioAnterior)}
             </span>
           )}
@@ -112,7 +112,7 @@ export default function ProductCard({ producto }: ProductCardProps) {
         type="button"
         onClick={agregarAlCarrito}
         disabled={!producto.enStock || validandoStock}
-        className="mt-3 w-full rounded-md border border-cyber-cyan-400/60 bg-cyber-cyan-500/10 px-3 py-2 text-sm font-bold text-cyber-cyan-300 transition-colors hover:bg-cyber-cyan-400 hover:text-white disabled:cursor-not-allowed disabled:border-oscuro-700 disabled:bg-oscuro-800 disabled:text-gray-500 disabled:hover:bg-oscuro-800 disabled:hover:text-gray-500"
+        className="btn-cyber-outline mt-3 w-full rounded-md px-3 py-2 text-sm disabled:hover:bg-oscuro-800 disabled:hover:text-gray-500"
       >
         {validandoStock ? "Verificando..." : producto.enStock ? "Agregar al carrito" : "Sin stock"}
       </button>

@@ -32,7 +32,7 @@ function ListaSugerencias({
 }) {
   if (sugerencias.length === 0) {
     return (
-      <p className="px-4 py-3 text-sm text-cyber-cyan-200/80">
+      <p className="px-4 py-3 text-sm text-muted">
         No se encontraron productos para &quot;{termino}&quot;.
       </p>
     );
@@ -61,7 +61,7 @@ function ListaSugerencias({
             </div>
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold text-foreground">{producto.nombre}</p>
-              <p className="text-xs font-semibold text-cyber-cyan-300">
+              <p className="font-mono text-xs font-semibold text-ink-cyan">
                 {formatearPrecio(producto.precio)}
               </p>
             </div>
@@ -93,7 +93,7 @@ export default function NavbarSearch({
   }, [terminoNormalizado]);
 
   const inputClasses =
-    "w-full rounded-md bg-oscuro-900/95 text-cyber-cyan-100 placeholder-cyber-cyan-300/60 px-4 py-2.5 pr-12 text-sm border border-cyber-purple-500/45 focus:outline-none focus:ring-2 focus:ring-cyber-cyan-500 focus:border-cyber-cyan-400 transition-all duration-200";
+    "w-full rounded-md border border-cyber-purple-500/45 bg-oscuro-900/95 px-4 py-2.5 pr-12 text-sm text-ink placeholder:text-muted focus:border-ink-cyan focus:outline-none focus:ring-2 focus:ring-ink-cyan transition-all duration-200";
 
   const manejarSubmit = (evento: React.FormEvent) => {
     evento.preventDefault();
@@ -102,7 +102,7 @@ export default function NavbarSearch({
 
   const dropdown =
     abierto && terminoNormalizado ? (
-      <div className="absolute top-full z-[70] mt-2 w-full overflow-hidden rounded-xl border border-cyber-purple-500/40 bg-oscuro-900/98 shadow-[0_0_22px_rgba(168,85,247,0.25)]">
+      <div className="glow-neon-sm absolute top-full z-[70] mt-2 w-full overflow-hidden rounded-xl border border-cyber-purple-500/40 bg-oscuro-900/98">
         <ListaSugerencias
           sugerencias={sugerencias}
           termino={terminoBusqueda.trim()}

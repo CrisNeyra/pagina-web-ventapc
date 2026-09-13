@@ -48,7 +48,7 @@ export default function AdminPanel() {
     if (!apiConfigurada() || !apiToken) {
       setError(
         !apiConfigurada()
-          ? "Configurá NEXT_PUBLIC_API_URL para el panel admin."
+          ? "Falta DATABASE_URL (Neon) para el panel admin."
           : "Debés iniciar sesión."
       );
       setCargando(false);

@@ -118,7 +118,7 @@ export default function Navbar() {
                 setMenuAbierto(false);
               }}
               aria-label="Ir al inicio"
-              className="group w-[170px] flex-shrink-0 sm:w-[188px] md:w-[208px]"
+              className="group w-[170px] flex-shrink-0 rounded-[15%] bg-white sm:w-[188px] md:w-[208px]"
               title="Ir al inicio"
             >
               <Image
@@ -127,7 +127,7 @@ export default function Navbar() {
                 width={480}
                 height={200}
                 preload
-                className="h-[70px] w-full rounded-[15%] object-contain transition-all duration-300 ease-out group-hover:z-10 group-hover:scale-110 group-hover:shadow-[0_0_28px_rgba(34,211,238,0.55)] sm:h-[76px] md:h-[83px]"
+                className="h-[70px] w-full rounded-[15%] bg-white object-contain p-1 transition-all duration-300 ease-out group-hover:z-10 group-hover:scale-110 group-hover:shadow-[0_0_28px_rgba(34,211,238,0.55)] sm:h-[76px] md:h-[83px]"
               />
             </Link>
 

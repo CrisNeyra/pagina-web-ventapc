@@ -4,7 +4,7 @@ Informe de revisión (desarrollador senior + QA) sobre Aura Pro tras el corte Ne
 
 ## Alcance
 
-Front Next.js (`src/`), API Nest (`api/`), CI y docs. No se auditaron secretos (`.env.local`).
+Front Next.js (`src/` + Route Handlers), Prisma/Neon, CI y docs. Nest en `api/` es legacy. No se auditaron secretos (`.env.local`).
 
 ## Código muerto (limpiado en el mismo commit)
 

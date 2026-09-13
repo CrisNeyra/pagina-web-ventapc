@@ -36,15 +36,16 @@ export default function TrabajaConNosotrosForm() {
 
     try {
       if (!apiConfigurada()) {
-        toast.error("Las postulaciones requieren la API Nest (NEXT_PUBLIC_API_URL).");
+        toast.error("Falta DATABASE_URL (Neon) para enviar postulaciones.");
         return;
       }
       await enviarPostulacionApi(formData);
       toast.success("¡Postulación enviada! Te contactaremos pronto.");
       formulario.reset();
       setArchivoNombre("");
-    } catch {
-      toast.error("Error de red al enviar la postulación.");
+    } catch (error) {
+      const codigo = error instanceof Error ? error.message : "";
+      toast.error(mapearError(codigo));
     } finally {
       setEnviando(false);
     }

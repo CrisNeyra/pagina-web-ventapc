@@ -1,43 +1,33 @@
-# Neon + Railway + Vercel (demo pública)
+# Neon + Vercel (stack actual)
 
-Stack único: **Next (Vercel) + Nest (Railway) + PostgreSQL (Neon)**.
+## Recomendado: Next + Prisma + Neon
 
-## 1. Neon
+Un solo deploy en **Vercel**; la base en **Neon**. No hace falta Railway ni Docker.
 
-Crear proyecto → copiar `DATABASE_URL` (con `sslmode=require`).
+Guía: [`stack-next-prisma-neon.md`](stack-next-prisma-neon.md).
 
-## 2. Railway
+### Resumen
 
-1. Deploy desde GitHub, **Root Directory** = `api`
-2. Variables mínimas:
-   - `DATABASE_URL` (Neon)
-   - `JWT_SECRET` (largo, aleatorio)
-   - `CORS_ORIGINS=https://pagina-web-ventapc.vercel.app,http://localhost:3000`
-   - `ADMIN_EMAILS=admin@aurapro.com`
-   - `NODE_ENV=production`
-3. Opcionales: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `RESEND_API_KEY`, `EMAIL_FROM`, `PUBLIC_SITE_URL`, `REDIS_URL`, MinIO/S3 (ver [`storage-cloud.md`](storage-cloud.md))
-4. Generate Domain → probar `/api/health` (`ok: true`, `services.postgres: true`)
-5. Seed corre en `npm run start:cloud` (admin `admin@aurapro.com` / `1234ab`)
+1. **Neon** — proyecto → `DATABASE_URL` (`sslmode=require`).
+2. **Local** — `.env.local` con `DATABASE_URL` + `JWT_SECRET` → `npm run db:setup` → `npm run dev`.
+3. **Vercel** — mismas vars + `NEXT_PUBLIC_SITE_URL` (+ Stripe si aplica).
 
-## 3. Vercel
+Checklist:
+
+- [ ] `GET /api/health` → `ok: true`, `mode: "next-prisma"`
+- [ ] Login / registro
+- [ ] Catálogo desde DB
+- [ ] Pedido offline / admin
+- [ ] (Opcional) Stripe con keys de test
+
+---
+
+## Legacy: Nest externo
+
+La carpeta `api/` ya no es necesaria para el flujo diario. Solo si querés forzar Nest:
 
 ```
 NEXT_PUBLIC_API_URL=https://TU-DOMINIO.up.railway.app/api
-NEXT_PUBLIC_USE_API_CATALOG=true
-NEXT_PUBLIC_SITE_URL=https://pagina-web-ventapc.vercel.app
-# Opcional
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
-NEXT_PUBLIC_SENTRY_DSN=
 ```
 
-Redeploy.
-
-## Checklist
-
-- [ ] `GET /api/health` → `ok: true`
-- [ ] Login / registro en el sitio
-- [ ] Checkout efectivo o transferencia
-- [ ] Guardar build en Armá tu PC
-- [ ] (Opcional) Emails Resend, Stripe webhook, Sentry
-
-Más detalle de seguridad: [`seguridad-api.md`](seguridad-api.md).
+Ver [`api-backend.md`](api-backend.md) y [`api/README.md`](../api/README.md).

@@ -46,7 +46,7 @@ export default function RootLayout({
       lang="es"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col bg-oscuro-950 text-cyber-cyan-100">
+      <body className="flex min-h-full flex-col bg-oscuro-950 text-ink">
         <AuthProvider>
           <DevConfigBanner />
           <Navbar />

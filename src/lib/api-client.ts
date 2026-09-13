@@ -1,8 +1,32 @@
+/**
+ * Cliente HTTP hacia el backend.
+ * Por defecto usa las Route Handlers de Next (`/api`).
+ * Solo si definís NEXT_PUBLIC_API_URL se usa una API externa (Nest legacy).
+ */
 export function obtenerApiUrl(): string {
-  return process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ?? "http://localhost:4000/api";
+  const externa = process.env.NEXT_PUBLIC_API_URL?.trim();
+  if (externa) return externa.replace(/\/$/, "");
+
+  if (typeof window !== "undefined") return "/api";
+
+  const site = process.env.NEXT_PUBLIC_SITE_URL?.trim() || process.env.VERCEL_URL?.trim();
+  if (site) {
+    const base = site.startsWith("http") ? site : `https://${site}`;
+    return `${base.replace(/\/$/, "")}/api`;
+  }
+
+  return "http://localhost:3000/api";
 }
 
+/** True si hay backend usable: Next+Prisma (DATABASE_URL) o Nest externo. */
 export function apiConfigurada(): boolean {
+  return (
+    Boolean(process.env.DATABASE_URL?.trim()) ||
+    Boolean(process.env.NEXT_PUBLIC_API_URL?.trim())
+  );
+}
+
+export function usaApiExterna(): boolean {
   return Boolean(process.env.NEXT_PUBLIC_API_URL?.trim());
 }
 
@@ -49,11 +73,11 @@ export async function apiFetch<T>(
     return respuesta.json() as Promise<T>;
   } catch (error) {
     if (error instanceof Error && error.name === "AbortError") {
-      throw new Error("La API no respondió a tiempo. Verificá que Nest esté en marcha.");
+      throw new Error("La API no respondió a tiempo. Verificá DATABASE_URL / el servidor.");
     }
     if (error instanceof TypeError) {
       throw new Error(
-        "No se pudo conectar con la API. Revisá NEXT_PUBLIC_API_URL y que Nest esté arriba."
+        "No se pudo conectar con la API. Revisá DATABASE_URL (Neon) o NEXT_PUBLIC_API_URL."
       );
     }
     throw error;

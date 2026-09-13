@@ -38,7 +38,7 @@ export function validarDatosEntrega(datos: DatosEntrega): { ok: true } | { ok: f
 export async function cotizarEnvio(codigoPostal?: string): Promise<number> {
   if (!codigoPostal?.trim()) return COSTO_ENVIO_PESOS;
 
-  if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_API_URL) {
+  if (typeof window !== "undefined") {
     try {
       const { cotizarEnvioApi } = await import("@/servicios/apiBackendServicio");
       const cotizacion = await cotizarEnvioApi(codigoPostal);

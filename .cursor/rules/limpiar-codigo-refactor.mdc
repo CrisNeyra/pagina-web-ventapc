@@ -1,0 +1,16 @@
+---
+description: Recomendar siempre limpiar código no usado y refactorizar solo si hace falta
+alwaysApply: true
+---
+
+# Limpieza y refactor
+
+Recomendar siempre limpiar códigos que no se utilicen y refactorizar, en el caso que sea necesario.
+
+Al terminar cambios o reviews:
+- Señalar código/archivos/imports/env sin uso
+- Proponer borrado o refactor concreto (paths)
+- No refactor masivo sin necesidad real
+- Con Nest legacy (`api/`): no eliminar lo que aún usa pedidos/Stripe/admin
+
+Detalle: `.cursor/skills/limpiar-y-refactorizar/SKILL.md`

@@ -114,7 +114,7 @@ export default function HeroVideos() {
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(236,72,153,0.14)_0%,_transparent_55%)]" />
 
         <div className="relative w-full max-w-[420px]">
-          <p className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.3em] text-cyber-cyan-400 sm:text-sm">
+          <p className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.3em] text-ink-cyan sm:text-sm">
             <FiZap
               className="shrink-0 text-cyber-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.9)]"
               size={13}
@@ -122,8 +122,8 @@ export default function HeroVideos() {
             ELECTROSALE
           </p>
 
-          <h2 className="text-3xl font-black uppercase leading-[1.04] text-white sm:text-4xl md:text-5xl lg:text-6xl xl:text-[4.2rem]">
-            <span className="mb-0.5 inline-block bg-gradient-to-r from-cyber-purple-300 via-cyber-pink-500 to-cyber-purple-400 bg-clip-text text-transparent">
+          <h2 className="text-3xl font-black uppercase leading-[1.04] text-ink sm:text-4xl md:text-5xl lg:text-6xl xl:text-[4.2rem]">
+            <span className="mb-0.5 inline-block bg-gradient-to-r from-[#4A00E0] via-[#9D174D] to-[#6D28D9] bg-clip-text text-transparent">
               POTENCIÁ
             </span>{" "}
             TU
@@ -133,13 +133,13 @@ export default function HeroVideos() {
             JUGAR.
           </h2>
 
-          <p className="mt-3 text-sm font-semibold uppercase tracking-wide text-cyber-cyan-200 sm:text-base">
+          <p className="mt-3 text-sm font-semibold uppercase tracking-wide text-ink-violet sm:text-base">
             SUBÍ DE NIVEL TUS PERIFÉRICOS.
           </p>
 
           <Link
             href="/productos"
-            className="mt-5 inline-block rounded-md border border-cyber-cyan-400 px-8 py-3 text-sm font-extrabold uppercase tracking-wider text-cyber-cyan-300 shadow-[0_0_20px_rgba(168,85,247,0.45)] transition-all duration-200 hover:bg-cyber-cyan-400 hover:text-white sm:text-base"
+            className="btn-cyber-outline glow-neon-sm mt-5 inline-block rounded-md px-8 py-3 text-sm font-extrabold uppercase tracking-wider sm:text-base"
           >
             VER PRODUCTOS →
           </Link>

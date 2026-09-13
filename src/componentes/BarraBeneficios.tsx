@@ -42,7 +42,7 @@ export default function BarraBeneficios() {
               <span className="text-oro-400 flex-shrink-0">{b.icono}</span>
               <div className="w-full">
                 <h3 className="text-sm font-bold text-foreground">{b.titulo}</h3>
-                <p className="text-xs text-azul-400">{b.detalle}</p>
+                <p className="text-xs text-muted">{b.detalle}</p>
 
                 {indice === 0 && (
                   <div className="mt-3 flex flex-wrap items-center gap-2">

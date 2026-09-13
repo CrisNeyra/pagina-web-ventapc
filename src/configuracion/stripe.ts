@@ -3,9 +3,7 @@ export function obtenerStripePublishableKey(): string | null {
   return key || null;
 }
 
-/** Stripe Elements + API Nest (`NEXT_PUBLIC_API_URL`). */
+/** Stripe Elements + Route Handlers de Next (`/api/payments/stripe/*`). */
 export function pagosConfigurados(): boolean {
-  return Boolean(
-    obtenerStripePublishableKey() && process.env.NEXT_PUBLIC_API_URL?.trim()
-  );
+  return Boolean(obtenerStripePublishableKey());
 }

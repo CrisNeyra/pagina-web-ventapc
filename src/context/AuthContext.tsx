@@ -123,7 +123,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = useCallback(async (email: string, password: string) => {
     if (!apiConfigurada()) {
-      return "La API no está configurada (NEXT_PUBLIC_API_URL).";
+      return "Falta DATABASE_URL (Neon) en el entorno.";
     }
     try {
       const resultado = await loginUsuarioApi(email, password);
@@ -139,7 +139,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = useCallback(async (email: string, password: string) => {
     if (!apiConfigurada()) {
-      return "La API no está configurada (NEXT_PUBLIC_API_URL).";
+      return "Falta DATABASE_URL (Neon) en el entorno.";
     }
     try {
       const resultado = await registrarUsuarioApi(email, password);

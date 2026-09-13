@@ -197,7 +197,7 @@ export default function ProductDetailView({ producto }: ProductDetailViewProps) 
             />
           </div>
 
-          <p className="text-xs font-semibold uppercase tracking-wide text-cyber-cyan-300/85">
+          <p className="text-xs font-semibold uppercase tracking-wide text-ink-cyan">
             Nuevo · {producto.categoria}
           </p>
           <h1 className="mt-1 text-2xl font-bold leading-tight text-foreground md:text-3xl">
@@ -206,16 +206,16 @@ export default function ProductDetailView({ producto }: ProductDetailViewProps) 
 
           <div className="mt-4">
             {descuento !== null && producto.precioAnterior && (
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-muted">
                 <span className="line-through">{formatearPrecio(producto.precioAnterior)}</span>
-                <span className="ml-2 font-bold text-cyber-lime-400">-{descuento}%</span>
+                <span className="ml-2 font-mono font-bold text-ink-lime">-{descuento}%</span>
               </p>
             )}
-            <p className="text-4xl font-black text-cyber-cyan-300">{formatearPrecio(producto.precio)}</p>
-            <p className="mt-1 text-sm text-cyber-cyan-100/85">
+            <p className="font-mono text-4xl font-black text-ink-cyan">{formatearPrecio(producto.precio)}</p>
+            <p className="mt-1 text-sm text-ink/80">
               {CUOTAS_DESTACADAS} cuotas de {formatearPrecio(cuotaDestacada)} sin interés
             </p>
-            <p className="mt-1 text-xs text-cyber-lime-400/90">
+            <p className="mt-1 font-mono text-xs text-ink-lime">
               10% off con transferencia ({formatearPrecio(producto.precio - ahorroTransferencia)})
             </p>
           </div>
@@ -301,9 +301,9 @@ export default function ProductDetailView({ producto }: ProductDetailViewProps) 
 
             <div className="mt-5 space-y-3 text-sm text-cyber-cyan-100/90">
               <p className="flex items-start gap-2">
-                <FiTruck className="mt-0.5 shrink-0 text-cyber-lime-400" />
+                <FiTruck className="mt-0.5 shrink-0 text-ink-lime" />
                 <span>
-                  <strong className="text-cyber-lime-400">Envíos a todo el país</strong>
+                  <strong className="text-ink-lime">Envíos a todo el país</strong>
                   <span className="block text-xs text-cyber-cyan-200/70">
                     24 a 96 horas hábiles según zona
                   </span>
@@ -319,7 +319,7 @@ export default function ProductDetailView({ producto }: ProductDetailViewProps) 
                 </span>
               </p>
               <p className="flex items-center gap-2">
-                <FiCheck className={producto.enStock ? "text-cyber-lime-400" : "text-cyber-pink-400"} />
+                <FiCheck className={producto.enStock ? "text-ink-lime" : "text-ink-magenta"} />
                 {producto.enStock
                   ? typeof producto.stock === "number"
                     ? `Stock disponible (${producto.stock} unidades)`
@@ -354,7 +354,7 @@ export default function ProductDetailView({ producto }: ProductDetailViewProps) 
               type="button"
               disabled={!producto.enStock || procesando}
               onClick={() => void agregar(true)}
-              className="mt-4 w-full rounded-md bg-cyber-cyan-500 px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-cyber-cyan-400 disabled:cursor-not-allowed disabled:opacity-50"
+              className="mt-4 w-full rounded-md bg-ink-cyan px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-ink-violet disabled:cursor-not-allowed disabled:opacity-50"
             >
               {procesando ? "Procesando..." : "Comprar ahora"}
             </button>
@@ -362,12 +362,12 @@ export default function ProductDetailView({ producto }: ProductDetailViewProps) 
               type="button"
               disabled={!producto.enStock || procesando}
               onClick={() => void agregar(false)}
-              className="mt-2 w-full rounded-md border border-cyber-cyan-400/70 bg-cyber-cyan-500/10 px-4 py-3 text-sm font-bold text-cyber-cyan-300 transition-colors hover:bg-cyber-cyan-400 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+              className="btn-cyber-outline mt-2 w-full rounded-md px-4 py-3 text-sm disabled:opacity-50"
             >
               Agregar al carrito
             </button>
 
-            <p className="mt-4 text-[11px] text-cyber-cyan-200/55">SKU: {producto.sku}</p>
+            <p className="mt-4 font-mono text-[11px] text-muted">SKU: {producto.sku}</p>
           </div>
         </aside>
       </div>

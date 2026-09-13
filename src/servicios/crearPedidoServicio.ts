@@ -34,7 +34,7 @@ export async function crearPedidoOffline(
     if (!pedidosApiConfigurados()) {
       return {
         ok: false,
-        mensaje: "Pedidos requieren NEXT_PUBLIC_API_URL (API Nest).",
+        mensaje: "Pedidos requieren DATABASE_URL (Neon) en el entorno.",
       };
     }
 

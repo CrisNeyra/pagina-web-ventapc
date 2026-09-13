@@ -10,7 +10,7 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (!process.env.NEXT_PUBLIC_API_URL?.trim()) {
+  if (!process.env.NEXT_PUBLIC_API_URL?.trim() && !process.env.DATABASE_URL?.trim()) {
     return NextResponse.next();
   }
 

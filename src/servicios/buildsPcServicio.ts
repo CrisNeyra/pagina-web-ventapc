@@ -43,7 +43,7 @@ export async function guardarBuildConReintentos(
   if (!apiConfigurada()) {
     return {
       ok: false,
-      mensaje: "Configurá NEXT_PUBLIC_API_URL para guardar builds en la API.",
+      mensaje: "Falta DATABASE_URL (Neon) para guardar builds en la API.",
     };
   }
 

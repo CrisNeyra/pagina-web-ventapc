@@ -73,7 +73,7 @@ export async function crearPaymentIntent(
     return {
       ok: false,
       mensaje:
-        "Pagos no configurados. Definí NEXT_PUBLIC_API_URL y NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY.",
+        "Pagos no configurados. Definí DATABASE_URL (Neon) y NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY.",
     };
   }
 

@@ -1,8 +1,9 @@
 import { test, expect } from "@playwright/test";
 
 /**
- * Flujos Nest vía API (login, pedido offline, guardar build).
- * Requiere NEXT_PUBLIC_API_URL apuntando a Nest en marcha (o se skippea).
+ * Flujos legacy Nest vía API externa (login, pedido offline, guardar build).
+ * Requiere NEXT_PUBLIC_API_URL apuntando a Nest en marcha; si no, se skippea.
+ * El flujo diario ya cubre esto con Route Handlers de Next (/api).
  */
 const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api").replace(
   /\/$/,

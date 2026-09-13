@@ -2,9 +2,10 @@
 
 :root {
   --background: #f4f1fa;
-  --foreground: #1a1028;
+  --foreground: #1a0033;
   --surface-aura-1: rgba(255, 255, 255, 0.92);
   --surface-aura-2: rgba(250, 248, 252, 0.96);
+  --focus-ring: #007a8c;
 }
 
 @theme inline {
@@ -13,7 +14,15 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
-  /* Azul eléctrico (acento) */
+  /* Texto semántico Light Cyberpunk (WCAG AA/AAA sobre blanco) */
+  --color-ink: #1a0033;
+  --color-ink-violet: #4a00e0;
+  --color-ink-cyan: #007a8c;
+  --color-ink-magenta: #9d174d;
+  --color-ink-lime: #3f6212;
+  --color-muted: #5b4a6e;
+
+  /* Azul eléctrico (acento cromático / fills) */
   --color-azul-50:  #ecfeff;
   --color-azul-100: #cffafe;
   --color-azul-200: #a5f3fc;
@@ -45,24 +54,24 @@
   --color-cyber-pink-400: #db2777;
   --color-cyber-pink-500: #ec4899;
 
-  /* 100/200 = texto sobre fondo claro; 300+ = neon */
-  --color-cyber-cyan-100: #2e1065;
-  --color-cyber-cyan-200: #4c1d95;
-  --color-cyber-cyan-300: #0891b2;
+  /* 100/200 = texto sobre fondo claro; 300 = texto acento AA; 400+ = neon cromo */
+  --color-cyber-cyan-100: #1a0033;
+  --color-cyber-cyan-200: #4a00e0;
+  --color-cyber-cyan-300: #007a8c;
   --color-cyber-cyan-400: #06b6d4;
-  --color-cyber-cyan-500: #0891b2;
+  --color-cyber-cyan-500: #007a8c;
 
-  --color-cyber-lime-400: #65a30d;
+  --color-cyber-lime-400: #3f6212;
   --color-cyber-yellow-400: #ca8a04;
 }
 
 body {
   background:
-    radial-gradient(circle at 18% 8%, rgba(168, 85, 247, 0.14), transparent 40%),
-    radial-gradient(circle at 85% 12%, rgba(6, 182, 212, 0.12), transparent 36%),
+    radial-gradient(circle at 18% 8%, rgba(74, 0, 224, 0.1), transparent 40%),
+    radial-gradient(circle at 85% 12%, rgba(0, 122, 140, 0.1), transparent 36%),
     var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
 .scrollbar-hide {
@@ -78,8 +87,85 @@ body {
 }
 
 :focus-visible {
-  outline: 2px solid #06b6d4;
+  outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
+}
+
+/* Navbar: peso 700 + underline neón visible sobre fondo claro */
+.nav-link-cyber {
+  position: relative;
+  font-weight: 700;
+  color: var(--color-ink);
+  transition: color 200ms ease, background-color 200ms ease;
+}
+
+.nav-link-cyber::after {
+  content: "";
+  position: absolute;
+  right: 1.25rem;
+  bottom: 0.35rem;
+  left: 1.25rem;
+  height: 2px;
+  transform: scaleX(0);
+  transform-origin: left;
+  background: linear-gradient(90deg, #06b6d4, #ec4899);
+  box-shadow: 0 0 8px rgba(6, 182, 212, 0.7);
+  transition: transform 200ms ease;
+}
+
+.nav-link-cyber:hover,
+.nav-link-cyber:focus-visible {
+  color: var(--color-ink-violet);
+  background-color: rgb(124 58 237 / 0.1);
+}
+
+.nav-link-cyber:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.nav-link-cyber:hover::after,
+.nav-link-cyber:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.nav-action-cyber {
+  font-weight: 700;
+  color: var(--color-ink);
+  transition: color 200ms ease;
+}
+
+.nav-action-cyber:hover,
+.nav-action-cyber:focus-visible {
+  color: var(--color-ink-violet);
+}
+
+.glow-neon-sm {
+  box-shadow:
+    0 0 12px rgb(74 0 224 / 0.16),
+    0 0 1px rgb(6 182 212 / 0.45);
+}
+
+.btn-cyber-outline {
+  border: 2px solid var(--color-ink-cyan);
+  background-color: rgb(0 122 140 / 0.08);
+  font-weight: 700;
+  color: var(--color-ink-cyan);
+  transition: background-color 200ms ease, color 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+}
+
+.btn-cyber-outline:hover:not(:disabled) {
+  border-color: var(--color-ink-cyan);
+  background-color: var(--color-ink-cyan);
+  color: #ffffff;
+  box-shadow: 0 0 16px rgb(0 122 140 / 0.35);
+}
+
+.btn-cyber-outline:disabled {
+  cursor: not-allowed;
+  border-color: var(--color-oscuro-700);
+  background-color: var(--color-oscuro-800);
+  color: #6b7280;
 }
 
 @media (prefers-reduced-motion: reduce) {

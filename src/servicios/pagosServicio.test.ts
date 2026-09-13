@@ -40,7 +40,7 @@ describe("crearPaymentIntent", () => {
     expect(crearPaymentIntentEnApi).not.toHaveBeenCalled();
   });
 
-  it("crea payment intent vía Nest", async () => {
+  it("crea payment intent vía API", async () => {
     const resultado = await crearPaymentIntent(
       [{ id: "gpu-001", precio: 100000, cantidad: 1 }],
       "token-test"

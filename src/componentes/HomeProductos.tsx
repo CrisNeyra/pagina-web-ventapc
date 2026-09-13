@@ -102,7 +102,7 @@ export default function HomeProductos({
               <button
                 type="button"
                 onClick={() => setMostrarTodosProductos((previo) => !previo)}
-                className="rounded-md border border-cyber-cyan-400/60 bg-cyber-cyan-500/10 px-6 py-2 text-sm font-bold text-cyber-cyan-300 transition-colors hover:bg-cyber-cyan-400 hover:text-white"
+                className="btn-cyber-outline rounded-md px-6 py-2 text-sm"
               >
                 {mostrarTodosProductos ? "Ver menos" : "Ver más"}
               </button>

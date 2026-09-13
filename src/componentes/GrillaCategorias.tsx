@@ -16,20 +16,18 @@ export default function GrillaCategorias() {
       <div className="max-w-7xl mx-auto px-4">
         {/* Encabezado */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl md:text-2xl text-gray-400">
+          <h2 className="text-xl text-muted md:text-2xl">
             Explorá nuestras <span className="font-bold text-foreground">categorías</span>
           </h2>
           <div className="flex gap-2">
             <button
-              className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-azul-500 
-                         text-azul-500 hover:bg-azul-500 hover:text-white transition-all duration-200"
+              className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-ink-cyan text-ink-cyan transition-all duration-200 hover:bg-ink-cyan hover:text-white"
               aria-label="Anterior"
             >
               <FiChevronLeft size={18} />
             </button>
             <button
-              className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-azul-500 
-                         text-azul-500 hover:bg-azul-500 hover:text-white transition-all duration-200"
+              className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-ink-cyan text-ink-cyan transition-all duration-200 hover:bg-ink-cyan hover:text-white"
               aria-label="Siguiente"
             >
               <FiChevronRight size={18} />
@@ -55,7 +53,7 @@ export default function GrillaCategorias() {
               }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-            <span className="absolute bottom-3 left-3 right-3 text-white font-bold text-sm uppercase tracking-wide text-center">
+            <span className="absolute inset-x-0 bottom-0 bg-ink/80 px-3 py-2 text-center text-sm font-bold uppercase tracking-wide text-white">
               {categoriaGrande.nombre}
             </span>
           </Link>
@@ -78,7 +76,7 @@ export default function GrillaCategorias() {
                 }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-              <span className="absolute bottom-3 left-3 right-3 text-white font-bold text-xs uppercase tracking-wide text-center">
+              <span className="absolute inset-x-0 bottom-0 bg-ink/80 px-3 py-2 text-center text-xs font-bold uppercase tracking-wide text-white">
                 {cat.nombre}
               </span>
             </Link>

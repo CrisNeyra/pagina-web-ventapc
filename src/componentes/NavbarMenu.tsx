@@ -31,7 +31,7 @@ export default function NavbarMenu({
               <li key={enlace.href}>
                 <Link
                   href={enlace.href}
-                  className="block whitespace-nowrap px-8 py-3 text-sm font-medium text-cyber-cyan-200/80 transition-all duration-200 hover:bg-cyber-purple-500/10 hover:text-cyber-cyan-100"
+                  className="nav-link-cyber block whitespace-nowrap px-8 py-3 text-sm"
                 >
                   {enlace.nombre}
                 </Link>
@@ -49,7 +49,7 @@ export default function NavbarMenu({
                 <Link
                   href={enlace.href}
                   onClick={onCerrarMenu}
-                  className="block px-6 py-3 text-sm text-cyber-cyan-200/80 transition-colors duration-200 hover:bg-cyber-purple-500/10 hover:text-cyber-cyan-100"
+                  className="nav-link-cyber block px-6 py-3 text-sm"
                 >
                   {enlace.nombre}
                 </Link>
@@ -60,7 +60,7 @@ export default function NavbarMenu({
                 <Link
                   href="/usuario"
                   onClick={onCerrarMenu}
-                  className="flex w-full items-center gap-2 px-6 py-3 text-sm text-cyber-cyan-200/80 hover:text-cyber-cyan-100"
+                  className="nav-action-cyber flex w-full items-center gap-2 px-6 py-3 text-sm"
                 >
                   <FiUser size={18} />
                   Usuario
@@ -71,7 +71,7 @@ export default function NavbarMenu({
                     onCerrarMenu();
                     onAbrirAuth();
                   }}
-                  className="flex w-full items-center gap-2 px-6 py-3 text-sm text-cyber-cyan-200/80 hover:text-cyber-cyan-100"
+                  className="nav-action-cyber flex w-full items-center gap-2 px-6 py-3 text-sm"
                 >
                   <FiUser size={18} />
                   Usuario
@@ -84,7 +84,7 @@ export default function NavbarMenu({
                   onCerrarMenu();
                   onAbrirCarrito();
                 }}
-                className="flex w-full items-center gap-2 px-6 py-3 text-sm text-cyber-cyan-200/80 hover:text-cyber-cyan-100"
+                className="nav-action-cyber flex w-full items-center gap-2 px-6 py-3 text-sm"
               >
                 <FiShoppingCart size={18} />
                 Carrito
@@ -97,7 +97,7 @@ export default function NavbarMenu({
                     onCerrarMenu();
                     onCerrarSesion();
                   }}
-                  className="flex w-full items-center gap-2 px-6 py-3 text-sm text-cyber-cyan-200/80 hover:text-cyber-cyan-100"
+                  className="nav-action-cyber flex w-full items-center gap-2 px-6 py-3 text-sm"
                 >
                   <FiLogOut size={18} />
                   Salir

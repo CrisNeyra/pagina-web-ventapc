@@ -1,6 +1,8 @@
-# Docker local — Aura Pro
+# Docker local — Aura Pro (LEGACY / opcional)
 
-Guía paso a paso para levantar PostgreSQL, Redis, MinIO y la API NestJS en Windows.
+Docker es **opcional**. El flujo diario recomendado es **Next + Prisma + Neon** (sin Docker ni Nest): ver [`stack-next-prisma-neon.md`](stack-next-prisma-neon.md) y `.env.local.example`.
+
+Usá esta guía solo si querés debuggear Nest (`api/`) o Postgres local.
 
 ## Requisitos
 
@@ -70,12 +72,14 @@ curl http://localhost:4000/api/products
 
 ## 5. Conectar el frontend
 
-En `.env.local` (raíz):
+En `.env.local` (raíz), modo Docker:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:4000/api
 NEXT_PUBLIC_USE_API_CATALOG=true
 ```
+
+Para desarrollar **sin** Docker, comentá esas líneas y usá la URL de Railway (`https://….up.railway.app/api`). En Railway, `CORS_ORIGINS` debe incluir `http://localhost:3000`.
 
 ```powershell
 cd "D:\Devs\Pagina web ventaPC"

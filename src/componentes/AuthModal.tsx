@@ -47,7 +47,7 @@ export default function AuthModal({
     resetMensajes();
 
     if (!configured) {
-      setError("Falta configurar la API. Definí NEXT_PUBLIC_API_URL en .env.local.");
+      setError("Falta configurar la base. Definí DATABASE_URL (Neon) en .env.local.");
       return;
     }
 
