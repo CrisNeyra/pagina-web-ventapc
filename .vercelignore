@@ -1,0 +1,11 @@
+# Solo Nest legacy en la raíz (NO src/app/api de Next)
+/api
+
+# Artefactos locales
+.env
+.env.local
+uploads
+.next
+coverage
+playwright-report
+test-results

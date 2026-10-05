@@ -1,8 +1,14 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
-  // bcrypt / Prisma nativos en Route Handlers (Vercel Node runtime)
-  serverExternalPackages: ["bcrypt", "@prisma/client", "prisma"],
+  serverExternalPackages: ["@prisma/client", "prisma"],
 };
 
-export default nextConfig;
+const sentryAuth = Boolean(process.env.SENTRY_AUTH_TOKEN?.trim());
+
+export default withSentryConfig(nextConfig, {
+  silent: true,
+  sourcemaps: { disable: !sentryAuth },
+  widenClientFileUpload: sentryAuth,
+});

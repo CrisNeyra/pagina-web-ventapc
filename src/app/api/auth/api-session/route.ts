@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { AURA_TOKEN_COOKIE } from "@/tipos/auth-user";
-
-const MAX_AGE_SEGUNDOS = 60 * 60 * 24 * 7;
+import { opcionesCookieAuth } from "@/lib/auth-cookie";
+import { verificarToken } from "@/lib/auth-server";
 
 /** Guarda el JWT Nest en cookie httpOnly para el proxy. */
 export async function POST(request: NextRequest) {
@@ -11,16 +11,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "MISSING_TOKEN" }, { status: 400 });
     }
 
+    const payload = await verificarToken(token);
+    if (!payload) {
+      return NextResponse.json({ error: "TOKEN_INVALIDO" }, { status: 401 });
+    }
+
     const response = NextResponse.json({ ok: true });
-    response.cookies.set({
-      name: AURA_TOKEN_COOKIE,
-      value: token,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: MAX_AGE_SEGUNDOS,
-    });
+    response.cookies.set(opcionesCookieAuth(token));
     return response;
   } catch {
     return NextResponse.json({ error: "INVALID_BODY" }, { status: 400 });

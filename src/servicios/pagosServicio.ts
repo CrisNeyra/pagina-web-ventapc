@@ -1,5 +1,4 @@
-import { preciosCatalogo } from "@/datos/preciosCatalogo";
-import { validarItemsContraCatalogo } from "@/lib/validarItemsPago";
+import { validarItemsPagoBasicos } from "@/lib/validarItemsPago";
 import type { DatosEntrega } from "@/lib/entrega";
 import { apiConfigurada } from "@/lib/api-client";
 import { crearPaymentIntentEnApi } from "@/servicios/apiBackendServicio";
@@ -61,12 +60,8 @@ export async function crearPaymentIntent(
     return { ok: false, mensaje: "El carrito está vacío." };
   }
 
-  const validacionCatalogo = validarItemsContraCatalogo(items, preciosCatalogo);
-  if (!validacionCatalogo.ok) {
-    return {
-      ok: false,
-      mensaje: mapearErrorHttp(400, validacionCatalogo.error),
-    };
+  if (!validarItemsPagoBasicos(items)) {
+    return { ok: false, mensaje: "El carrito contiene productos inválidos." };
   }
 
   if (!apiConfigurada()) {

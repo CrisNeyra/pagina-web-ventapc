@@ -59,8 +59,8 @@ export default function ProductCard({ producto }: ProductCardProps) {
   };
 
   return (
-    <article className="group rounded-xl border border-cyber-purple-500/25 bg-oscuro-900 p-4 shadow-sm transition-all duration-200 hover:border-cyber-cyan-400/80 hover:shadow-[0_0_12px_rgb(74_0_224_/_0.16),0_0_1px_rgb(6_182_212_/_0.45)]">
-      <Link href={`/producto/${producto.id}`} className="block">
+    <article className="group flex h-full flex-col rounded-xl border border-cyber-purple-500/25 bg-oscuro-900 p-4 shadow-sm transition-all duration-200 hover:border-cyber-cyan-400/80 hover:shadow-[0_0_12px_rgb(74_0_224_/_0.16),0_0_1px_rgb(6_182_212_/_0.45)]">
+      <Link href={`/producto/${producto.id}`} className="block min-h-0 flex-1">
         <div className="relative mb-4 h-44 w-full overflow-hidden rounded-xl bg-oscuro-800">
           <Image
             src={imagenActual}
@@ -112,7 +112,8 @@ export default function ProductCard({ producto }: ProductCardProps) {
         type="button"
         onClick={agregarAlCarrito}
         disabled={!producto.enStock || validandoStock}
-        className="btn-cyber-outline mt-3 w-full rounded-md px-3 py-2 text-sm disabled:hover:bg-oscuro-800 disabled:hover:text-gray-500"
+        aria-busy={validandoStock}
+        className="btn-cyber-outline mt-3 w-full rounded-md px-3 py-2.5 text-sm disabled:hover:bg-oscuro-800 disabled:hover:text-gray-500"
       >
         {validandoStock ? "Verificando..." : producto.enStock ? "Agregar al carrito" : "Sin stock"}
       </button>

@@ -188,6 +188,42 @@ export async function crearPedidoOffline(opciones: {
   }
 }
 
+const RESERVA_EFECTIVO_MS = 48 * 60 * 60 * 1000;
+
+/** Devuelve stock de pedidos en efectivo que superaron las 48 h sin retiro. */
+export async function liberarReservasEfectivoVencidas(ahora = new Date()) {
+  const limite = new Date(ahora.getTime() - RESERVA_EFECTIVO_MS);
+  const vencidos = await prisma.order.findMany({
+    where: {
+      estado: OrderStatus.pending_cash,
+      createdAt: { lt: limite },
+    },
+    include: { items: true },
+  });
+
+  let liberados = 0;
+  for (const pedido of vencidos) {
+    await prisma.$transaction(async (tx) => {
+      const actual = await tx.order.findUnique({ where: { id: pedido.id } });
+      if (!actual || actual.estado !== OrderStatus.pending_cash) return;
+      await restaurarStock(
+        tx,
+        pedido.items.map((item) => ({
+          productId: item.productId,
+          cantidad: item.cantidad,
+        }))
+      );
+      await tx.order.update({
+        where: { id: pedido.id },
+        data: { estado: OrderStatus.cancelled },
+      });
+    });
+    liberados += 1;
+  }
+
+  return { liberados };
+}
+
 export async function listarPedidosUsuario(userId: string) {
   const pedidos = await prisma.order.findMany({
     where: { userId },

@@ -81,10 +81,14 @@ export async function registrarUsuarioApi(email: string, password: string) {
   );
 }
 
-export async function loginUsuarioApi(email: string, password: string) {
+export async function loginUsuarioApi(
+  email: string,
+  password: string,
+  recordarme = false
+) {
   return apiFetch<{ token: string; user: { id: string; email: string; role: string } }>(
     "/auth/login",
-    { method: "POST", body: JSON.stringify({ email, password }) }
+    { method: "POST", body: JSON.stringify({ email, password, recordarme }) }
   );
 }
 

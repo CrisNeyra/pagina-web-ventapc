@@ -67,7 +67,7 @@ interface AuthContextValue {
   user: AuthUser | null;
   loading: boolean;
   configured: boolean;
-  signIn: (email: string, password: string) => Promise<string | null>;
+  signIn: (email: string, password: string, recordarme?: boolean) => Promise<string | null>;
   signUp: (email: string, password: string) => Promise<string | null>;
   signOut: () => Promise<string | null>;
 }
@@ -75,9 +75,14 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const configured = apiConfigurada();
+  const [apiEnCliente, setApiEnCliente] = useState(false);
+  const configured = apiConfigurada() || apiEnCliente;
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [loading, setLoading] = useState(configured);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setApiEnCliente(true);
+  }, []);
 
   useEffect(() => {
     let cancelado = false;
@@ -91,7 +96,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      const token = obtenerApiToken();
+      let token = obtenerApiToken();
+      if (!token) {
+        try {
+          const espejo = await fetch("/api/auth/client-token", { credentials: "include" });
+          if (espejo.ok) {
+            const datos = (await espejo.json()) as { token?: string };
+            if (datos.token) {
+              guardarApiToken(datos.token);
+              token = datos.token;
+            }
+          }
+        } catch {
+          token = null;
+        }
+      }
+
       if (!token) {
         if (!cancelado) {
           setUser(null);
@@ -121,12 +141,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, [configured]);
 
-  const signIn = useCallback(async (email: string, password: string) => {
-    if (!apiConfigurada()) {
-      return "Falta DATABASE_URL (Neon) en el entorno.";
-    }
+  const signIn = useCallback(async (email: string, password: string, recordarme = false) => {
     try {
-      const resultado = await loginUsuarioApi(email, password);
+      const resultado = await loginUsuarioApi(email, password, recordarme);
       guardarApiToken(resultado.token);
       await sincronizarCookieJwt(resultado.token);
       setUser(mapearUsuarioNest(resultado.user));
@@ -138,9 +155,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signUp = useCallback(async (email: string, password: string) => {
-    if (!apiConfigurada()) {
-      return "Falta DATABASE_URL (Neon) en el entorno.";
-    }
     try {
       const resultado = await registrarUsuarioApi(email, password);
       guardarApiToken(resultado.token);

@@ -26,7 +26,7 @@ test.describe("API Nest: login + checkout offline + PC build", () => {
     test.skip(!(await apiDisponible(request)), "API Nest no disponible en " + API_URL);
 
     const email = `e2e_${Date.now()}@aurapro.test`;
-    const password = "1234ab";
+    const password = "AuraPro2026x";
 
     const registro = await request.post(`${API_URL}/auth/register`, {
       data: { email, password },

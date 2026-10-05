@@ -18,8 +18,8 @@ export default function PaginaError({ error, reset }: PaginaErrorProps) {
           Ocurrió un problema al cargar la página
         </h1>
         <p className="mt-3 text-sm text-cyber-cyan-200/85">
-          Reintenta la operacion. Si persiste, revisa la conexion y configuracion de
-          Firebase.
+          Reintenta la operación. Si persiste, revisá la conexión y las variables
+          de entorno (Neon / JWT).
         </p>
         <button
           type="button"

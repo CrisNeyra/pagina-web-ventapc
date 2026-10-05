@@ -2,6 +2,7 @@ import Stripe from "stripe";
 import { OrderStatus, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { cotizarEnvioPorCp } from "@/lib/shipping-server";
+import { notificarPedidoCreado } from "@/lib/email-server";
 import {
   EntregaDto,
   ItemPedidoDto,
@@ -95,12 +96,17 @@ export async function crearPaymentIntentStripe(opciones: {
   if (totalPesos < 1) throw new OrderError("INVALID_AMOUNT");
 
   const stripeAmountCents = totalPesos * 100;
+  const cuotasPermitidas = [1, 3, 6, 12];
   const cuotas =
     opciones.metodoPago === "credito"
-      ? Math.min(12, Math.max(1, opciones.cuotas ?? 1))
+      ? cuotasPermitidas.includes(opciones.cuotas ?? 1)
+        ? (opciones.cuotas as number)
+        : 1
       : 1;
 
   const stripe = obtenerStripe();
+
+  const usarCuotasStripe = process.env.STRIPE_INSTALLMENTS === "true" && cuotas > 1;
 
   const intent = await stripe.paymentIntents.create({
     amount: stripeAmountCents,
@@ -111,6 +117,15 @@ export async function crearPaymentIntentStripe(opciones: {
       metodoPago: opciones.metodoPago,
       cuotas: String(cuotas),
     },
+    ...(usarCuotasStripe
+      ? {
+          payment_method_options: {
+            card: {
+              installments: { enabled: true },
+            },
+          },
+        }
+      : {}),
   });
 
   try {
@@ -165,6 +180,9 @@ export async function procesarWebhookStripe(
 
   if (event.type === "payment_intent.succeeded") {
     const pi = event.data.object as Stripe.PaymentIntent;
+    const pedido = await prisma.order.findFirst({
+      where: { stripePaymentIntentId: pi.id },
+    });
     await prisma.order.updateMany({
       where: {
         stripePaymentIntentId: pi.id,
@@ -172,6 +190,14 @@ export async function procesarWebhookStripe(
       },
       data: { estado: OrderStatus.paid },
     });
+    if (pedido?.email) {
+      void notificarPedidoCreado({
+        email: pedido.email,
+        orderId: pedido.id,
+        totalPesos: pedido.totalPesos,
+        estado: OrderStatus.paid,
+      });
+    }
   }
 
   if (event.type === "payment_intent.payment_failed") {

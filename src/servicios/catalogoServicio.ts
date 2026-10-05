@@ -32,10 +32,11 @@ function mapearProducto(producto: ProductoApi): Producto {
   };
 }
 
-/** Catálogo desde DB (Neon/Prisma) o API externa; fallback estático. */
+/** Catálogo desde DB (Neon/Prisma) o `/api`; fallback estático. */
 export function usarCatalogoApi(): boolean {
-  if (databaseUrlConfigurada()) return true;
-  return process.env.NEXT_PUBLIC_USE_API_CATALOG === "true" && usaApiExterna();
+  if (apiConfigurada()) return true;
+  // DATABASE_URL no llega al bundle del cliente; en el browser el origen `/api` sí existe.
+  return typeof window !== "undefined";
 }
 
 async function obtenerCatalogoDesdePrisma(opciones?: {

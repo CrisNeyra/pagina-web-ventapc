@@ -1,5 +1,5 @@
 export interface AuthUser {
-  /** ID estable (Nest UUID o Firebase uid). */
+  /** ID estable del usuario (UUID Prisma). */
   uid: string;
   email: string | null;
   role?: string;

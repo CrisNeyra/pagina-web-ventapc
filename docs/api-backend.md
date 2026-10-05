@@ -8,7 +8,7 @@ Usá Nest solo como referencia o escape hatch con `NEXT_PUBLIC_API_URL`.
 ## Arranque legacy (opcional)
 
 ```bash
-npm run catalog:export:api
+npm run catalogo:export:api
 docker compose up -d postgres redis minio
 cd api
 cp .env.example .env

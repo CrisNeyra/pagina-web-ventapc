@@ -14,7 +14,7 @@ Plataforma de e-commerce ficticia (hardware gamer / PC). Tema cyberpunk, catálo
 | Auth | JWT + cookie httpOnly `aura_token` |
 | Guía stack | [`docs/stack-next-prisma-neon.md`](docs/stack-next-prisma-neon.md) |
 
-Admin demo (tras seed): `admin@aurapro.com` / `1234ab`
+Admin tras seed: el email de `ADMIN_EMAIL` (default `admin@aurapro.com`) con la clave de `ADMIN_PASSWORD` (ya no se usa `1234ab`).
 
 ---
 
@@ -97,7 +97,7 @@ La carpeta `api/` quedó como referencia. Solo hace falta si querés correr Nest
 
 ## Despliegue
 
-**Vercel (Next + Route Handlers) + Neon (Postgres).** Variables: `DATABASE_URL`, `JWT_SECRET`, `NEXT_PUBLIC_SITE_URL`. Guía paso a paso: [`docs/vercel-produccion.md`](docs/vercel-produccion.md).
+**Vercel (Next + Route Handlers) + Neon (Postgres).** Variables mínimas: `DATABASE_URL`, `JWT_SECRET`, `NEXT_PUBLIC_SITE_URL`. En prod también `BLOB_READ_WRITE_TOKEN` (CVs) y, recomendado, Upstash + Resend. Guía: [`docs/vercel-produccion.md`](docs/vercel-produccion.md).
 
 ---
 

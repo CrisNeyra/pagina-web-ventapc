@@ -39,6 +39,18 @@ describe("PcBuilder", () => {
     vi.mocked(useAuth).mockReturnValue({ ...authMock });
   });
 
+  it("quita el componente seleccionado", async () => {
+    const user = userEvent.setup();
+    useBuilderStore.setState({
+      seleccion: { procesador: productoCpu },
+    });
+
+    render(<PcBuilder />);
+    await user.click(screen.getByRole("button", { name: /quitar procesador/i }));
+
+    expect(useBuilderStore.getState().seleccion.procesador).toBeUndefined();
+  });
+
   it("muestra mensaje si intenta guardar sin estar autenticado", async () => {
     const user = userEvent.setup();
     useBuilderStore.setState({

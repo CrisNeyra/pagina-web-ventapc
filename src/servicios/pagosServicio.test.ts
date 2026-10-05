@@ -1,9 +1,3 @@
-vi.mock("@/datos/preciosCatalogo", () => ({
-  preciosCatalogo: {
-    "gpu-001": 100000,
-  },
-}));
-
 vi.mock("@/lib/api-token", () => ({
   obtenerApiToken: vi.fn(() => "api-token-test"),
 }));

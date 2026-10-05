@@ -1,8 +1,10 @@
 # Observabilidad
 
+> **Legacy Nest / stack actual:** salud y errores en producción van por Next (`GET /api/health` next-prisma + Sentry). Nest solo si corrés `api/` con `NEXT_PUBLIC_API_URL`. Ver [`stack-next-prisma-neon.md`](stack-next-prisma-neon.md).
+
 ## Health
 
-`GET /api/health` (Nest):
+`GET /api/health` (Nest legacy; en Vercel/prod usá el Route Handler Next):
 
 ```json
 {

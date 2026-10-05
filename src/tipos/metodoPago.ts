@@ -35,3 +35,8 @@ export const METODOS_PAGO: MetodoPagoOpcion[] = [
     badge: "12 cuotas",
   },
 ];
+
+export function metodosPagoVisibles(stripeActivo: boolean): MetodoPagoOpcion[] {
+  if (stripeActivo) return METODOS_PAGO;
+  return METODOS_PAGO.filter((metodo) => metodo.id !== "debito" && metodo.id !== "credito");
+}

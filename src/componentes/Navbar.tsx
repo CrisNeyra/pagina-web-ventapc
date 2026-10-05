@@ -14,6 +14,19 @@ import { useCartStore } from "@/store/cartStore";
 import { useBusquedaStore } from "@/store/busquedaStore";
 import { toast } from "sonner";
 
+function mensajeAuthError(codigo: string): string {
+  if (codigo === "google_config") {
+    return "El inicio con Google no está configurado. Usá correo y contraseña.";
+  }
+  if (codigo === "google_email") {
+    return "Google no devolvió un email verificado.";
+  }
+  if (codigo === "google_state") {
+    return "La sesión con Google expiró. Intentá de nuevo.";
+  }
+  return "No se pudo iniciar sesión con Google. Intentá de nuevo.";
+}
+
 function esRedirectInterno(valor: string | null): valor is string {
   return Boolean(valor && valor.startsWith("/") && !valor.startsWith("//"));
 }
@@ -22,6 +35,7 @@ export default function Navbar() {
   const router = useRouter();
   const [menuAbierto, setMenuAbierto] = useState(false);
   const [authModalAbierto, setAuthModalAbierto] = useState(false);
+  const [authErrorInicial, setAuthErrorInicial] = useState("");
   const [drawerAbierto, setDrawerAbierto] = useState(false);
   const [sugerenciasDesktopAbiertas, setSugerenciasDesktopAbiertas] = useState(false);
   const [sugerenciasMobileAbiertas, setSugerenciasMobileAbiertas] = useState(false);
@@ -71,21 +85,32 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("auth") !== "required") return;
+    const url = new URL(window.location.href);
+    let limpio = false;
 
-    const redirect = params.get("redirect");
-    if (esRedirectInterno(redirect)) {
-      redirectTrasAuthRef.current = redirect;
+    if (url.searchParams.get("auth") === "required") {
+      const redirect = url.searchParams.get("redirect");
+      if (esRedirectInterno(redirect)) {
+        redirectTrasAuthRef.current = redirect;
+      }
+      setAuthModalAbierto(true);
+      toast.error("Iniciá sesión para continuar.");
+      url.searchParams.delete("auth");
+      url.searchParams.delete("redirect");
+      limpio = true;
     }
 
-    setAuthModalAbierto(true);
-    toast.error("Iniciá sesión para continuar.");
+    const authError = url.searchParams.get("authError");
+    if (authError) {
+      setAuthModalAbierto(true);
+      setAuthErrorInicial(mensajeAuthError(authError));
+      url.searchParams.delete("authError");
+      limpio = true;
+    }
 
-    const url = new URL(window.location.href);
-    url.searchParams.delete("auth");
-    url.searchParams.delete("redirect");
-    window.history.replaceState({}, "", url.pathname + url.search);
+    if (limpio) {
+      window.history.replaceState({}, "", url.pathname + url.search);
+    }
   }, []);
 
   const alAutenticarse = () => {
@@ -107,7 +132,7 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full shadow-[0_0_24px_rgba(168,85,247,0.18)]">
+    <header className="sticky top-0 z-50 w-full overflow-x-clip shadow-[0_0_24px_rgba(168,85,247,0.18)]">
       <div className="border-b border-cyber-purple-500/20 bg-oscuro-900/90 shadow-sm backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-4 py-4">
           <div className="flex min-w-0 flex-1 items-center gap-4">
@@ -118,7 +143,7 @@ export default function Navbar() {
                 setMenuAbierto(false);
               }}
               aria-label="Ir al inicio"
-              className="group w-[170px] flex-shrink-0 rounded-[15%] bg-white sm:w-[188px] md:w-[208px]"
+              className="group w-[148px] flex-shrink-0 overflow-hidden rounded-[15%] bg-white sm:w-[188px] md:w-[208px]"
               title="Ir al inicio"
             >
               <Image
@@ -145,6 +170,7 @@ export default function Navbar() {
             user={user}
             totalItems={totalItems}
             menuAbierto={menuAbierto}
+            carritoAbierto={drawerAbierto}
             onAbrirAuth={() => setAuthModalAbierto(true)}
             onAbrirCarrito={() => setDrawerAbierto(true)}
             onCerrarSesion={() => void cerrarSesion()}
@@ -173,7 +199,11 @@ export default function Navbar() {
 
       <AuthModal
         abierto={authModalAbierto}
-        onCerrar={() => setAuthModalAbierto(false)}
+        errorInicial={authErrorInicial}
+        onCerrar={() => {
+          setAuthErrorInicial("");
+          setAuthModalAbierto(false);
+        }}
         onAutenticado={alAutenticarse}
       />
       <CartDrawer abierto={drawerAbierto} onCerrar={() => setDrawerAbierto(false)} />

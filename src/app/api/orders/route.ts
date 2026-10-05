@@ -7,6 +7,7 @@ import {
   type EntregaDto,
   type ItemPedidoDto,
 } from "@/lib/orders-server";
+import { notificarPedidoCreado } from "@/lib/email-server";
 
 export const runtime = "nodejs";
 
@@ -44,6 +45,13 @@ export async function POST(request: Request) {
       metodoPago: body.metodoPago,
       entrega: body.entrega,
       idempotencyKey,
+    });
+
+    void notificarPedidoCreado({
+      email: user.email,
+      orderId: pedido.id,
+      totalPesos: pedido.totalPesos,
+      estado: pedido.estado,
     });
 
     return NextResponse.json({

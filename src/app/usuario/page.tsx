@@ -12,6 +12,9 @@ import {
   obtenerPedidosUsuario,
   type Pedido,
 } from "@/servicios/pedidosServicio";
+import { apiFetch } from "@/lib/api-client";
+import { obtenerApiToken } from "@/lib/api-token";
+import { MENSAJE_REQUISITOS_PASSWORD, validarPassword } from "@/lib/auth";
 
 export default function UsuarioPage() {
   const { user } = useAuth();
@@ -87,14 +90,7 @@ export default function UsuarioPage() {
 
         <article className="rounded-2xl border border-cyber-purple-500/35 bg-oscuro-900/80 p-5 lg:col-span-2">
           <h2 className="text-lg font-bold text-foreground">Cambiar contraseña</h2>
-          <form className="mt-4 grid gap-3 md:grid-cols-3">
-            <input type="password" placeholder="Contraseña actual" className="rounded-md border border-cyber-purple-500/40 bg-oscuro-800 px-3 py-2 text-sm text-cyber-cyan-100 outline-none focus:border-cyber-cyan-400" />
-            <input type="password" placeholder="Nueva contraseña" className="rounded-md border border-cyber-purple-500/40 bg-oscuro-800 px-3 py-2 text-sm text-cyber-cyan-100 outline-none focus:border-cyber-cyan-400" />
-            <input type="password" placeholder="Confirmar contraseña" className="rounded-md border border-cyber-purple-500/40 bg-oscuro-800 px-3 py-2 text-sm text-cyber-cyan-100 outline-none focus:border-cyber-cyan-400" />
-          </form>
-          <button type="button" className="mt-3 rounded-md border border-cyber-cyan-400/55 bg-cyber-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyber-cyan-300 hover:bg-cyber-cyan-400 hover:text-white">
-            Guardar contraseña
-          </button>
+          <CambiarPasswordForm />
         </article>
 
         <article className="rounded-2xl border border-cyber-purple-500/35 bg-oscuro-900/80 p-5 lg:col-span-2">
@@ -215,5 +211,104 @@ export default function UsuarioPage() {
 
       </section>
     </main>
+  );
+}
+
+function CambiarPasswordForm() {
+  const [actual, setActual] = useState("");
+  const [nueva, setNueva] = useState("");
+  const [confirmacion, setConfirmacion] = useState("");
+  const [mensaje, setMensaje] = useState("");
+  const [error, setError] = useState("");
+  const [cargando, setCargando] = useState(false);
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setMensaje("");
+    setError("");
+    if (nueva !== confirmacion) {
+      setError("La confirmación no coincide.");
+      return;
+    }
+    if (!validarPassword(nueva)) {
+      setError(MENSAJE_REQUISITOS_PASSWORD);
+      return;
+    }
+    const token = obtenerApiToken();
+    if (!token) {
+      setError("Sesión inválida. Volvé a iniciar sesión.");
+      return;
+    }
+    setCargando(true);
+    try {
+      await apiFetch("/auth/password", {
+        method: "PATCH",
+        token,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ actual, nueva }),
+      });
+      setMensaje("Contraseña actualizada.");
+      setActual("");
+      setNueva("");
+      setConfirmacion("");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "No se pudo cambiar la contraseña.");
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  const campo =
+    "rounded-md border border-cyber-purple-500/40 bg-oscuro-800 px-3 py-2 text-sm text-cyber-cyan-100 outline-none focus:border-cyber-cyan-400";
+
+  return (
+    <form className="mt-4 grid gap-3 md:grid-cols-3" onSubmit={onSubmit}>
+      <label className="block">
+        <span className="mb-1 block text-xs font-medium text-cyber-cyan-200">Contraseña actual</span>
+        <input
+          type="password"
+          autoComplete="current-password"
+          value={actual}
+          onChange={(e) => setActual(e.target.value)}
+          required
+          className={campo}
+        />
+      </label>
+      <label className="block">
+        <span className="mb-1 block text-xs font-medium text-cyber-cyan-200">Nueva contraseña</span>
+        <input
+          type="password"
+          autoComplete="new-password"
+          value={nueva}
+          onChange={(e) => setNueva(e.target.value)}
+          required
+          minLength={10}
+          className={campo}
+        />
+      </label>
+      <label className="block">
+        <span className="mb-1 block text-xs font-medium text-cyber-cyan-200">Confirmar contraseña</span>
+        <input
+          type="password"
+          autoComplete="new-password"
+          value={confirmacion}
+          onChange={(e) => setConfirmacion(e.target.value)}
+          required
+          minLength={10}
+          className={campo}
+        />
+      </label>
+      <div className="md:col-span-3 flex flex-wrap items-center gap-3">
+        <button
+          type="submit"
+          disabled={cargando}
+          className="rounded-md border border-cyber-cyan-400/55 bg-cyber-cyan-500/10 px-4 py-2 text-sm font-semibold text-cyber-cyan-300 hover:bg-cyber-cyan-400 hover:text-white disabled:opacity-50"
+        >
+          {cargando ? "Guardando..." : "Guardar contraseña"}
+        </button>
+        {error ? <p className="text-sm text-red-400">{error}</p> : null}
+        {mensaje ? <p className="text-sm text-cyber-lime-400">{mensaje}</p> : null}
+      </div>
+    </form>
   );
 }

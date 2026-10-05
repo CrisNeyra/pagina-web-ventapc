@@ -1,6 +1,8 @@
 # Storage de CVs (postulaciones)
 
-Los CVs PDF se guardan vía `StorageService` en Nest.
+> **Legacy Nest / stack actual:** postulaciones y CVs en el flujo diario viven en Next (`src/app/api`). Nest + MinIO solo si levantás `api/` con `NEXT_PUBLIC_API_URL`. Ver [`stack-next-prisma-neon.md`](stack-next-prisma-neon.md).
+
+Los CVs PDF en el escape hatch Nest se guardan vía `StorageService`.
 
 ## Modos
 

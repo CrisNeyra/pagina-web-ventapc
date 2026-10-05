@@ -67,6 +67,7 @@ export default function NavbarMenu({
                 </Link>
               ) : (
                 <button
+                  type="button"
                   onClick={() => {
                     onCerrarMenu();
                     onAbrirAuth();
@@ -80,6 +81,7 @@ export default function NavbarMenu({
             </li>
             <li>
               <button
+                type="button"
                 onClick={() => {
                   onCerrarMenu();
                   onAbrirCarrito();
@@ -93,6 +95,7 @@ export default function NavbarMenu({
             <li className="mt-2 border-t border-cyber-purple-500/25 pt-2">
               {user && (
                 <button
+                  type="button"
                   onClick={() => {
                     onCerrarMenu();
                     onCerrarSesion();

@@ -1,8 +1,8 @@
-import { mkdir, writeFile } from "node:fs/promises";
-import { dirname, resolve } from "node:path";
 import { randomUUID } from "node:crypto";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { guardarArchivoCv } from "@/lib/cv-storage";
+import { notificarPostulacion } from "@/lib/email-server";
 
 export class ExtrasError extends Error {
   constructor(message: string) {
@@ -50,10 +50,6 @@ export async function listarPcBuildsUsuario(userId: string) {
 
 const MAX_CV_BYTES = 5 * 1024 * 1024;
 
-function raizUploads() {
-  return resolve(process.cwd(), process.env.UPLOADS_DIR?.trim() || "uploads");
-}
-
 function esPdf(buffer: Buffer) {
   return buffer.subarray(0, 4).toString("utf8") === "%PDF";
 }
@@ -84,11 +80,8 @@ export async function crearPostulacion(opciones: {
 
   const id = randomUUID();
   const cvNombre = opciones.cvNombreOriginal.replace(/[^\w.\- ()áéíóúÁÉÍÓÚñÑ]/g, "_") || "curriculum.pdf";
-  const cvPath = `postulaciones/${id}/${cvNombre}`;
-  const absoluto = resolve(raizUploads(), cvPath);
-
-  await mkdir(dirname(absoluto), { recursive: true });
-  await writeFile(absoluto, opciones.cvBuffer);
+  const cvRelativo = `postulaciones/${id}/${cvNombre}`;
+  const cvPath = await guardarArchivoCv(opciones.cvBuffer, cvRelativo);
 
   const postulacion = await prisma.postulacion.create({
     data: {
@@ -101,6 +94,8 @@ export async function crearPostulacion(opciones: {
       cvNombre,
     },
   });
+
+  void notificarPostulacion({ email, nombre });
 
   return {
     id: postulacion.id,

@@ -1,5 +1,7 @@
 # Seguridad API (JWT, Stripe, rate limit)
 
+> **Legacy Nest / stack actual:** el camino diario es Next.js + Route Handlers en `/api` (Prisma + Neon). Nest (`api/`) solo con `NEXT_PUBLIC_API_URL`. Ver [`stack-next-prisma-neon.md`](stack-next-prisma-neon.md).
+
 ## JWT
 
 - Login / registro emiten Bearer JWT (`Authorization: Bearer …`).

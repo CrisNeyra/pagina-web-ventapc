@@ -81,8 +81,10 @@ export default function FloatingWhatsApp() {
           className={`absolute bottom-full right-0 mb-3 w-[292px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-[#128C7E]/55 bg-[#1F2C34] shadow-[0_0_25px_rgba(18,140,126,0.35)] transition-all duration-200 ${
             abierto
               ? "pointer-events-auto translate-y-0 opacity-100"
-              : "pointer-events-none translate-y-2 opacity-0"
+              : "pointer-events-none invisible translate-y-2 opacity-0"
           }`}
+          aria-hidden={!abierto}
+          {...(!abierto ? { inert: true } : {})}
         >
           <div className="px-4 pb-4 pt-3">
             <p className="text-sm font-semibold text-[#E7F3F0]">¿Querés abrir WhatsApp?</p>

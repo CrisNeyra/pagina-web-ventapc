@@ -93,7 +93,7 @@ export default function CheckoutEntrega({ datos, onChange }: CheckoutEntregaProp
               type="text"
               value={datos.envio?.direccion ?? ""}
               onChange={(evento) => actualizarEnvio("direccion", evento.target.value)}
-              className="w-full rounded-md border border-cyber-purple-500/35 bg-oscuro-900 px-3 py-2 text-sm text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyber-cyan-400"
+              className="min-h-11 w-full rounded-md border border-cyber-purple-500/35 bg-oscuro-900 px-3 py-3 text-sm text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyber-cyan-400"
               placeholder="Calle y número, piso/depto"
               autoComplete="street-address"
             />
@@ -104,7 +104,7 @@ export default function CheckoutEntrega({ datos, onChange }: CheckoutEntregaProp
               type="text"
               value={datos.envio?.ciudad ?? ""}
               onChange={(evento) => actualizarEnvio("ciudad", evento.target.value)}
-              className="w-full rounded-md border border-cyber-purple-500/35 bg-oscuro-900 px-3 py-2 text-sm text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyber-cyan-400"
+              className="min-h-11 w-full rounded-md border border-cyber-purple-500/35 bg-oscuro-900 px-3 py-3 text-sm text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyber-cyan-400"
               placeholder="Buenos Aires"
               autoComplete="address-level2"
             />
@@ -115,7 +115,7 @@ export default function CheckoutEntrega({ datos, onChange }: CheckoutEntregaProp
               type="text"
               value={datos.envio?.codigoPostal ?? ""}
               onChange={(evento) => actualizarEnvio("codigoPostal", evento.target.value)}
-              className="w-full rounded-md border border-cyber-purple-500/35 bg-oscuro-900 px-3 py-2 text-sm text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyber-cyan-400"
+              className="min-h-11 w-full rounded-md border border-cyber-purple-500/35 bg-oscuro-900 px-3 py-3 text-sm text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyber-cyan-400"
               placeholder="C1043"
               autoComplete="postal-code"
             />
@@ -126,7 +126,7 @@ export default function CheckoutEntrega({ datos, onChange }: CheckoutEntregaProp
               type="tel"
               value={datos.envio?.telefonoContacto ?? ""}
               onChange={(evento) => actualizarEnvio("telefonoContacto", evento.target.value)}
-              className="w-full rounded-md border border-cyber-purple-500/35 bg-oscuro-900 px-3 py-2 text-sm text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyber-cyan-400"
+              className="min-h-11 w-full rounded-md border border-cyber-purple-500/35 bg-oscuro-900 px-3 py-3 text-sm text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyber-cyan-400"
               placeholder="+54 11 5555-5555"
               autoComplete="tel"
             />

@@ -7,8 +7,10 @@ GitHub ──push──► Vercel (Next.js + /api Route Handlers)
                      │
                      │ Prisma
                      ▼
-                   Neon (PostgreSQL)
+    10|                   Neon (PostgreSQL)
 ```
+
+Código de la migración ya está en `main` (a partir de `dc35251`). Si `/api/health` da 404, Vercel todavía no redeployó o faltan env vars.
 
 ## 1. Neon
 
@@ -17,12 +19,12 @@ GitHub ──push──► Vercel (Next.js + /api Route Handlers)
 3. Desde tu PC (una vez, o tras cambios de schema):
 
 ```bash
-# Con DATABASE_URL en .env / .env.local
+# Con DATABASE_URL y ADMIN_PASSWORD en .env.local
 npm run db:migrate
 npm run db:seed
 ```
 
-Admin tras seed: `admin@aurapro.com` / `1234ab`.
+`ADMIN_PASSWORD` es obligatorio (mín. 10 caracteres, letra y número).
 
 ## 2. Variables en Vercel
 
@@ -32,59 +34,48 @@ Project → **Settings → Environment Variables** (Production + Preview):
 |----------|-------------|--------|
 | `DATABASE_URL` | Sí | Connection string Neon |
 | `JWT_SECRET` | Sí | Secreto largo (≥32 chars), solo servidor |
-| `NEXT_PUBLIC_SITE_URL` | Sí | `https://tu-proyecto.vercel.app` (o dominio custom) |
+| `NEXT_PUBLIC_SITE_URL` | Sí | `https://pagina-web-ventapc.vercel.app` |
+| `GOOGLE_CLIENT_ID` | Para login Google | ID de cliente OAuth (aplicación web). No va al repo |
+| `GOOGLE_CLIENT_SECRET` | Para login Google | Secreto del mismo cliente. Solo servidor |
+| `BLOB_READ_WRITE_TOKEN` | CVs en prod | Vercel Blob; sin esto los PDF no persisten |
+| `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` | Rate-limit prod | Login/register/postulaciones |
+| `RESEND_API_KEY` + `EMAIL_FROM` | Emails | Pedidos y postulaciones |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | No | Solo si usás Stripe |
 | `STRIPE_SECRET_KEY` | No | Solo servidor |
-| `STRIPE_WEBHOOK_SECRET` | No | Tras crear endpoint en Stripe Dashboard |
+| `STRIPE_WEBHOOK_SECRET` | No | Endpoint: `/api/payments/stripe/webhook` |
 | `ADMIN_EMAILS` | No | CSV de emails admin extra |
 | `NEXT_PUBLIC_SENTRY_DSN` | No | Observabilidad |
 
-No hace falta `NEXT_PUBLIC_API_URL` (el cliente usa `/api` del mismo origen).
+**No** setees `NEXT_PUBLIC_API_URL` (el cliente debe usar `/api` del mismo origen).
+
+Login con Google: en [Google Cloud](https://console.cloud.google.com/) → Credenciales → cliente OAuth web, registrá estos redirect exactos:
+
+- `http://localhost:3000/api/auth/google/callback`
+- `https://pagina-web-ventapc.vercel.app/api/auth/google/callback`
+
+Mientras la pantalla de consentimiento esté en “Prueba”, el Gmail tiene que estar en **Usuarios de prueba**.
 
 ## 3. Conectar el repo a Vercel
 
-1. [vercel.com](https://vercel.com) → **Add New Project** → importá `CrisNeyra/pagina-web-ventapc` (o tu fork).
+1. [vercel.com](https://vercel.com) → proyecto `pagina-web-ventapc`.
 2. **Root Directory:** `.` (raíz; no `api/`).
 3. Framework: Next.js (auto).
-4. Build Command: `prisma generate && next build` (ya está en `package.json` → `npm run build`).
-5. Install: `npm install` (también corre `postinstall` → `prisma generate`).
-6. Pegá las variables del paso 2 → **Deploy**.
-
-Si el proyecto **ya existe** en Vercel: cargá/actualizá las env vars → **Redeploy**.
+4. Build: `npm run build` (`prisma generate && next build`).
+5. Pegá las variables del paso 2 → **Redeploy** (sin cache si el build anterior falló).
 
 ## 4. Post-deploy
 
-1. Abrí `https://TU-DOMINIO/api/health`  
-   Esperado: `ok: true`, `mode: "next-prisma"`.
+1. `https://TU-DOMINIO/api/health` → `ok: true`, `mode: "next-prisma"`.
 2. Login admin / catálogo / un pedido efectivo de prueba.
-3. (Opcional) Stripe webhook:  
-   `https://TU-DOMINIO/api/payments/stripe/webhook`  
-   Eventos: `payment_intent.succeeded`, `payment_intent.payment_failed`.
-
-## 5. Push del código nuevo
-
-En esta máquina hay muchos cambios locales (migración Nest → Next) **sin pushear**. Sin push, Vercel sigue el commit viejo.
-
-```bash
-git add -A
-git status   # revisá que no entre .env.local
-git commit -m "feat: Next+Prisma+Neon como stack único (API en Route Handlers)"
-git push origin main
-```
-
-Si `git` se queja de *dubious ownership*:
-
-```bash
-git config --global --add safe.directory "D:/Devs/Pagina web ventaPC"
-```
+3. Stripe webhook (opcional): `https://TU-DOMINIO/api/payments/stripe/webhook`.
 
 ## Troubleshooting
 
 | Síntoma | Qué mirar |
 |---------|-----------|
-| Build falla en `prisma generate` | `DATABASE_URL` no es necesaria en build si solo generás client; igual conviene tenerla. Revisá logs. |
-| `/api/health` → DB fail | `DATABASE_URL` mal pegada; IP allow / Neon slept (wake on first query). |
-| Login 503 | Falta `JWT_SECRET` en Vercel. |
-| 404 en `/api/...` | Redeploy tras push; Root Directory no debe ser `api/`. |
+| `/api/health` 404 | Deploy viejo o Root Directory = `api/` |
+| `/api/health` DB fail | `DATABASE_URL` mal pegada; Neon slept |
+| Login 503 | Falta `JWT_SECRET` |
+| CVs desaparecen | Falta `BLOB_READ_WRITE_TOKEN` |
 
 Más contexto: [`stack-next-prisma-neon.md`](stack-next-prisma-neon.md).

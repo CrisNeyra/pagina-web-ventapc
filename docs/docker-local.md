@@ -76,7 +76,6 @@ En `.env.local` (raíz), modo Docker:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:4000/api
-NEXT_PUBLIC_USE_API_CATALOG=true
 ```
 
 Para desarrollar **sin** Docker, comentá esas líneas y usá la URL de Railway (`https://….up.railway.app/api`). En Railway, `CORS_ORIGINS` debe incluir `http://localhost:3000`.

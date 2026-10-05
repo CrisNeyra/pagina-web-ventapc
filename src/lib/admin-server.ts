@@ -1,8 +1,7 @@
 import { OrderStatus, PostulacionStatus } from "@prisma/client";
-import { readFile } from "node:fs/promises";
-import { isAbsolute, normalize, resolve } from "node:path";
 import { prisma } from "@/lib/prisma";
 import { OrderError, restaurarStock } from "@/lib/orders-server";
+import { leerArchivoCv } from "@/lib/cv-storage";
 
 const ESTADOS_PENDIENTES: OrderStatus[] = [
   OrderStatus.pending_payment,
@@ -90,19 +89,6 @@ export async function listarPostulacionesAdmin() {
   }));
 }
 
-function raizUploads() {
-  return resolve(process.cwd(), process.env.UPLOADS_DIR?.trim() || "uploads");
-}
-
-function resolverRutaCv(cvPath: string) {
-  const root = raizUploads();
-  const absoluto = isAbsolute(cvPath) ? normalize(cvPath) : resolve(root, cvPath);
-  if (!absoluto.startsWith(root)) {
-    throw new OrderError("CV_PATH_INVALIDO");
-  }
-  return absoluto;
-}
-
 export async function obtenerCvPostulacionAdmin(postulacionId: string) {
   const postulacion = await prisma.postulacion.findUnique({
     where: { id: postulacionId },
@@ -110,8 +96,7 @@ export async function obtenerCvPostulacionAdmin(postulacionId: string) {
   if (!postulacion) throw new OrderError("POSTULACION_NO_ENCONTRADA");
 
   try {
-    const ruta = resolverRutaCv(postulacion.cvPath);
-    const buffer = await readFile(ruta);
+    const buffer = await leerArchivoCv(postulacion.cvPath);
     return {
       buffer,
       nombre: postulacion.cvNombre || "cv.pdf",
@@ -120,5 +105,26 @@ export async function obtenerCvPostulacionAdmin(postulacionId: string) {
     if (error instanceof OrderError) throw error;
     throw new OrderError("CV_NO_DISPONIBLE");
   }
+}
+
+export async function actualizarStockProductoAdmin(
+  productId: string,
+  stock: number,
+  enStock?: boolean
+) {
+  if (!Number.isInteger(stock) || stock < 0) {
+    throw new OrderError("STOCK_INVALIDO");
+  }
+
+  const producto = await prisma.product.findUnique({ where: { id: productId } });
+  if (!producto) throw new OrderError("PRODUCTO_NO_ENCONTRADO");
+
+  return prisma.product.update({
+    where: { id: productId },
+    data: {
+      stock,
+      enStock: enStock ?? stock > 0,
+    },
+  });
 }
 

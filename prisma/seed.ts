@@ -1,7 +1,8 @@
 import { readFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { PrismaClient, UserRole } from "@prisma/client";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
+import { validarPassword } from "../src/lib/auth";
 
 /** Prisma CLI carga .env solo; tsx no. Cargamos DATABASE_URL antes del client. */
 function cargarEnv() {
@@ -90,8 +91,22 @@ async function main() {
   }
 
   const adminEmail = process.env.ADMIN_EMAIL ?? "admin@aurapro.com";
-  // 4 dígitos + 2 letras (mismo formato que el AuthModal del front)
-  const adminPassword = process.env.ADMIN_PASSWORD ?? "1234ab";
+  const adminPassword = process.env.ADMIN_PASSWORD?.trim();
+  const enProd = process.env.NODE_ENV === "production" || Boolean(process.env.VERCEL);
+
+  if (!adminPassword) {
+    if (enProd) {
+      throw new Error("ADMIN_PASSWORD es obligatorio al hacer seed en producción.");
+    }
+    throw new Error(
+      "Definí ADMIN_PASSWORD en .env.local (mín. 10 caracteres, letra y número). Ya no se usa 1234ab."
+    );
+  }
+
+  if (!validarPassword(adminPassword)) {
+    throw new Error("ADMIN_PASSWORD no cumple la política (10+ chars, letra y número).");
+  }
+
   const passwordHash = await bcrypt.hash(adminPassword, 10);
 
   await prisma.user.upsert({

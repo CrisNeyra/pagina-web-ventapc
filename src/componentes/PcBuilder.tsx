@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { FiX } from "react-icons/fi";
 import { builderCategories, builderProducts } from "@/datos/pcBuilder";
 import { formatearPrecio } from "@/utils/formato";
 import { calcularSubtotalBuilder, useBuilderStore } from "@/store/builderStore";
@@ -119,20 +120,20 @@ export default function PcBuilder() {
                       : "border-cyber-purple-500/25 bg-oscuro-800/70 hover:border-cyber-purple-400"
                   }`}
                 >
-                  {seleccionado && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        quitarProducto(categoria.id);
-                      }}
-                      className="absolute right-1 top-1 rounded border border-cyber-pink-500/50 px-1 text-[10px] font-bold uppercase text-cyber-pink-300 hover:bg-cyber-pink-500/20"
-                    >
-                      X
-                    </button>
-                  )}
-
                   <div className="relative mb-2 flex h-16 items-center justify-center overflow-hidden rounded-lg border border-cyber-purple-500/30 bg-oscuro-900">
+                    {seleccionado && (
+                      <button
+                        type="button"
+                        aria-label={`Quitar ${categoria.nombre}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          quitarProducto(categoria.id);
+                        }}
+                        className="absolute right-1 top-1 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-white/80 bg-oscuro-950 text-white shadow-md hover:bg-cyber-pink-500"
+                      >
+                        <FiX size={14} aria-hidden />
+                      </button>
+                    )}
                     {seleccionado && mostrarImagenSeleccionada ? (
                       <Image
                         src={seleccionado.imagen}

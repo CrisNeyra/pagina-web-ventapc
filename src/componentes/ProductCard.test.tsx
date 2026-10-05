@@ -6,6 +6,10 @@ import { useCartStore } from "@/store/cartStore";
 import type { Producto } from "@/tipos/producto";
 import { toast } from "sonner";
 
+vi.mock("@/servicios/catalogoServicio", () => ({
+  verificarStockProducto: vi.fn(async () => true),
+}));
+
 vi.mock("sonner", () => ({
   toast: {
     success: vi.fn(),

@@ -30,3 +30,11 @@ describe("checkout", () => {
     expect(calcularCuota(120000, 12)).toBe(10000);
   });
 });
+
+describe("medios visibles sin Stripe", () => {
+  it("oculta débito y crédito", async () => {
+    const { metodosPagoVisibles } = await import("@/tipos/metodoPago");
+    const ids = metodosPagoVisibles(false).map((m) => m.id);
+    expect(ids).toEqual(["efectivo", "transferencia"]);
+  });
+});

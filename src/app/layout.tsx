@@ -48,9 +48,17 @@ export default function RootLayout({
     >
       <body className="flex min-h-full flex-col bg-oscuro-950 text-ink">
         <AuthProvider>
+          <a
+            href="#contenido"
+            className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[200] focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-ink focus:shadow-lg"
+          >
+            Saltar al contenido
+          </a>
           <DevConfigBanner />
           <Navbar />
-          {children}
+          <div id="contenido" className="flex flex-1 flex-col">
+            {children}
+          </div>
           <Footer />
           <FloatingWhatsApp />
           <WelcomeBannerModal />

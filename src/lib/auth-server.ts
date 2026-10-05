@@ -1,8 +1,11 @@
 import { AURA_TOKEN_COOKIE } from "@/tipos/auth-user";
 import { SignJWT, jwtVerify } from "jose";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { UserRole } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { validarPassword } from "@/lib/auth";
+import { expiracionJwt } from "@/lib/auth-cookie";
+import { firmarTokenReset, huellaPassword, verificarTokenReset } from "@/lib/password-reset";
 
 function jwtSecret(): Uint8Array {
   const secret = process.env.JWT_SECRET?.trim();
@@ -16,16 +19,19 @@ export function nombreCookieAuth(): string {
   return AURA_TOKEN_COOKIE;
 }
 
-export async function firmarToken(user: {
-  id: string;
-  email: string;
-  role: UserRole;
-}): Promise<string> {
+export async function firmarToken(
+  user: {
+    id: string;
+    email: string;
+    role: UserRole;
+  },
+  expiresIn: "30d" | "7d" | "1d" = "7d"
+): Promise<string> {
   return new SignJWT({ email: user.email, role: user.role })
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(user.id)
     .setIssuedAt()
-    .setExpirationTime("7d")
+    .setExpirationTime(expiresIn)
     .sign(jwtSecret());
 }
 
@@ -44,7 +50,7 @@ export async function verificarToken(
 
 export async function registrarUsuario(email: string, password: string) {
   const normalizado = email.trim().toLowerCase();
-  if (!normalizado || password.length < 6) {
+  if (!normalizado || !validarPassword(password)) {
     throw new Error("DATOS_INVALIDOS");
   }
 
@@ -63,7 +69,11 @@ export async function registrarUsuario(email: string, password: string) {
   };
 }
 
-export async function loginUsuario(email: string, password: string) {
+export async function loginUsuario(
+  email: string,
+  password: string,
+  recordarme = false
+) {
   const normalizado = email.trim().toLowerCase();
   const user = await prisma.user.findUnique({ where: { email: normalizado } });
   if (!user?.passwordHash) throw new Error("CREDENCIALES_INVALIDAS");
@@ -71,7 +81,7 @@ export async function loginUsuario(email: string, password: string) {
   const valido = await bcrypt.compare(password, user.passwordHash);
   if (!valido) throw new Error("CREDENCIALES_INVALIDAS");
 
-  const token = await firmarToken(user);
+  const token = await firmarToken(user, expiracionJwt(recordarme));
   return {
     token,
     user: { id: user.id, email: user.email, role: user.role },
@@ -97,4 +107,43 @@ export async function obtenerUsuarioDesdeRequest(request: Request) {
   if (!payload) return null;
 
   return obtenerUsuarioPorId(payload.sub);
+}
+
+export async function solicitarRestablecerPassword(email: string) {
+  const normalizado = email.trim().toLowerCase();
+  const user = await prisma.user.findUnique({ where: { email: normalizado } });
+  if (!user) return null;
+  return firmarTokenReset(user);
+}
+
+export async function restablecerPassword(token: string, nueva: string) {
+  if (!validarPassword(nueva)) throw new Error("DATOS_INVALIDOS");
+
+  const payload = await verificarTokenReset(token);
+  if (!payload) throw new Error("TOKEN_INVALIDO");
+
+  const user = await prisma.user.findUnique({ where: { id: payload.sub } });
+  if (!user || huellaPassword(user.passwordHash) !== payload.ph) {
+    throw new Error("TOKEN_INVALIDO");
+  }
+
+  const passwordHash = await bcrypt.hash(nueva, 10);
+  await prisma.user.update({ where: { id: user.id }, data: { passwordHash } });
+}
+
+export async function cambiarPasswordUsuario(
+  userId: string,
+  actual: string,
+  nueva: string
+) {
+  if (!validarPassword(nueva)) throw new Error("DATOS_INVALIDOS");
+
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user?.passwordHash) throw new Error("CREDENCIALES_INVALIDAS");
+
+  const valido = await bcrypt.compare(actual, user.passwordHash);
+  if (!valido) throw new Error("CREDENCIALES_INVALIDAS");
+
+  const passwordHash = await bcrypt.hash(nueva, 10);
+  await prisma.user.update({ where: { id: userId }, data: { passwordHash } });
 }

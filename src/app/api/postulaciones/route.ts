@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { databaseUrlConfigurada } from "@/lib/prisma";
 import { crearPostulacion, ExtrasError } from "@/lib/extras-server";
+import { claveRateLimit, limitarPeticion, respuestaRateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -10,6 +11,12 @@ export async function POST(request: Request) {
       { message: "POSTULACIONES_NO_CONFIGURADAS" },
       { status: 503 }
     );
+  }
+
+  const limite = await limitarPeticion(claveRateLimit(request, "postulaciones"), 5, 60 * 60 * 1000);
+  if (!limite.ok) {
+    const r = respuestaRateLimit(limite.retryAfterSec);
+    return NextResponse.json(r.body, r.init);
   }
 
   let form: FormData;

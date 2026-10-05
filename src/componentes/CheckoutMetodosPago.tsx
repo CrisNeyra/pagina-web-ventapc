@@ -1,5 +1,6 @@
+import { pagosConfigurados } from "@/configuracion/stripe";
 import type { MetodoPago } from "@/tipos/metodoPago";
-import { METODOS_PAGO } from "@/tipos/metodoPago";
+import { metodosPagoVisibles } from "@/tipos/metodoPago";
 import {
   FiCreditCard,
   FiDollarSign,
@@ -26,7 +27,7 @@ export default function CheckoutMetodosPago({
 }: CheckoutMetodosPagoProps) {
   return (
     <div className="grid gap-3 sm:grid-cols-2">
-      {METODOS_PAGO.map((metodo) => {
+      {metodosPagoVisibles(pagosConfigurados()).map((metodo) => {
         const Icono = ICONOS[metodo.id];
         const activo = seleccionado === metodo.id;
 

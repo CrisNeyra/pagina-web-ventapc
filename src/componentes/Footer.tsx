@@ -65,7 +65,7 @@ export default function Footer() {
           </div>
 
           <div className="flex flex-col items-center gap-3">
-            <h4 className="font-bold text-cyber-cyan-100 text-sm">Seguínos en</h4>
+            <h2 className="text-sm font-bold text-cyber-cyan-100">Seguínos en</h2>
             <div className="flex flex-wrap justify-center gap-3 max-w-xs">
               {REDES_SOCIALES.map((red) => {
                 const Icono = ICONOS_REDES[red.id];

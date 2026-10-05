@@ -52,6 +52,7 @@ export async function apiFetch<T>(
   try {
     const respuesta = await fetch(url, {
       ...resto,
+      credentials: resto.credentials ?? "include",
       signal: controlador.signal,
       headers: {
         ...(headers ?? {}),

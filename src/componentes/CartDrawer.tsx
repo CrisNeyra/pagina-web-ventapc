@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { FiMinus, FiPlus, FiTrash2, FiX } from "react-icons/fi";
@@ -14,6 +15,24 @@ interface CartDrawerProps {
 
 export default function CartDrawer({ abierto, onCerrar }: CartDrawerProps) {
   const { items, subtotal, updateQuantity, removeItem, clearCart } = useCartStore();
+  const vacio = items.length === 0;
+
+  useEffect(() => {
+    if (!abierto) return;
+
+    const manejarTecla = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onCerrar();
+    };
+
+    const overflowPrevio = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", manejarTecla);
+
+    return () => {
+      document.body.style.overflow = overflowPrevio;
+      document.removeEventListener("keydown", manejarTecla);
+    };
+  }, [abierto, onCerrar]);
 
   return (
     <>
@@ -25,13 +44,20 @@ export default function CartDrawer({ abierto, onCerrar }: CartDrawerProps) {
         aria-hidden="true"
       />
       <aside
+        id="carrito-drawer"
+        role="dialog"
+        aria-modal={abierto}
+        aria-labelledby="carrito-titulo"
+        aria-hidden={!abierto}
+        inert={!abierto}
         className={`fixed right-0 top-0 z-[80] flex h-screen w-full flex-col border-l border-cyber-purple-500/25 bg-oscuro-900 shadow-xl transition-transform md:max-w-md ${
-          abierto ? "translate-x-0" : "translate-x-full"
+          abierto ? "translate-x-0" : "invisible translate-x-full"
         }`}
-        aria-label="Carrito de compras"
       >
         <header className="flex items-center justify-between border-b border-cyber-purple-500/30 px-4 py-4">
-          <h3 className="text-lg font-bold text-foreground">Tu carrito</h3>
+          <h2 id="carrito-titulo" className="text-lg font-bold text-foreground">
+            Tu carrito
+          </h2>
           <button
             type="button"
             onClick={onCerrar}
@@ -43,9 +69,9 @@ export default function CartDrawer({ abierto, onCerrar }: CartDrawerProps) {
         </header>
 
         <div className="flex-1 overflow-y-auto px-4 py-3">
-          {items.length === 0 ? (
+          {vacio ? (
             <p className="rounded-xl border border-cyber-purple-500/30 bg-oscuro-800/75 p-4 text-sm text-cyber-cyan-200/80">
-              Tu carrito está vacío.
+              Tu carrito está vacío. Agregá un producto para continuar.
             </p>
           ) : (
             <ul className="space-y-3">
@@ -126,17 +152,28 @@ export default function CartDrawer({ abierto, onCerrar }: CartDrawerProps) {
             <button
               type="button"
               onClick={clearCart}
-              className="rounded-md border border-cyber-purple-500/35 px-3 py-2 text-sm font-semibold text-cyber-cyan-200 hover:bg-oscuro-800"
+              disabled={vacio}
+              className="rounded-md border border-cyber-purple-500/35 px-3 py-2 text-sm font-semibold text-cyber-cyan-200 hover:bg-oscuro-800 disabled:cursor-not-allowed disabled:opacity-40"
             >
               Vaciar
             </button>
-            <Link
-              href="/checkout"
-              onClick={onCerrar}
-              className="flex-1 rounded-md bg-cyber-cyan-500 px-3 py-2 text-center text-sm font-bold text-white hover:bg-cyber-cyan-400"
-            >
-              Finalizar compra
-            </Link>
+            {vacio ? (
+              <Link
+                href="/productos"
+                onClick={onCerrar}
+                className="flex-1 rounded-md bg-cyber-cyan-500 px-3 py-2 text-center text-sm font-bold text-white hover:bg-cyber-cyan-400"
+              >
+                Ver productos
+              </Link>
+            ) : (
+              <Link
+                href="/checkout"
+                onClick={onCerrar}
+                className="flex-1 rounded-md bg-cyber-cyan-500 px-3 py-2 text-center text-sm font-bold text-white hover:bg-cyber-cyan-400"
+              >
+                Finalizar compra
+              </Link>
+            )}
           </div>
         </footer>
       </aside>

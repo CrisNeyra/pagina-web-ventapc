@@ -71,7 +71,6 @@ services:
       ADMIN_EMAILS: admin@aurapro.com
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
       STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
-      FIREBASE_SERVICE_ACCOUNT_JSON: ${FIREBASE_SERVICE_ACCOUNT_JSON:-}
     depends_on:
       postgres:
         condition: service_healthy

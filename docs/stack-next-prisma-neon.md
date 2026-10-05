@@ -42,7 +42,7 @@ npm run db:setup    # migrate deploy + seed
 npm run dev
 ```
 
-Admin tras seed: `admin@aurapro.com` / `1234ab`.
+Admin tras seed: `ADMIN_EMAIL` + `ADMIN_PASSWORD` (política: 10+ caracteres, letra y número).
 
 | Comando | Uso |
 |---------|-----|
@@ -61,8 +61,7 @@ Admin tras seed: `admin@aurapro.com` / `1234ab`.
 
 **Opcionales:**
 
-- `NEXT_PUBLIC_SITE_URL`, Stripe (`NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`)
-- `ADMIN_EMAILS`, `UPLOADS_DIR`, Sentry
+- `NEXT_PUBLIC_SITE_URL`, Stripe, `ADMIN_EMAILS`, `BLOB_READ_WRITE_TOKEN`, Resend, Upstash, Sentry
 
 **Legacy:** `NEXT_PUBLIC_API_URL` fuerza al cliente a usar Nest externo. Vacío = `/api` del mismo origen (recomendado).
 
@@ -85,7 +84,7 @@ El build ejecuta `prisma generate` antes de `next build`. Tras el primer deploy:
 | Stripe intent + webhook | Next |
 | admin (pedidos + postulaciones/CV) | Next |
 | PC builds, postulaciones públicas | Next |
-| Nest `api/` | Legacy opcional (no borrar aún; referencia / escape hatch) |
+| Nest `api/` | Archivado (referencia; no se despliega) |
 
 ## Seguridad
 
