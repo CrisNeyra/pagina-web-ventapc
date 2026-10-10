@@ -75,7 +75,7 @@ export async function obtenerTransferenciaApi() {
 }
 
 export async function registrarUsuarioApi(email: string, password: string) {
-  return apiFetch<{ token: string; user: { id: string; email: string; role: string } }>(
+  return apiFetch<{ user: { id: string; email: string; role: string } }>(
     "/auth/register",
     { method: "POST", body: JSON.stringify({ email, password }) }
   );
@@ -86,7 +86,7 @@ export async function loginUsuarioApi(
   password: string,
   recordarme = false
 ) {
-  return apiFetch<{ token: string; user: { id: string; email: string; role: string } }>(
+  return apiFetch<{ user: { id: string; email: string; role: string } }>(
     "/auth/login",
     { method: "POST", body: JSON.stringify({ email, password, recordarme }) }
   );
@@ -139,7 +139,8 @@ export async function obtenerCvAdminApi(token: string, postulacionId: string) {
   const respuesta = await fetch(
     `${obtenerApiUrl()}/admin/postulaciones/${postulacionId}/cv`,
     {
-      headers: { Authorization: `Bearer ${token}` },
+      credentials: "include",
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
     }
   );
   if (!respuesta.ok) {

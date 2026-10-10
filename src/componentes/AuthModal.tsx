@@ -28,6 +28,7 @@ export default function AuthModal({
   const [recordarme, setRecordarme] = useState(false);
   const [error, setError] = useState("");
   const [ok, setOk] = useState("");
+  const [enlaceDemo, setEnlaceDemo] = useState("");
   const [cargando, setCargando] = useState(false);
   const [mostrarPassword, setMostrarPassword] = useState(false);
   const { configured, signIn, signUp } = useAuth();
@@ -45,6 +46,7 @@ export default function AuthModal({
   const resetMensajes = () => {
     setError("");
     setOk("");
+    setEnlaceDemo("");
   };
 
   const cerrar = () => {
@@ -83,12 +85,16 @@ export default function AuthModal({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email }),
         });
-        const datos = (await respuesta.json().catch(() => ({}))) as { message?: string };
+        const datos = (await respuesta.json().catch(() => ({}))) as {
+          message?: string;
+          enlace?: string;
+        };
         if (!respuesta.ok) {
           setError(datos.message || "No se pudo enviar el enlace.");
           return;
         }
         setOk(datos.message || "Si el correo está registrado, te enviamos un enlace.");
+        if (datos.enlace) setEnlaceDemo(datos.enlace);
         return;
       }
 
@@ -272,6 +278,14 @@ export default function AuthModal({
           {ok && (
             <p className="rounded-md border border-cyber-lime-400/30 bg-cyber-lime-400/10 px-3 py-2 text-xs text-cyber-lime-400">
               {ok}
+              {enlaceDemo && (
+                <>
+                  {" "}
+                  <a href={enlaceDemo} className="font-semibold underline">
+                    Abrir enlace
+                  </a>
+                </>
+              )}
             </p>
           )}
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { FiSearch } from "react-icons/fi";
@@ -84,13 +84,57 @@ export default function NavbarSearch({
   const terminoBusqueda = useBusquedaStore((state) => state.termino);
   const setTerminoBusqueda = useBusquedaStore((state) => state.setTermino);
   const terminoNormalizado = terminoBusqueda.trim().toLowerCase();
+  const [catalogo, setCatalogo] = useState<Producto[]>(catalogoCompleto);
+
+  useEffect(() => {
+    let cancelado = false;
+    void fetch("/api/products")
+      .then(async (respuesta) => {
+        if (!respuesta.ok) throw new Error("catalogo");
+        return (await respuesta.json()) as {
+          productos?: {
+            id: string;
+            nombre: string;
+            descripcion: string;
+            precio: number;
+            imagenes: string[];
+            categoria: string;
+            enStock: boolean;
+            stock?: number;
+            etiqueta?: string | null;
+          }[];
+        };
+      })
+      .then((datos) => {
+        if (cancelado || !datos.productos?.length) return;
+        setCatalogo(
+          datos.productos.map((producto) => ({
+            id: producto.id,
+            nombre: producto.nombre,
+            descripcion: producto.descripcion,
+            precio: producto.precio,
+            imagenes: producto.imagenes ?? [],
+            categoria: producto.categoria,
+            enStock: producto.enStock,
+            stock: producto.stock,
+            etiqueta: producto.etiqueta ?? undefined,
+          }))
+        );
+      })
+      .catch(() => {
+        if (!cancelado) setCatalogo(catalogoCompleto);
+      });
+    return () => {
+      cancelado = true;
+    };
+  }, []);
 
   const sugerencias = useMemo(() => {
     if (!terminoNormalizado) return [];
-    return catalogoCompleto
+    return catalogo
       .filter((producto) => producto.nombre.toLowerCase().includes(terminoNormalizado))
       .slice(0, 6);
-  }, [terminoNormalizado]);
+  }, [catalogo, terminoNormalizado]);
 
   const inputClasses =
     "w-full rounded-md border border-cyber-purple-500/45 bg-oscuro-900/95 px-4 py-2.5 pr-12 text-sm text-ink placeholder:text-muted focus:border-ink-cyan focus:outline-none focus:ring-2 focus:ring-ink-cyan transition-all duration-200";

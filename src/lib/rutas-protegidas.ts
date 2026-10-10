@@ -1,4 +1,4 @@
-const RUTAS_PROTEGIDAS = ["/usuario", "/checkout"];
+const RUTAS_PROTEGIDAS = ["/usuario", "/checkout", "/admin"];
 
 export function esRutaProtegida(pathname: string): boolean {
   if (pathname === "/checkout/exito" || pathname === "/checkout/error") {

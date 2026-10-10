@@ -1,12 +1,8 @@
 /**
- * Cliente HTTP hacia el backend.
- * Por defecto usa las Route Handlers de Next (`/api`).
- * Solo si definís NEXT_PUBLIC_API_URL se usa una API externa (Nest legacy).
+ * Cliente HTTP hacia las Route Handlers de Next (`/api` del mismo origen).
+ * Nest en `api/` queda fuera de este cliente.
  */
 export function obtenerApiUrl(): string {
-  const externa = process.env.NEXT_PUBLIC_API_URL?.trim();
-  if (externa) return externa.replace(/\/$/, "");
-
   if (typeof window !== "undefined") return "/api";
 
   const site = process.env.NEXT_PUBLIC_SITE_URL?.trim() || process.env.VERCEL_URL?.trim();
@@ -18,8 +14,15 @@ export function obtenerApiUrl(): string {
   return "http://localhost:3000/api";
 }
 
-/** True si hay backend usable: Next+Prisma (DATABASE_URL) o Nest externo. */
+/**
+ * True si hay backend usable.
+ * En el navegador, `/api` del mismo origen existe aunque DATABASE_URL no llegue al bundle.
+ * En el servidor sigue exigiendo DATABASE_URL o una API externa.
+ */
 export function apiConfigurada(): boolean {
+  if (typeof window !== "undefined" && !process.env.NEXT_PUBLIC_API_URL?.trim()) {
+    return true;
+  }
   return (
     Boolean(process.env.DATABASE_URL?.trim()) ||
     Boolean(process.env.NEXT_PUBLIC_API_URL?.trim())

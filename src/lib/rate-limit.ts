@@ -1,8 +1,32 @@
+import { obtenerRedis, redisConfigurado } from "@/lib/redis";
+
 export type RateLimitResult = { ok: true } | { ok: false; retryAfterSec: number };
 
 const memoria = new Map<string, { count: number; resetAt: number }>();
 
+export function rateLimitRemotoConfigurado(): boolean {
+  return (
+    redisConfigurado() ||
+    Boolean(
+      process.env.UPSTASH_REDIS_REST_URL?.trim() &&
+        process.env.UPSTASH_REDIS_REST_TOKEN?.trim()
+    )
+  );
+}
+
+export function proveedorRateLimit(): "redis" | "upstash" | "memory" {
+  if (redisConfigurado()) return "redis";
+  if (
+    process.env.UPSTASH_REDIS_REST_URL?.trim() &&
+    process.env.UPSTASH_REDIS_REST_TOKEN?.trim()
+  ) {
+    return "upstash";
+  }
+  return "memory";
+}
+
 function ipDeRequest(request: Request): string {
+  // En Vercel el primer valor de x-forwarded-for es el cliente.
   const forwarded = request.headers.get("x-forwarded-for");
   if (forwarded) return forwarded.split(",")[0]?.trim() || "unknown";
   return request.headers.get("x-real-ip")?.trim() || "local";
@@ -10,6 +34,25 @@ function ipDeRequest(request: Request): string {
 
 export function claveRateLimit(request: Request, bucket: string): string {
   return `${bucket}:${ipDeRequest(request)}`;
+}
+
+async function limitarRedisCloud(
+  clave: string,
+  limite: number,
+  ventanaSec: number
+): Promise<RateLimitResult | null> {
+  const redis = await obtenerRedis();
+  if (!redis) return null;
+
+  const redisKey = `rl:${clave}`;
+  const count = await redis.incr(redisKey);
+  if (count === 1) {
+    await redis.expire(redisKey, ventanaSec);
+  }
+  if (count > limite) {
+    return { ok: false, retryAfterSec: ventanaSec };
+  }
+  return { ok: true };
 }
 
 async function limitarUpstash(
@@ -59,7 +102,7 @@ function limitarMemoria(
   return { ok: true };
 }
 
-/** Upstash si hay credenciales; si no, memoria (útil en local, débil en serverless). */
+/** Redis Cloud (REDIS_URL) o Upstash REST; si no hay ninguno, memoria. */
 export async function limitarPeticion(
   clave: string,
   limite: number,
@@ -67,10 +110,14 @@ export async function limitarPeticion(
 ): Promise<RateLimitResult> {
   const ventanaSec = Math.max(1, Math.ceil(ventanaMs / 1000));
   try {
-    const remoto = await limitarUpstash(clave, limite, ventanaSec);
-    if (remoto) return remoto;
-  } catch {
-    // fallback memoria
+    if (redisConfigurado()) {
+      const remoto = await limitarRedisCloud(clave, limite, ventanaSec);
+      if (remoto) return remoto;
+    }
+    const upstash = await limitarUpstash(clave, limite, ventanaSec);
+    if (upstash) return upstash;
+  } catch (error) {
+    console.error("Rate limit remoto falló; uso memoria", error);
   }
   return limitarMemoria(clave, limite, ventanaMs);
 }

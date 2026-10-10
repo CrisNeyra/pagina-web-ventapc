@@ -3,6 +3,7 @@ import { databaseUrlConfigurada } from "@/lib/prisma";
 import { solicitarRestablecerPassword } from "@/lib/auth-server";
 import { emailConfigurado, notificarRestablecerPassword } from "@/lib/email-server";
 import { claveRateLimit, limitarPeticion, respuestaRateLimit } from "@/lib/rate-limit";
+import { esquemaOlvido } from "@/lib/validacion";
 
 export const runtime = "nodejs";
 
@@ -23,7 +24,8 @@ export async function POST(request: Request) {
     );
   }
 
-  if (!emailConfigurado()) {
+  const demoSinCorreo = process.env.NODE_ENV !== "production" && !emailConfigurado();
+  if (!emailConfigurado() && !demoSinCorreo) {
     return NextResponse.json(
       { message: "El envío de correo no está configurado (RESEND_API_KEY y EMAIL_FROM)." },
       { status: 503 }
@@ -36,16 +38,24 @@ export async function POST(request: Request) {
     return NextResponse.json(r.body, r.init);
   }
 
-  const body = (await request.json().catch(() => null)) as { email?: string } | null;
-  const email = body?.email?.trim().toLowerCase();
-  if (!email || !email.includes("@")) {
+  const crudo = await request.json().catch(() => null);
+  const body = esquemaOlvido.safeParse(crudo);
+  if (!body.success) {
     return NextResponse.json({ message: "DATOS_INVALIDOS" }, { status: 400 });
   }
+  const email = body.data.email.toLowerCase();
 
   try {
     const token = await solicitarRestablecerPassword(email);
     if (token) {
       const enlace = `${origenPublico(request)}/restablecer?token=${encodeURIComponent(token)}`;
+      if (demoSinCorreo) {
+        return NextResponse.json({
+          ok: true,
+          message: "Modo demo: el correo no está configurado. Usá este enlace para restablecer la contraseña.",
+          enlace,
+        });
+      }
       const envio = await notificarRestablecerPassword({ email, enlace });
       if (!envio.enviado) {
         return NextResponse.json(

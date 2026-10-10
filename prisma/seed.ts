@@ -1,6 +1,7 @@
 import { readFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
-import { PrismaClient, UserRole } from "@prisma/client";
+import { Prisma, PrismaClient, UserRole } from "@prisma/client";
+import { especificacionesPc } from "../src/datos/especificacionesPc";
 import bcrypt from "bcryptjs";
 import { validarPassword } from "../src/lib/auth";
 
@@ -68,12 +69,13 @@ async function main() {
         nombre: producto.nombre,
         descripcion: producto.descripcion,
         precio: producto.precio,
-        stock: producto.enStock ? 10 : 0,
-        enStock: producto.enStock,
         categoria: producto.categoria,
         imagenes: producto.imagenes,
         etiqueta: producto.etiqueta ?? null,
         slug: slugify(`${producto.nombre}-${producto.id}`),
+        specs: especificacionesPc[producto.id]
+          ? (JSON.parse(JSON.stringify(especificacionesPc[producto.id])) as Prisma.InputJsonValue)
+          : Prisma.JsonNull,
       },
       create: {
         id: producto.id,
@@ -86,6 +88,9 @@ async function main() {
         categoria: producto.categoria,
         imagenes: producto.imagenes,
         etiqueta: producto.etiqueta ?? null,
+        specs: especificacionesPc[producto.id]
+          ? (JSON.parse(JSON.stringify(especificacionesPc[producto.id])) as Prisma.InputJsonValue)
+          : Prisma.JsonNull,
       },
     });
   }

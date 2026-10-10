@@ -1,7 +1,3 @@
-vi.mock("@/lib/api-token", () => ({
-  obtenerApiToken: vi.fn(() => "api-token-test"),
-}));
-
 vi.mock("@/servicios/apiBackendServicio", () => ({
   crearPaymentIntentEnApi: vi.fn(async () => ({
     orderId: "order-123",
@@ -57,7 +53,7 @@ describe("crearPaymentIntent", () => {
 
     expect(crearPaymentIntentEnApi).toHaveBeenCalledWith(
       expect.any(Array),
-      "api-token-test",
+      "",
       expect.objectContaining({ metodoPago: "credito", cuotas: 6 })
     );
   });

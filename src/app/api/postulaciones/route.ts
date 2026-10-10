@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { databaseUrlConfigurada } from "@/lib/prisma";
 import { crearPostulacion, ExtrasError } from "@/lib/extras-server";
 import { claveRateLimit, limitarPeticion, respuestaRateLimit } from "@/lib/rate-limit";
+import { esquemaPostulacion } from "@/lib/validacion";
 
 export const runtime = "nodejs";
 
@@ -26,10 +27,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "DATOS_INVALIDOS" }, { status: 400 });
   }
 
-  const nombre = String(form.get("nombre") ?? "");
-  const email = String(form.get("email") ?? "");
-  const telefono = String(form.get("telefono") ?? "");
-  const mensaje = String(form.get("mensaje") ?? "");
+  const campos = esquemaPostulacion.safeParse({
+    nombre: String(form.get("nombre") ?? ""),
+    email: String(form.get("email") ?? ""),
+    telefono: String(form.get("telefono") ?? ""),
+    mensaje: String(form.get("mensaje") ?? ""),
+  });
+  if (!campos.success) {
+    return NextResponse.json({ message: "CAMPOS_REQUERIDOS" }, { status: 400 });
+  }
+  const { nombre, email, telefono, mensaje } = campos.data;
   const cv = form.get("cv");
 
   if (!(cv instanceof File)) {

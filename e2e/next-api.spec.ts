@@ -27,18 +27,18 @@ test.describe("API Next: health + productos + auth", () => {
       data: { email, password },
     });
     expect([200, 201]).toContain(registro.status());
-    const regBody = (await registro.json()) as { token: string };
-    expect(regBody.token).toBeTruthy();
+    const regBody = (await registro.json()) as { token?: string; user?: { email: string } };
+    expect(regBody.token).toBeUndefined();
+    expect(regBody.user?.email).toBe(email);
 
     const login = await request.post("/api/auth/login", {
       data: { email, password },
     });
     expect(login.ok()).toBeTruthy();
-    const { token } = (await login.json()) as { token: string };
+    const loginBody = (await login.json()) as { token?: string };
+    expect(loginBody.token).toBeUndefined();
 
-    const me = await request.get("/api/auth/me", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const me = await request.get("/api/auth/me");
     expect(me.ok()).toBeTruthy();
   });
 });

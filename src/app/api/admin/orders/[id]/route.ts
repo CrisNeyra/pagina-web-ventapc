@@ -3,6 +3,7 @@ import { databaseUrlConfigurada } from "@/lib/prisma";
 import { verificarAdminRequest } from "@/lib/admin-auth";
 import { actualizarEstadoPedidoAdmin } from "@/lib/admin-server";
 import { OrderError } from "@/lib/orders-server";
+import { esquemaEstadoPedido } from "@/lib/validacion";
 
 export const runtime = "nodejs";
 
@@ -23,13 +24,14 @@ export async function PATCH(
   }
 
   const { id } = await context.params;
-  const body = (await request.json().catch(() => null)) as { estado?: string } | null;
-  if (!body?.estado) {
+  const crudo = await request.json().catch(() => null);
+  const body = esquemaEstadoPedido.safeParse(crudo);
+  if (!body.success) {
     return NextResponse.json({ message: "ESTADO_INVALIDO" }, { status: 400 });
   }
 
   try {
-    const pedido = await actualizarEstadoPedidoAdmin(id, body.estado);
+    const pedido = await actualizarEstadoPedidoAdmin(id, body.data.estado);
     return NextResponse.json(pedido);
   } catch (error) {
     const mensaje = error instanceof OrderError ? error.message : "ERROR_ADMIN";

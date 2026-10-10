@@ -2,32 +2,40 @@ export function emailConfigurado() {
   return Boolean(process.env.RESEND_API_KEY?.trim() && process.env.EMAIL_FROM?.trim());
 }
 
+function esperar(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function enviarEmail(opciones: { to: string; subject: string; html: string }) {
   if (!emailConfigurado()) return { enviado: false as const };
 
-  try {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.RESEND_API_KEY!.trim()}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: process.env.EMAIL_FROM!.trim(),
-        to: [opciones.to],
-        subject: opciones.subject,
-        html: opciones.html,
-      }),
-    });
-    if (!res.ok) {
+  for (let intento = 1; intento <= 3; intento += 1) {
+    try {
+      const res = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.RESEND_API_KEY!.trim()}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: process.env.EMAIL_FROM!.trim(),
+          to: [opciones.to],
+          subject: opciones.subject,
+          html: opciones.html,
+        }),
+      });
+      if (res.ok) return { enviado: true as const };
+      const reintentar = res.status === 429 || res.status >= 500;
       console.error("Resend error", res.status, await res.text().catch(() => ""));
-      return { enviado: false as const };
+      if (!reintentar || intento === 3) return { enviado: false as const };
+    } catch (error) {
+      console.error("Resend exception", error);
+      if (intento === 3) return { enviado: false as const };
     }
-    return { enviado: true as const };
-  } catch (error) {
-    console.error("Resend exception", error);
-    return { enviado: false as const };
+    await esperar(200 * intento);
   }
+
+  return { enviado: false as const };
 }
 
 export async function notificarPedidoCreado(opciones: {

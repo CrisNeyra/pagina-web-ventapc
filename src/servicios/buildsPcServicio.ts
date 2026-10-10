@@ -1,5 +1,4 @@
 import { apiConfigurada, apiFetch } from "@/lib/api-client";
-import { obtenerApiToken } from "@/lib/api-token";
 
 interface ItemBuild {
   id: string;
@@ -47,19 +46,13 @@ export async function guardarBuildConReintentos(
     };
   }
 
-  const token = obtenerApiToken();
-  if (!token) {
-    return {
-      ok: false,
-      mensaje: "Iniciá sesión para guardar esta configuración.",
-    };
-  }
+  const token = "";
 
   const maximoIntentos = 3;
 
   for (let intento = 1; intento <= maximoIntentos; intento += 1) {
     try {
-      await guardarBuildEnApi(token, {
+      await guardarBuildEnApi(token ?? "", {
         subtotal: datosBuild.subtotal,
         items: datosBuild.items,
       });

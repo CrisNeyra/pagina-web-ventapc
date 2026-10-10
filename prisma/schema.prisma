@@ -54,6 +54,7 @@ model Product {
   categoria   String
   imagenes    Json     @default("[]")
   etiqueta    String?
+  specs       Json?
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 

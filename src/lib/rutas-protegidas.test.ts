@@ -2,9 +2,10 @@ import { describe, it, expect } from "vitest";
 import { esRutaProtegida } from "./rutas-protegidas";
 
 describe("esRutaProtegida", () => {
-  it("protege /usuario y /checkout", () => {
+  it("protege /usuario, /checkout y /admin", () => {
     expect(esRutaProtegida("/usuario")).toBe(true);
     expect(esRutaProtegida("/checkout")).toBe(true);
+    expect(esRutaProtegida("/admin")).toBe(true);
   });
 
   it("no protege páginas públicas de checkout", () => {

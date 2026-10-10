@@ -3,8 +3,12 @@ import { AURA_TOKEN_COOKIE } from "@/tipos/auth-user";
 import { opcionesCookieAuth } from "@/lib/auth-cookie";
 import { verificarToken } from "@/lib/auth-server";
 
-/** Guarda el JWT Nest en cookie httpOnly para el proxy. */
+/** Solo el ramal Nest externo puede copiar un JWT a la cookie. El logout sigue en DELETE. */
 export async function POST(request: NextRequest) {
+  if (!process.env.NEXT_PUBLIC_API_URL?.trim()) {
+    return NextResponse.json({ message: "API_SESSION_DESACTIVADA" }, { status: 410 });
+  }
+
   try {
     const { token } = (await request.json()) as { token?: string };
     if (!token?.trim()) {

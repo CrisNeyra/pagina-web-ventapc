@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { apiConfigurada, usaApiExterna } from "@/lib/api-client";
 import { databaseUrlConfigurada, prisma } from "@/lib/prisma";
+import { proveedorRateLimit } from "@/lib/rate-limit";
+import { emailConfigurado } from "@/lib/email-server";
 
 export const runtime = "nodejs";
 
@@ -49,6 +51,8 @@ export async function GET() {
     apiOk,
     apiServices,
     mode: usaApiExterna() ? "external-nest" : "next-prisma",
+    rateLimit: proveedorRateLimit(),
+    email: emailConfigurado(),
     timestamp: new Date().toISOString(),
   });
 }

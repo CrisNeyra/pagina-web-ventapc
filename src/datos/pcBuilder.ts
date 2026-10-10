@@ -3,35 +3,61 @@ import type {
   BuilderCategoryId,
   BuilderProduct,
 } from "@/tipos/pcBuilder";
-import { productosDestacados, productosRebajados } from "@/datos/productos";
+import { catalogoCompleto } from "@/datos/productos";
+import type { Producto } from "@/tipos/producto";
 
-// Imágenes del PC Builder reutilizan assets del catálogo principal.
-const catalogoBase = [...productosDestacados, ...productosRebajados];
+const IDS_POR_CATEGORIA: { id: string; categoria: BuilderCategoryId }[] = [
+  { id: "proc-001", categoria: "procesador" },
+  { id: "proc-002", categoria: "procesador" },
+  { id: "proc-003", categoria: "procesador" },
+  { id: "proc-004", categoria: "procesador" },
+  { id: "mother-001", categoria: "motherboard" },
+  { id: "mother-002", categoria: "motherboard" },
+  { id: "mother-003", categoria: "motherboard" },
+  { id: "cooler-001", categoria: "cooler" },
+  { id: "cooler-002", categoria: "cooler" },
+  { id: "ram-001", categoria: "ram" },
+  { id: "ram-002", categoria: "ram" },
+  { id: "ram-003", categoria: "ram" },
+  { id: "ram-004", categoria: "ram" },
+  { id: "gpu-001", categoria: "gpu" },
+  { id: "gpu-002", categoria: "gpu" },
+  { id: "gpu-003", categoria: "gpu" },
+  { id: "ssd-001", categoria: "almacenamiento" },
+  { id: "ssd-002", categoria: "almacenamiento" },
+  { id: "ssd-003", categoria: "almacenamiento" },
+  { id: "ssd-004", categoria: "almacenamiento" },
+  { id: "fuente-001", categoria: "fuente" },
+  { id: "fuente-002", categoria: "fuente" },
+  { id: "fuente-003", categoria: "fuente" },
+  { id: "combo-001", categoria: "gabinete" },
+];
 
-function obtenerProductoPorId(id: string) {
-  const producto = catalogoBase.find((item) => item.id === id);
-  if (!producto) {
-    throw new Error(`No se encontró el producto "${id}" para Pc Builder.`);
-  }
-  return producto;
-}
-
-function crearBuilderProduct(
+function armarProducto(
+  catalogo: Producto[],
   id: string,
-  categoria: BuilderCategoryId,
-  productoId: string,
-  imagenOverride?: string
-): BuilderProduct {
-  const producto = obtenerProductoPorId(productoId);
+  categoria: BuilderCategoryId
+): BuilderProduct | null {
+  const producto = catalogo.find((item) => item.id === id);
+  if (!producto) return null;
   return {
-    id,
+    id: producto.id,
     categoria,
     nombre: producto.nombre,
     descripcion: producto.descripcion,
     precio: producto.precio,
-    imagen: imagenOverride ?? producto.imagenes[0] ?? "/placeholder-producto.svg",
+    imagen: producto.imagenes[0] ?? "/placeholder-producto.svg",
     stock: producto.enStock,
+    specs: producto.specs ?? undefined,
   };
+}
+
+export function productosBuilderDesdeCatalogo(catalogo: Producto[]): BuilderProduct[] {
+  const fuente = catalogo.length > 0 ? catalogo : catalogoCompleto;
+  return IDS_POR_CATEGORIA.flatMap((item) => {
+    const producto = armarProducto(fuente, item.id, item.categoria) ?? armarProducto(catalogoCompleto, item.id, item.categoria);
+    return producto ? [producto] : [];
+  });
 }
 
 export const builderCategories: BuilderCategory[] = [
@@ -45,40 +71,6 @@ export const builderCategories: BuilderCategory[] = [
   { id: "gabinete", nombre: "Gabinete", icono: "CASE" },
 ];
 
-export const builderProducts: BuilderProduct[] = [
-  crearBuilderProduct("b-cpu-001", "procesador", "proc-001"),
-  crearBuilderProduct("b-cpu-002", "procesador", "proc-002"),
-  crearBuilderProduct("b-cpu-003", "procesador", "proc-003"),
-  crearBuilderProduct("b-cpu-004", "procesador", "proc-004"),
-
-  // Motherboards — imágenes del catálogo de PCs armadas.
-  crearBuilderProduct("b-mb-001", "motherboard", "pc-001", "/productos/pc-001-principal.jpg"),
-  crearBuilderProduct("b-mb-002", "motherboard", "pc-002", "/productos/pc-002-principal.jpg"),
-
-  // Coolers — imágenes de combos/PCs del catálogo.
-  crearBuilderProduct("b-cl-001", "cooler", "combo-001", "/productos/combo-001-principal.jpg"),
-  crearBuilderProduct("b-cl-002", "cooler", "pc-003", "/productos/pc-003-principal.jpg"),
-
-  crearBuilderProduct("b-ram-001", "ram", "ram-001"),
-  crearBuilderProduct("b-ram-002", "ram", "ram-002"),
-  crearBuilderProduct("b-ram-003", "ram", "ram-003"),
-
-  crearBuilderProduct("b-gpu-001", "gpu", "gpu-001"),
-  crearBuilderProduct("b-gpu-002", "gpu", "gpu-002"),
-  crearBuilderProduct("b-gpu-003", "gpu", "gpu-003"),
-
-  crearBuilderProduct("b-ssd-001", "almacenamiento", "ssd-001"),
-  crearBuilderProduct("b-ssd-002", "almacenamiento", "ssd-002"),
-  crearBuilderProduct("b-ssd-003", "almacenamiento", "ssd-003"),
-  crearBuilderProduct("b-ssd-004", "almacenamiento", "ssd-004"),
-
-  // Fuentes — imágenes de PCs del catálogo.
-  crearBuilderProduct("b-psu-001", "fuente", "pc-002", "/productos/pc-002-principal.jpg"),
-  crearBuilderProduct("b-psu-002", "fuente", "combo-001", "/productos/combo-001-principal.jpg"),
-
-  // Gabinetes — imágenes de combos/PCs del catálogo.
-  crearBuilderProduct("b-case-001", "gabinete", "combo-001", "/productos/combo-001-principal.jpg"),
-  crearBuilderProduct("b-case-002", "gabinete", "pc-001", "/productos/pc-001-principal.jpg"),
-];
+export const builderProducts: BuilderProduct[] = productosBuilderDesdeCatalogo(catalogoCompleto);
 
 export const defaultBuilderCategory: BuilderCategoryId = "procesador";

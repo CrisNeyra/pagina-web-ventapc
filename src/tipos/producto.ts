@@ -9,6 +9,7 @@ export interface Producto {
   enStock: boolean;
   stock?: number;
   etiqueta?: string; // "PC ARMADA", "COMBO", etc.
+  specs?: import("@/datos/especificacionesPc").EspecificacionPc | null;
 }
 
 export interface Banner {

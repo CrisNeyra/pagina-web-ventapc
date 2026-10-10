@@ -1,7 +1,7 @@
 import type { Producto } from "@/tipos/producto";
 import type { Prisma } from "@prisma/client";
 import { catalogoCompleto } from "@/datos/productos";
-import { apiConfigurada, apiFetch, usaApiExterna } from "@/lib/api-client";
+import { apiConfigurada, apiFetch } from "@/lib/api-client";
 import { databaseUrlConfigurada, prisma } from "@/lib/prisma";
 import { mapearProductoDb } from "@/lib/mapear-producto";
 
@@ -16,6 +16,7 @@ interface ProductoApi {
   categoria: string;
   imagenes: string[];
   etiqueta?: string | null;
+  specs?: Producto["specs"];
 }
 
 function mapearProducto(producto: ProductoApi): Producto {
@@ -29,6 +30,7 @@ function mapearProducto(producto: ProductoApi): Producto {
     enStock: producto.enStock,
     stock: producto.stock,
     etiqueta: producto.etiqueta ?? undefined,
+    specs: producto.specs ?? undefined,
   };
 }
 
@@ -66,7 +68,7 @@ export async function obtenerCatalogoDesdeApi(opciones?: {
   busqueda?: string;
   soloStock?: boolean;
 }): Promise<Producto[]> {
-  if (databaseUrlConfigurada() && !usaApiExterna()) {
+  if (databaseUrlConfigurada()) {
     return obtenerCatalogoDesdePrisma(opciones);
   }
 
@@ -86,7 +88,7 @@ export async function obtenerCatalogoDesdeApi(opciones?: {
 
 export async function obtenerProductoDesdeApi(id: string): Promise<Producto | null> {
   try {
-    if (databaseUrlConfigurada() && !usaApiExterna()) {
+    if (databaseUrlConfigurada()) {
       const producto =
         (await prisma.product.findUnique({ where: { id } })) ??
         (await prisma.product.findUnique({ where: { slug: id } }));

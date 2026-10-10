@@ -2,7 +2,6 @@ import { validarItemsPagoBasicos } from "@/lib/validarItemsPago";
 import type { DatosEntrega } from "@/lib/entrega";
 import { apiConfigurada } from "@/lib/api-client";
 import { crearPaymentIntentEnApi } from "@/servicios/apiBackendServicio";
-import { obtenerApiToken } from "@/lib/api-token";
 
 export interface ItemPago {
   id: string;
@@ -73,12 +72,7 @@ export async function crearPaymentIntent(
   }
 
   try {
-    const apiToken = obtenerApiToken();
-    if (!apiToken) {
-      return { ok: false, mensaje: "Debés iniciar sesión para pagar." };
-    }
-
-    const resultado = await crearPaymentIntentEnApi(items, apiToken, {
+    const resultado = await crearPaymentIntentEnApi(items, "", {
       metodoPago: opciones.metodoPago ?? "debito",
       cuotas: opciones.cuotas,
       entrega: opciones.entrega ?? { tipo: "retiro" },

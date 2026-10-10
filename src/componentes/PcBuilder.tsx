@@ -2,15 +2,21 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FiX } from "react-icons/fi";
 import { builderCategories, builderProducts } from "@/datos/pcBuilder";
+import { choquesDeSeleccion, motivoIncompatibilidad } from "@/lib/compatibilidadPc";
 import { formatearPrecio } from "@/utils/formato";
 import { calcularSubtotalBuilder, useBuilderStore } from "@/store/builderStore";
 import { guardarBuildConReintentos } from "@/servicios/buildsPcServicio";
 import { useAuth } from "@/context/AuthContext";
+import { useCartStore } from "@/store/cartStore";
 
-export default function PcBuilder() {
+export default function PcBuilder({
+  productos = builderProducts,
+}: {
+  productos?: typeof builderProducts;
+}) {
   const {
     categoriaActiva,
     seleccion,
@@ -20,14 +26,16 @@ export default function PcBuilder() {
     limpiarBuild,
   } = useBuilderStore();
   const { user } = useAuth();
+  const addItem = useCartStore((estado) => estado.addItem);
+  const router = useRouter();
   const [guardando, setGuardando] = useState(false);
   const [feedback, setFeedback] = useState("");
   const [imagenesConError, setImagenesConError] = useState<Record<string, true>>({});
 
   const productosCategoria = useMemo(
     () =>
-      builderProducts.filter((producto) => producto.categoria === categoriaActiva),
-    [categoriaActiva]
+      productos.filter((producto) => producto.categoria === categoriaActiva),
+    [categoriaActiva, productos]
   );
 
   const subtotal = useMemo(() => calcularSubtotalBuilder(seleccion), [seleccion]);
@@ -39,6 +47,7 @@ export default function PcBuilder() {
     () => builderCategories.find((cat) => cat.id === categoriaActiva),
     [categoriaActiva]
   );
+  const choques = useMemo(() => choquesDeSeleccion(seleccion), [seleccion]);
 
   const guardarConfiguracion = async () => {
     setFeedback("");
@@ -166,6 +175,13 @@ export default function PcBuilder() {
           <p className="mt-1 text-2xl font-black text-cyber-cyan-300">
             {formatearPrecio(subtotal)}
           </p>
+          {choques.length > 0 && (
+            <ul className="mt-3 space-y-1 text-xs text-cyber-pink-300">
+              {choques.map((choque) => (
+                <li key={choque}>{choque}</li>
+              ))}
+            </ul>
+          )}
           <div className="mt-3 grid grid-cols-2 gap-2">
             <button
               type="button"
@@ -174,12 +190,27 @@ export default function PcBuilder() {
             >
               Volver atras
             </button>
-            <Link
-              href="/checkout"
-              className="rounded-md bg-cyber-cyan-500 px-3 py-2 text-center text-xs font-bold uppercase tracking-wide text-white hover:bg-cyber-cyan-400"
+            <button
+              type="button"
+              disabled={choques.length > 0}
+              onClick={() => {
+                for (const categoria of builderCategories) {
+                  const pieza = seleccion[categoria.id];
+                  if (!pieza) continue;
+                  addItem({
+                    id: pieza.id,
+                    nombre: pieza.nombre,
+                    precio: pieza.precio,
+                    imagen: pieza.imagen,
+                    enStock: pieza.stock,
+                  });
+                }
+                router.push("/checkout");
+              }}
+              className="rounded-md bg-cyber-cyan-500 px-3 py-2 text-center text-xs font-bold uppercase tracking-wide text-white hover:bg-cyber-cyan-400 disabled:cursor-not-allowed disabled:bg-oscuro-700 disabled:text-cyber-cyan-200/50"
             >
               Siguiente paso
-            </Link>
+            </button>
           </div>
           <button
             type="button"
@@ -208,6 +239,10 @@ export default function PcBuilder() {
         <div className="space-y-3">
           {productosCategoria.map((producto) => {
             const seleccionado = seleccion[categoriaActiva]?.id === producto.id;
+            const motivo = producto.stock
+              ? motivoIncompatibilidad(producto, seleccion)
+              : null;
+            const bloqueado = !producto.stock || Boolean(motivo);
             const claveImagenProducto = `producto-${producto.id}`;
             const mostrarImagenProducto = Boolean(producto.imagen) && !imagenesConError[claveImagenProducto];
             return (
@@ -250,12 +285,16 @@ export default function PcBuilder() {
                     <p className="text-lg font-black text-cyber-cyan-300">
                       {formatearPrecio(producto.precio)}
                     </p>
-                    <p className="text-[11px] font-semibold uppercase tracking-wide text-cyber-lime-300/90">
-                      {producto.stock ? "Compatible" : "Sin stock"}
+                    <p
+                      className={`text-[11px] font-semibold ${
+                        bloqueado ? "text-cyber-pink-300" : "text-cyber-lime-300/90 uppercase tracking-wide"
+                      }`}
+                    >
+                      {!producto.stock ? "Sin stock" : motivo ?? "Compatible"}
                     </p>
                     <button
                       type="button"
-                      disabled={!producto.stock}
+                      disabled={bloqueado}
                       onClick={() => seleccionarProducto(producto)}
                       className="mt-2 w-full rounded-md bg-cyber-purple-500 px-3 py-2 text-sm font-bold text-white hover:bg-cyber-purple-400 disabled:cursor-not-allowed disabled:opacity-60"
                     >

@@ -3,6 +3,7 @@ import { databaseUrlConfigurada } from "@/lib/prisma";
 import { loginUsuario } from "@/lib/auth-server";
 import { opcionesCookieAuth } from "@/lib/auth-cookie";
 import { claveRateLimit, limitarPeticion, respuestaRateLimit } from "@/lib/rate-limit";
+import { esquemaLogin } from "@/lib/validacion";
 
 export const runtime = "nodejs";
 
@@ -20,19 +21,19 @@ export async function POST(request: Request) {
     return NextResponse.json(r.body, r.init);
   }
 
-  const body = (await request.json().catch(() => null)) as {
-    email?: string;
-    password?: string;
-    recordarme?: boolean;
-  } | null;
-
-  if (!body?.email || !body?.password) {
+  const crudo = await request.json().catch(() => null);
+  const body = esquemaLogin.safeParse(crudo);
+  if (!body.success) {
     return NextResponse.json({ message: "DATOS_INVALIDOS" }, { status: 400 });
   }
 
   try {
-    const resultado = await loginUsuario(body.email, body.password, Boolean(body.recordarme));
-    const response = NextResponse.json(resultado);
+    const resultado = await loginUsuario(
+      body.data.email,
+      body.data.password,
+      Boolean(body.data.recordarme)
+    );
+    const response = NextResponse.json({ user: resultado.user });
     response.cookies.set(opcionesCookieAuth(resultado.token));
     return response;
   } catch (error) {

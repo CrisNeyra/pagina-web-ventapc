@@ -6,7 +6,6 @@ import { useAuth } from "@/context/AuthContext";
 import { formatearPrecio } from "@/utils/formato";
 import { etiquetaEstadoPedido, etiquetaMetodoPago } from "@/servicios/pedidosServicio";
 import { apiConfigurada } from "@/lib/api-client";
-import { obtenerApiToken } from "@/lib/api-token";
 import {
   actualizarPedidoAdminApi,
   obtenerCvAdminApi,
@@ -43,22 +42,16 @@ export default function AdminPanel() {
     setCargando(true);
     setError("");
 
-    const apiToken = obtenerApiToken();
-
-    if (!apiConfigurada() || !apiToken) {
-      setError(
-        !apiConfigurada()
-          ? "Falta DATABASE_URL (Neon) para el panel admin."
-          : "Debés iniciar sesión."
-      );
+    if (!apiConfigurada()) {
+      setError("Falta DATABASE_URL (Neon) para el panel admin.");
       setCargando(false);
       return;
     }
 
     try {
       const [datosPedidos, datosPostulaciones] = await Promise.all([
-        obtenerPedidosAdminApi(apiToken),
-        obtenerPostulacionesAdminApi(apiToken),
+        obtenerPedidosAdminApi(""),
+        obtenerPostulacionesAdminApi(""),
       ]);
       setPedidos(
         datosPedidos.map((p) => ({
@@ -88,10 +81,9 @@ export default function AdminPanel() {
   }, []);
 
   const actualizarPedido = async (orderId: string, estado: string) => {
-    const apiToken = obtenerApiToken();
-    if (!apiConfigurada() || !apiToken) return;
+    if (!apiConfigurada()) return;
     try {
-      await actualizarPedidoAdminApi(apiToken, orderId, estado);
+      await actualizarPedidoAdminApi("", orderId, estado);
       await cargarDatos();
     } catch {
       setError("No se pudo actualizar el pedido.");
@@ -99,10 +91,9 @@ export default function AdminPanel() {
   };
 
   const descargarCv = async (postulacionId: string) => {
-    const apiToken = obtenerApiToken();
-    if (!apiConfigurada() || !apiToken) return;
+    if (!apiConfigurada()) return;
     try {
-      const blob = await obtenerCvAdminApi(apiToken, postulacionId);
+      const blob = await obtenerCvAdminApi("", postulacionId);
       const url = URL.createObjectURL(blob);
       window.open(url, "_blank", "noopener,noreferrer");
       window.setTimeout(() => URL.revokeObjectURL(url), 60_000);

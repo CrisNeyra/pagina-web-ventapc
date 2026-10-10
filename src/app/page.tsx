@@ -5,11 +5,11 @@ import BrandsGrid from "@/componentes/BrandsGrid";
 import HomeProductos from "@/componentes/HomeProductos";
 import BannerArmaTuPC from "@/componentes/BannerArmaTuPC";
 import GrillaCategorias from "@/componentes/GrillaCategorias";
-import { productosDestacados, productosRebajados } from "@/datos/productos";
-import { unificarCatalogo } from "@/utils/productos";
+import { obtenerCatalogo } from "@/servicios/catalogoServicio";
 
-export default function PaginaInicio() {
-  const productosUnicos = unificarCatalogo(productosDestacados, productosRebajados);
+export default async function PaginaInicio() {
+  const productosUnicos = await obtenerCatalogo();
+  const productosDestacados = productosUnicos.slice(0, 4);
 
   return (
     <main className="flex-1 bg-background">

@@ -1,7 +1,6 @@
 import type { MetodoPago } from "@/tipos/metodoPago";
 import type { DatosEntrega } from "@/lib/entrega";
 import { pedidosApiConfigurados, crearPedidoEnApi } from "@/servicios/apiBackendServicio";
-import { obtenerApiToken } from "@/lib/api-token";
 
 export interface ItemPedidoRequest {
   id: string;
@@ -38,12 +37,7 @@ export async function crearPedidoOffline(
       };
     }
 
-    const apiToken = obtenerApiToken();
-    if (!apiToken) {
-      return { ok: false, mensaje: "Debés iniciar sesión para confirmar el pedido." };
-    }
-
-    const pedido = await crearPedidoEnApi(items, metodoPago, entrega, apiToken);
+    const pedido = await crearPedidoEnApi(items, metodoPago, entrega, "");
     return {
       ok: true,
       orderId: pedido.id,
@@ -52,6 +46,13 @@ export async function crearPedidoOffline(
     };
   } catch (error) {
     const msg = error instanceof Error ? error.message : "";
+    if (
+      msg.includes("NO_AUTENTICADO") ||
+      msg.includes("TOKEN_INVALIDO") ||
+      msg.includes("API_ERROR_401")
+    ) {
+      return { ok: false, mensaje: "Debés iniciar sesión para confirmar el pedido." };
+    }
     if (msg.includes("SIN_STOCK")) {
       return { ok: false, mensaje: "Alguno de los productos no tiene stock suficiente." };
     }
@@ -59,6 +60,12 @@ export async function crearPedidoOffline(
       return {
         ok: false,
         mensaje: "Los precios del carrito no coinciden. Actualizá la página e intentá de nuevo.",
+      };
+    }
+    if (msg.includes("INCOMPATIBLE_BUILD")) {
+      return {
+        ok: false,
+        mensaje: "Hay componentes incompatibles en el armado. Revisá socket, memoria o fuente.",
       };
     }
     if (msg.includes("UNKNOWN_PRODUCT")) {

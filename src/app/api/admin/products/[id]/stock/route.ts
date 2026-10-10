@@ -3,6 +3,7 @@ import { databaseUrlConfigurada } from "@/lib/prisma";
 import { verificarAdminRequest } from "@/lib/admin-auth";
 import { actualizarStockProductoAdmin } from "@/lib/admin-server";
 import { OrderError } from "@/lib/orders-server";
+import { esquemaStockAdmin } from "@/lib/validacion";
 
 export const runtime = "nodejs";
 
@@ -23,17 +24,14 @@ export async function PATCH(
   }
 
   const { id } = await context.params;
-  const body = (await request.json().catch(() => null)) as {
-    stock?: number;
-    enStock?: boolean;
-  } | null;
-
-  if (typeof body?.stock !== "number") {
+  const crudo = await request.json().catch(() => null);
+  const body = esquemaStockAdmin.safeParse(crudo);
+  if (!body.success) {
     return NextResponse.json({ message: "STOCK_INVALIDO" }, { status: 400 });
   }
 
   try {
-    const producto = await actualizarStockProductoAdmin(id, body.stock, body.enStock);
+    const producto = await actualizarStockProductoAdmin(id, body.data.stock, body.data.enStock);
     return NextResponse.json({
       id: producto.id,
       stock: producto.stock,

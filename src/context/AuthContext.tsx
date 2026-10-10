@@ -10,24 +10,11 @@ import {
 } from "react";
 import { apiConfigurada } from "@/lib/api-client";
 import { capturarError } from "@/lib/observabilidad";
-import { guardarApiToken, limpiarApiToken, obtenerApiToken } from "@/lib/api-token";
-import {
-  loginUsuarioApi,
-  obtenerUsuarioApi,
-  registrarUsuarioApi,
-} from "@/servicios/apiBackendServicio";
+import { loginUsuarioApi, registrarUsuarioApi } from "@/servicios/apiBackendServicio";
 import type { AuthUser } from "@/tipos/auth-user";
 
-async function sincronizarCookieJwt(token: string | null): Promise<boolean> {
+async function cerrarCookieSesion(): Promise<boolean> {
   const intentar = async () => {
-    if (token) {
-      const respuesta = await fetch("/api/auth/api-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token }),
-      });
-      return respuesta.ok;
-    }
     const respuesta = await fetch("/api/auth/api-session", { method: "DELETE" });
     return respuesta.ok;
   };
@@ -88,6 +75,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     let cancelado = false;
 
     async function restaurarSesion() {
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("aura-pro-api-token");
+      }
+
       if (!configured) {
         if (!cancelado) {
           setUser(null);
@@ -96,39 +87,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      let token = obtenerApiToken();
-      if (!token) {
-        try {
-          const espejo = await fetch("/api/auth/client-token", { credentials: "include" });
-          if (espejo.ok) {
-            const datos = (await espejo.json()) as { token?: string };
-            if (datos.token) {
-              guardarApiToken(datos.token);
-              token = datos.token;
-            }
-          }
-        } catch {
-          token = null;
-        }
-      }
-
-      if (!token) {
-        if (!cancelado) {
-          setUser(null);
-          setLoading(false);
-        }
-        return;
-      }
-
       try {
-        const me = await obtenerUsuarioApi(token);
-        if (!cancelado) {
-          setUser(mapearUsuarioNest(me));
-          await sincronizarCookieJwt(token);
+        const respuesta = await fetch("/api/auth/me", { credentials: "include" });
+        if (!respuesta.ok) {
+          if (!cancelado) setUser(null);
+          return;
         }
+        const me = (await respuesta.json()) as { id: string; email: string; role: string };
+        if (!cancelado) setUser(mapearUsuarioNest(me));
       } catch {
-        limpiarApiToken();
-        await sincronizarCookieJwt(null);
         if (!cancelado) setUser(null);
       } finally {
         if (!cancelado) setLoading(false);
@@ -144,8 +111,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signIn = useCallback(async (email: string, password: string, recordarme = false) => {
     try {
       const resultado = await loginUsuarioApi(email, password, recordarme);
-      guardarApiToken(resultado.token);
-      await sincronizarCookieJwt(resultado.token);
       setUser(mapearUsuarioNest(resultado.user));
       return null;
     } catch (error) {
@@ -157,8 +122,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signUp = useCallback(async (email: string, password: string) => {
     try {
       const resultado = await registrarUsuarioApi(email, password);
-      guardarApiToken(resultado.token);
-      await sincronizarCookieJwt(resultado.token);
       setUser(mapearUsuarioNest(resultado.user));
       return null;
     } catch (error) {
@@ -168,8 +131,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signOut = useCallback(async () => {
-    limpiarApiToken();
-    await sincronizarCookieJwt(null);
+    await cerrarCookieSesion();
     setUser(null);
     return null;
   }, []);

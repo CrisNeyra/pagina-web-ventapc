@@ -20,8 +20,8 @@ test.describe("Flujo de compra", () => {
     await expect(page.getByText(/RTX|AMD|Intel|MSI|Corsair/i).first()).toBeVisible();
 
     await page.goto("/checkout");
-    await expect(page).toHaveURL(/\/checkout/);
-    await expect(page.getByRole("heading", { name: /checkout/i })).toBeVisible();
+    await expect(page).toHaveURL(/auth=required/);
+    await expect(page.getByRole("heading", { name: /iniciar sesión/i })).toBeVisible();
   });
 
   test("muestra login requerido en checkout sin sesión", async ({ page }) => {
@@ -51,7 +51,8 @@ test.describe("Flujo de compra", () => {
     });
 
     await page.goto("/checkout");
-    await expect(page.getByText(/iniciá sesión/i)).toBeVisible();
+    await expect(page).toHaveURL(/auth=required/);
+    await expect(page.getByRole("heading", { name: /iniciar sesión/i })).toBeVisible();
   });
 
   test("página de éxito muestra confirmación", async ({ page }) => {

@@ -1,5 +1,4 @@
 import { apiConfigurada } from "@/lib/api-client";
-import { obtenerApiToken } from "@/lib/api-token";
 import { obtenerPedidosUsuarioApi } from "@/servicios/apiBackendServicio";
 
 export interface ItemPedido {
@@ -56,11 +55,8 @@ export function etiquetaEstadoPedido(estado: string): string {
 export async function obtenerPedidosUsuario(_userId: string): Promise<Pedido[]> {
   if (!apiConfigurada()) return [];
 
-  const token = obtenerApiToken();
-  if (!token) return [];
-
   try {
-    const pedidos = await obtenerPedidosUsuarioApi(token);
+    const pedidos = await obtenerPedidosUsuarioApi("");
     return pedidos.map((pedido) => ({
       id: pedido.id,
       estado: pedido.estado,

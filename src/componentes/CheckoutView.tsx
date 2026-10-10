@@ -30,16 +30,11 @@ import {
   validarDatosEntrega,
   type DatosEntrega,
 } from "@/lib/entrega";
-import { obtenerApiToken } from "@/lib/api-token";
 import { apiConfigurada } from "@/lib/api-client";
 import { obtenerTransferenciaApi } from "@/servicios/apiBackendServicio";
 
 async function obtenerTokenSesion(): Promise<string> {
-  const token = obtenerApiToken();
-  if (!token) {
-    throw new Error("SIN_SESION");
-  }
-  return token;
+  return "";
 }
 
 const DATOS_TRANSFERENCIA_DEFAULT = {

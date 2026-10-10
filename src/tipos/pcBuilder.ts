@@ -22,4 +22,5 @@ export interface BuilderProduct {
   precio: number;
   imagen: string;
   stock: boolean;
+  specs?: import("@/datos/especificacionesPc").EspecificacionPc;
 }

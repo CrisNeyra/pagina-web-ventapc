@@ -143,6 +143,32 @@
     ]
   },
   {
+    "id": "cooler-001",
+    "nombre": "Cooler CPU ID-Cooling SE-214-XT",
+    "descripcion": "Disipador por aire de torre con ventilador de 120 mm.\nCubre sockets AM5, AM4 y LGA1700.\nBase de contacto directo y altura contenida para la mayoría de los gabinetes.\nOpción silenciosa para procesadores de hasta 180 W.",
+    "precio": 34999,
+    "categoria": "Coolers",
+    "enStock": true,
+    "imagenes": [
+      "/productos/cooler-001-principal.jpg",
+      "/productos/cooler-001-img2.jpg",
+      "/productos/cooler-001-img3.jpg"
+    ]
+  },
+  {
+    "id": "cooler-002",
+    "nombre": "Cooler líquido Deepcool LS520 240 mm",
+    "descripcion": "AIO de 240 mm con dos ventiladores.\nCubre sockets AM5 y LGA1700.\nRadiador para procesadores de alto consumo.\nBomba silenciosa y tubos con funda.",
+    "precio": 89999,
+    "categoria": "Coolers",
+    "enStock": true,
+    "imagenes": [
+      "/productos/cooler-002-principal.jpg",
+      "/productos/cooler-002-img2.jpg",
+      "/productos/cooler-002-img3.jpg"
+    ]
+  },
+  {
     "id": "silla-001",
     "nombre": "Silla Gamer Corsair T3 Rush",
     "descripcion": "Silla ergonómica premium con respaldo reclinable y almohadas cervical/lumbar.\nTapizado transpirable de alta calidad para sesiones largas de juego o trabajo.\nApoyabrazos 4D ajustables y base metálica reforzada para máxima estabilidad.\nPensada para confort prolongado con estética gamer profesional.",

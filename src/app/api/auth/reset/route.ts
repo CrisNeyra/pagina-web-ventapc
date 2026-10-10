@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { databaseUrlConfigurada } from "@/lib/prisma";
 import { restablecerPassword } from "@/lib/auth-server";
 import { claveRateLimit, limitarPeticion, respuestaRateLimit } from "@/lib/rate-limit";
+import { esquemaReset } from "@/lib/validacion";
 
 export const runtime = "nodejs";
 
@@ -19,17 +20,14 @@ export async function POST(request: Request) {
     return NextResponse.json(r.body, r.init);
   }
 
-  const body = (await request.json().catch(() => null)) as {
-    token?: string;
-    password?: string;
-  } | null;
-
-  if (!body?.token || !body?.password) {
+  const crudo = await request.json().catch(() => null);
+  const body = esquemaReset.safeParse(crudo);
+  if (!body.success) {
     return NextResponse.json({ message: "DATOS_INVALIDOS" }, { status: 400 });
   }
 
   try {
-    await restablecerPassword(body.token, body.password);
+    await restablecerPassword(body.data.token, body.data.password);
     return NextResponse.json({ ok: true });
   } catch (error) {
     const mensaje = error instanceof Error ? error.message : "ERROR";

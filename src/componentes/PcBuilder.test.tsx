@@ -7,6 +7,10 @@ import { defaultBuilderCategory } from "@/datos/pcBuilder";
 import { builderProducts } from "@/datos/pcBuilder";
 import { guardarBuildConReintentos } from "@/servicios/buildsPcServicio";
 
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn() }),
+}));
+
 vi.mock("@/context/AuthContext", () => ({
   useAuth: vi.fn(),
 }));

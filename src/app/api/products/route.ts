@@ -28,14 +28,17 @@ export async function GET(request: Request) {
     ];
   }
 
-  const productos = await prisma.product.findMany({
-    where,
-    orderBy: { nombre: "asc" },
-    take: 100,
-  });
+  const [productos, total] = await Promise.all([
+    prisma.product.findMany({
+      where,
+      orderBy: { nombre: "asc" },
+      take: 100,
+    }),
+    prisma.product.count({ where }),
+  ]);
 
   return NextResponse.json({
     productos: productos.map(mapearProductoApi),
-    total: productos.length,
+    total,
   });
 }

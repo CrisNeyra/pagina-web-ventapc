@@ -1,13 +1,9 @@
 import { NextResponse } from "next/server";
 import { databaseUrlConfigurada } from "@/lib/prisma";
 import { obtenerUsuarioDesdeRequest } from "@/lib/auth-server";
-import {
-  crearPedidoOffline,
-  OrderError,
-  type EntregaDto,
-  type ItemPedidoDto,
-} from "@/lib/orders-server";
+import { crearPedidoOffline, OrderError } from "@/lib/orders-server";
 import { notificarPedidoCreado } from "@/lib/email-server";
+import { esquemaPedido } from "@/lib/validacion";
 
 export const runtime = "nodejs";
 
@@ -24,13 +20,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "NO_AUTENTICADO" }, { status: 401 });
   }
 
-  const body = (await request.json().catch(() => null)) as {
-    items?: ItemPedidoDto[];
-    metodoPago?: string;
-    entrega?: EntregaDto;
-  } | null;
-
-  if (!body?.items || !body.metodoPago || !body.entrega) {
+  const crudo = await request.json().catch(() => null);
+  const body = esquemaPedido.safeParse(crudo);
+  if (!body.success) {
     return NextResponse.json({ message: "DATOS_INVALIDOS" }, { status: 400 });
   }
 
@@ -41,9 +33,9 @@ export async function POST(request: Request) {
     const pedido = await crearPedidoOffline({
       userId: user.id,
       email: user.email,
-      items: body.items,
-      metodoPago: body.metodoPago,
-      entrega: body.entrega,
+      items: body.data.items,
+      metodoPago: body.data.metodoPago,
+      entrega: body.data.entrega,
       idempotencyKey,
     });
 

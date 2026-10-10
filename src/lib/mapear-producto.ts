@@ -1,5 +1,11 @@
 import type { Product } from "@prisma/client";
+import type { EspecificacionPc } from "@/datos/especificacionesPc";
 import type { Producto } from "@/tipos/producto";
+
+function leerSpecs(valor: unknown): EspecificacionPc | undefined {
+  if (!valor || typeof valor !== "object" || Array.isArray(valor)) return undefined;
+  return valor as EspecificacionPc;
+}
 
 export function mapearProductoDb(producto: Product): Producto {
   const imagenes = Array.isArray(producto.imagenes)
@@ -16,6 +22,7 @@ export function mapearProductoDb(producto: Product): Producto {
     enStock: producto.enStock,
     stock: producto.stock,
     etiqueta: producto.etiqueta ?? undefined,
+    specs: leerSpecs(producto.specs),
   };
 }
 
@@ -31,5 +38,6 @@ export function mapearProductoApi(producto: Product) {
     categoria: producto.categoria,
     imagenes: Array.isArray(producto.imagenes) ? producto.imagenes : [],
     etiqueta: producto.etiqueta,
+    specs: leerSpecs(producto.specs) ?? null,
   };
 }

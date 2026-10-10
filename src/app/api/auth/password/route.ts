@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { databaseUrlConfigurada } from "@/lib/prisma";
 import { cambiarPasswordUsuario, obtenerUsuarioDesdeRequest } from "@/lib/auth-server";
+import { esquemaCambioPassword } from "@/lib/validacion";
 
 export const runtime = "nodejs";
 
@@ -17,17 +18,14 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ message: "NO_AUTENTICADO" }, { status: 401 });
   }
 
-  const body = (await request.json().catch(() => null)) as {
-    actual?: string;
-    nueva?: string;
-  } | null;
-
-  if (!body?.actual || !body?.nueva) {
+  const crudo = await request.json().catch(() => null);
+  const body = esquemaCambioPassword.safeParse(crudo);
+  if (!body.success) {
     return NextResponse.json({ message: "DATOS_INVALIDOS" }, { status: 400 });
   }
 
   try {
-    await cambiarPasswordUsuario(user.id, body.actual, body.nueva);
+    await cambiarPasswordUsuario(user.id, body.data.actual, body.data.nueva);
     return NextResponse.json({ ok: true });
   } catch (error) {
     const mensaje = error instanceof Error ? error.message : "ERROR";

@@ -38,8 +38,8 @@ Project → **Settings → Environment Variables** (Production + Preview):
 | `GOOGLE_CLIENT_ID` | Para login Google | ID de cliente OAuth (aplicación web). No va al repo |
 | `GOOGLE_CLIENT_SECRET` | Para login Google | Secreto del mismo cliente. Solo servidor |
 | `BLOB_READ_WRITE_TOKEN` | CVs en prod | Vercel Blob; sin esto los PDF no persisten |
-| `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` | Rate-limit prod | Login/register/postulaciones |
-| `RESEND_API_KEY` + `EMAIL_FROM` | Emails | Pedidos y postulaciones |
+| `REDIS_URL` (o `REDIS_HOST` + `REDIS_PORT` + `REDIS_PASSWORD`) | Rate limit | Preferido: [Redis Cloud](https://app.redislabs.com) free. El CLI suele dar `redis://` (sin TLS); si exige TLS usá `rediss://`. `/api/health` → `rateLimit: "redis"`. Alternativa: Upstash REST |
+| `RESEND_API_KEY` + `EMAIL_FROM` | Emails | Pedidos, restablecer contraseña y postulaciones. Prueba: `Aura Pro <onboarding@resend.dev>` (solo llega al dueño de la cuenta Resend). Clientes reales: dominio verificado en Resend — ver sección «Correo con dominio propio» |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | No | Solo si usás Stripe |
 | `STRIPE_SECRET_KEY` | No | Solo servidor |
 | `STRIPE_WEBHOOK_SECRET` | No | Endpoint: `/api/payments/stripe/webhook` |
@@ -54,6 +54,30 @@ Login con Google: en [Google Cloud](https://console.cloud.google.com/) → Crede
 - `https://pagina-web-ventapc.vercel.app/api/auth/google/callback`
 
 Mientras la pantalla de consentimiento esté en “Prueba”, el Gmail tiene que estar en **Usuarios de prueba**.
+
+Para que entre cualquier Gmail, en el proyecto `aurapro-27727` → **APIs y servicios → Pantalla de consentimiento de OAuth**:
+
+1. Política de privacidad: `https://pagina-web-ventapc.vercel.app/privacidad`. Dominio autorizado: `pagina-web-ventapc.vercel.app`.
+2. **Publicar app** (salir de Prueba). Con los scopes `openid email profile`, Google deja entrar a cualquier Gmail y puede mostrar «app no verificada» hasta la verificación de marca.
+3. Probá el botón en local y en Vercel con un Gmail que no esté en usuarios de prueba.
+
+Ese clic de publicar se hace en Google Cloud Console; el código no lo puede hacer solo.
+
+## Correo con dominio propio (Resend)
+
+`onboarding@resend.dev` solo entrega a la casilla de la cuenta Resend. Para mails a clientes:
+
+1. Comprá un dominio (Namecheap, Cloudflare Registrar, Google Domains / Squarespace, etc.). No sirve `*.vercel.app`.
+2. En [resend.com/domains](https://resend.com/domains) → **Add Domain** → tu dominio (ej. `aurapro.com`).
+3. Resend muestra registros DNS (MX/TXT/CNAME según el panel). Copialos en el DNS del registrador.
+4. Esperá a que el dominio pase a **Verified** (minutos a unas horas).
+5. Cambiá `EMAIL_FROM` a algo del dominio, por ejemplo:
+   `Aura Pro <hola@aurapro.com>`
+   o `Aura Pro <noreply@aurapro.com>`.
+6. Actualizá la variable en `.env.local` y en Vercel → Redeploy.
+7. Probá «Olvidé mi contraseña» con un Gmail tuyo que no sea el de Resend: tiene que llegar el mail.
+
+Opcional: apuntá ese dominio a Vercel (CNAME/`A`) para que el sitio deje de ser solo `pagina-web-ventapc.vercel.app`. Eso también ayuda a Google (marca / dominio autorizado).
 
 ## 3. Conectar el repo a Vercel
 

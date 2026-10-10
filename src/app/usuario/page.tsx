@@ -13,7 +13,6 @@ import {
   type Pedido,
 } from "@/servicios/pedidosServicio";
 import { apiFetch } from "@/lib/api-client";
-import { obtenerApiToken } from "@/lib/api-token";
 import { MENSAJE_REQUISITOS_PASSWORD, validarPassword } from "@/lib/auth";
 
 export default function UsuarioPage() {
@@ -234,16 +233,10 @@ function CambiarPasswordForm() {
       setError(MENSAJE_REQUISITOS_PASSWORD);
       return;
     }
-    const token = obtenerApiToken();
-    if (!token) {
-      setError("Sesión inválida. Volvé a iniciar sesión.");
-      return;
-    }
     setCargando(true);
     try {
       await apiFetch("/auth/password", {
         method: "PATCH",
-        token,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ actual, nueva }),
       });

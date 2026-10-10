@@ -1,6 +1,7 @@
 import { OrderStatus, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { cotizarEnvioPorCp } from "@/lib/shipping-server";
+import { choquesPorIds } from "@/lib/compatibilidadPc";
 
 export interface ItemPedidoDto {
   id: string;
@@ -146,6 +147,10 @@ export async function crearPedidoOffline(opciones: {
       precioUnitario: producto.precio,
       cantidad: item.cantidad,
     });
+  }
+
+  if (choquesPorIds(opciones.items.map((pieza) => pieza.id)).length > 0) {
+    throw new OrderError("INCOMPATIBLE_BUILD");
   }
 
   let totalPesos = subtotal;
