@@ -9,6 +9,7 @@ import {
   reservarStock,
   restaurarStock,
 } from "@/lib/orders-server";
+import { urlRetornoMercadoPago } from "@/lib/site-url";
 
 const MP_API = "https://api.mercadopago.com";
 
@@ -20,48 +21,6 @@ function accessTokenMp(): string {
 
 export function mercadoPagoSecretConfigurado(): boolean {
   return Boolean(process.env.MERCADOPAGO_ACCESS_TOKEN?.trim());
-}
-
-function normalizarUrl(url: string): string {
-  const trimmed = url.trim().replace(/\/$/, "");
-  if (!trimmed) return "";
-  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) return trimmed;
-  return `https://${trimmed}`;
-}
-
-function esUrlPublicaHttps(url: string): boolean {
-  try {
-    const parsed = new URL(url);
-    if (parsed.protocol !== "https:") return false;
-    const host = parsed.hostname.toLowerCase();
-    return host !== "localhost" && host !== "127.0.0.1" && !host.endsWith(".local");
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Mercado Pago rechaza localhost/http en back_urls + auto_return
- * ("back_url.success must be defined"). En local usamos la URL HTTPS de prod.
- */
-function urlRetornoMercadoPago(): string {
-  const candidatos = [
-    process.env.MERCADOPAGO_BACK_URL,
-    process.env.NEXT_PUBLIC_SITE_URL,
-    process.env.VERCEL_PROJECT_PRODUCTION_URL
-      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-      : "",
-    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "",
-    "https://proaurapro.vercel.app",
-  ];
-
-  for (const candidato of candidatos) {
-    if (!candidato?.trim()) continue;
-    const url = normalizarUrl(candidato);
-    if (esUrlPublicaHttps(url)) return url;
-  }
-
-  return "https://proaurapro.vercel.app";
 }
 
 function validarEntrega(entrega: EntregaDto) {

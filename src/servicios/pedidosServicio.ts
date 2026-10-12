@@ -23,8 +23,8 @@ export interface Pedido {
 const ETIQUETAS_METODO_PAGO: Record<string, string> = {
   efectivo: "Efectivo en el local",
   transferencia: "Transferencia bancaria",
-  debito: "Tarjeta de débito",
-  credito: "Tarjeta de crédito",
+  debito: "Mercado Pago · débito",
+  credito: "Mercado Pago · crédito",
 };
 
 export function etiquetaMetodoPago(metodo?: string): string {
@@ -38,11 +38,14 @@ export function montoPedidoEnPesos(pedido: Pick<Pedido, "amount" | "paymentInten
 }
 
 const ETIQUETAS_ESTADO: Record<string, string> = {
-  pending_payment: "Pendiente de pago",
+  pending_payment: "Pendiente de pago (Mercado Pago)",
   pending_cash: "Pendiente de pago en local",
   pending_transfer: "Pendiente de transferencia",
   paid: "Pagado",
   payment_failed: "Pago fallido",
+  ready_for_pickup: "Listo para retiro",
+  shipped: "Enviado",
+  cancelled: "Cancelado",
 };
 
 export function etiquetaEstadoPedido(estado: string): string {

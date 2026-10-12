@@ -7,9 +7,10 @@ import {
 
 describe("etiquetaEstadoPedido", () => {
   it("traduce estados conocidos", () => {
-    expect(etiquetaEstadoPedido("pending_payment")).toBe("Pendiente de pago");
+    expect(etiquetaEstadoPedido("pending_payment")).toBe("Pendiente de pago (Mercado Pago)");
     expect(etiquetaEstadoPedido("paid")).toBe("Pagado");
     expect(etiquetaEstadoPedido("payment_failed")).toBe("Pago fallido");
+    expect(etiquetaEstadoPedido("cancelled")).toBe("Cancelado");
   });
 
   it("devuelve el estado original si no está mapeado", () => {
@@ -20,7 +21,7 @@ describe("etiquetaEstadoPedido", () => {
 describe("etiquetaMetodoPago", () => {
   it("traduce métodos conocidos", () => {
     expect(etiquetaMetodoPago("efectivo")).toBe("Efectivo en el local");
-    expect(etiquetaMetodoPago("credito")).toBe("Tarjeta de crédito");
+    expect(etiquetaMetodoPago("credito")).toBe("Mercado Pago · crédito");
   });
 });
 

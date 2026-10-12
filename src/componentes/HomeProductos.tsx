@@ -66,8 +66,12 @@ export default function HomeProductos({
             Productos Destacados
           </h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {(hayBusqueda ? destacadosFiltrados : destacadosMostrar).map((producto) => (
-              <ProductCard key={producto.id} producto={producto} />
+            {(hayBusqueda ? destacadosFiltrados : destacadosMostrar).map((producto, indice) => (
+              <ProductCard
+                key={producto.id}
+                producto={producto}
+                priority={!hayBusqueda && indice < 2}
+              />
             ))}
           </div>
         </section>

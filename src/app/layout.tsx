@@ -8,6 +8,7 @@ import FloatingWhatsApp from "@/componentes/FloatingWhatsApp";
 import WelcomeBannerModal from "@/componentes/WelcomeBannerModal";
 import { Toaster } from "sonner";
 import { AuthProvider } from "@/context/AuthContext";
+import { urlSitio } from "@/lib/site-url";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,21 +20,43 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const sitio = urlSitio();
+const descripcionSitio =
+  "Tienda argentina de hardware gamer: placas de video, procesadores, notebooks, RAM y periféricos. Envíos a todo el país. Pagos con Mercado Pago, transferencia o efectivo.";
+
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "https://pagina-web-ventapc.vercel.app"
-  ),
-  title: "Aura Pro | Componentes de PC & Hardware Gamer",
-  description:
-    "Aura Pro — tu tienda de confianza para hardware y componentes de PC de alta calidad. Placas de video, procesadores, memorias RAM y más.",
+  metadataBase: new URL(sitio),
+  title: {
+    default: "Aura Pro | Componentes de PC y hardware gamer",
+    template: "%s | Aura Pro",
+  },
+  description: descripcionSitio,
+  keywords: [
+    "hardware gamer",
+    "componentes PC",
+    "placas de video",
+    "notebooks",
+    "Argentina",
+    "Aura Pro",
+  ],
+  authors: [{ name: "Aura Pro" }],
   openGraph: {
-    title: "Aura Pro | Hardware Gamer",
-    description: "Componentes de PC y periféricos gamer con envío a todo el país.",
+    title: "Aura Pro | Hardware gamer",
+    description: descripcionSitio,
+    url: sitio,
     siteName: "Aura Pro",
     locale: "es_AR",
     type: "website",
-    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Aura Pro" }],
+    images: [{ url: "/logo.jpg", width: 512, height: 512, alt: "Aura Pro" }],
   },
+  twitter: {
+    card: "summary",
+    title: "Aura Pro | Hardware gamer",
+    description: descripcionSitio,
+    images: ["/logo.jpg"],
+  },
+  robots: { index: true, follow: true },
+  alternates: { canonical: sitio },
 };
 
 export default function RootLayout({
@@ -47,6 +70,26 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-oscuro-950 text-ink">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Store",
+              name: "Aura Pro",
+              url: sitio,
+              description: descripcionSitio,
+              image: `${sitio}/logo.jpg`,
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: "Av. Corrientes 1234",
+                addressLocality: "CABA",
+                addressCountry: "AR",
+              },
+              paymentAccepted: "Cash, BankTransfer, Mercado Pago",
+            }),
+          }}
+        />
         <AuthProvider>
           <a
             href="#contenido"

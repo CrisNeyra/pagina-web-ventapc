@@ -9,7 +9,16 @@ function CheckoutExitoContenido() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
   const metodo = searchParams.get("metodo");
+  const pendingFlag = searchParams.get("pending") === "1";
+  const collectionStatus = (searchParams.get("collection_status") || searchParams.get("status") || "")
+    .toLowerCase();
   const clearCart = useCartStore((state) => state.clearCart);
+
+  const pendiente =
+    pendingFlag ||
+    collectionStatus === "pending" ||
+    collectionStatus === "in_process" ||
+    collectionStatus === "inprocess";
 
   useEffect(() => {
     clearCart();
@@ -20,19 +29,27 @@ function CheckoutExitoContenido() {
       ? "¡Pedido confirmado!"
       : metodo === "transferencia"
         ? "¡Pedido registrado!"
-        : "¡Pago exitoso!";
+        : pendiente
+          ? "Pago en proceso"
+          : "¡Pago exitoso!";
 
   const descripcion =
     metodo === "efectivo"
       ? "Tu pedido quedó reservado. Acercate al local para abonar en efectivo y retirar tus productos."
       : metodo === "transferencia"
         ? "Tu pedido fue registrado. Realizá la transferencia y enviá el comprobante a pagos@aurapro.com."
-        : "Tu compra fue procesada correctamente. En breve verás el pedido en tu área de usuario.";
+        : pendiente
+          ? "Mercado Pago todavía está procesando el pago. Te avisamos por email cuando se acredite. También podés ver el estado en Mis compras."
+          : "Tu compra fue procesada correctamente. En breve vas a ver el pedido en tu área de usuario.";
 
   return (
     <main className="min-h-screen bg-oscuro-950">
       <section className="mx-auto max-w-2xl px-4 py-12 text-center">
-        <h1 className="text-3xl font-black text-cyber-lime-400">{titulo}</h1>
+        <h1
+          className={`text-3xl font-black ${pendiente ? "text-cyber-cyan-300" : "text-cyber-lime-400"}`}
+        >
+          {titulo}
+        </h1>
         <p className="mt-4 text-sm text-cyber-cyan-200/85">{descripcion}</p>
         {orderId && (
           <p className="mt-2 text-xs text-cyber-cyan-200/70">

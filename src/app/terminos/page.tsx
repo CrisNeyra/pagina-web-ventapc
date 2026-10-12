@@ -37,7 +37,7 @@ export default function TerminosPage() {
             <ul className="mt-2 list-disc space-y-1 pl-5">
               <li>Los precios están expresados en pesos argentinos (ARS) e incluyen IVA cuando corresponda.</li>
               <li>Medios de pago: efectivo en local, transferencia bancaria (10% de descuento), tarjeta de débito y crédito.</li>
-              <li>Crédito: hasta 12 cuotas sin interés según promociones vigentes.</li>
+              <li>Crédito: cuotas según el emisor y las promociones vigentes de Mercado Pago.</li>
               <li>La confirmación del pedido queda sujeta a verificación de stock y pago.</li>
             </ul>
           </section>

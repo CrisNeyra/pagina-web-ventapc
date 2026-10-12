@@ -40,5 +40,17 @@ test.describe("API Next: health + productos + auth", () => {
 
     const me = await request.get("/api/auth/me");
     expect(me.ok()).toBeTruthy();
+
+    const preferencia = await request.post("/api/payments/mercadopago/preference", {
+      data: {
+        items: [{ id: "producto-e2e-inexistente", precio: 1, cantidad: 1 }],
+        metodoPago: "debito",
+        entrega: { tipo: "retiro" },
+      },
+    });
+    expect(preferencia.status()).toBeGreaterThanOrEqual(400);
+
+    const adminOrders = await request.get("/api/admin/orders");
+    expect(adminOrders.status()).toBeGreaterThanOrEqual(401);
   });
 });

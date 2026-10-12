@@ -1,7 +1,7 @@
 import AdminPanel from "@/componentes/AdminPanel";
 
 export const metadata = {
-  title: "Administración | Aura Pro",
+  title: "Administración",
   robots: { index: false, follow: false },
 };
 

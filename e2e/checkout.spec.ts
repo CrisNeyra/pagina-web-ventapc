@@ -60,4 +60,17 @@ test.describe("Flujo de compra", () => {
     await expect(page.getByRole("heading", { name: /pedido confirmado/i })).toBeVisible();
     await expect(page.getByText(/test-order/)).toBeVisible();
   });
+
+  test("éxito pendiente de Mercado Pago", async ({ page }) => {
+    await page.goto("/checkout/exito?orderId=mp-pending&pending=1");
+    await expect(page.getByRole("heading", { name: /pago en proceso/i })).toBeVisible();
+    await expect(page.getByText(/mp-pending/)).toBeVisible();
+  });
+
+  test("error de pago muestra pedido y reintento", async ({ page }) => {
+    await page.goto("/checkout/error?orderId=mp-fail");
+    await expect(page.getByRole("heading", { name: /no se pudo completar el pago/i })).toBeVisible();
+    await expect(page.getByText(/mp-fail/)).toBeVisible();
+    await expect(page.getByRole("link", { name: /reintentar checkout/i })).toBeVisible();
+  });
 });

@@ -20,6 +20,14 @@ interface PedidoAdmin {
   metodoPago: string | null;
   totalPesos: number;
   createdAt: string | null;
+  mercadopagoPreferenceId?: string | null;
+  mercadopagoPaymentId?: string | null;
+}
+
+type FiltroPedidos = "pendientes" | "mercadopago" | "todos";
+
+function esMercadoPago(metodo: string | null) {
+  return metodo === "debito" || metodo === "credito";
 }
 
 interface PostulacionAdmin {
@@ -37,6 +45,7 @@ export default function AdminPanel() {
   const [postulaciones, setPostulaciones] = useState<PostulacionAdmin[]>([]);
   const [error, setError] = useState("");
   const [cargando, setCargando] = useState(false);
+  const [filtroPedidos, setFiltroPedidos] = useState<FiltroPedidos>("pendientes");
 
   const cargarDatos = useCallback(async () => {
     setCargando(true);
@@ -61,6 +70,8 @@ export default function AdminPanel() {
           metodoPago: p.metodoPago,
           totalPesos: p.totalPesos,
           createdAt: p.createdAt,
+          mercadopagoPreferenceId: p.mercadopagoPreferenceId,
+          mercadopagoPaymentId: p.mercadopagoPaymentId,
         }))
       );
       setPostulaciones(
@@ -129,6 +140,17 @@ export default function AdminPanel() {
     );
   }
 
+  const pedidosVisibles = pedidos.filter((pedido) => {
+    if (filtroPedidos === "mercadopago") return esMercadoPago(pedido.metodoPago);
+    if (filtroPedidos === "todos") return true;
+    return [
+      "pending_payment",
+      "pending_cash",
+      "pending_transfer",
+      "payment_failed",
+    ].includes(pedido.estado);
+  });
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -155,14 +177,36 @@ export default function AdminPanel() {
       )}
 
       <section className="rounded-2xl border border-cyber-purple-500/35 bg-oscuro-900/85 p-5">
-        <h2 className="text-lg font-bold text-foreground">
-          Pedidos pendientes ({pedidos.length})
-        </h2>
-        {pedidos.length === 0 ? (
-          <p className="mt-3 text-sm text-cyber-cyan-200/70">No hay pedidos pendientes.</p>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-lg font-bold text-foreground">Pedidos</h2>
+          <div className="flex flex-wrap gap-2">
+            {(
+              [
+                ["pendientes", "Pendientes"],
+                ["mercadopago", "Mercado Pago"],
+                ["todos", "Todos"],
+              ] as const
+            ).map(([id, label]) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setFiltroPedidos(id)}
+                className={`rounded-md px-3 py-1 text-xs font-semibold ${
+                  filtroPedidos === id
+                    ? "bg-cyber-cyan-500 text-white"
+                    : "border border-cyber-purple-500/40 text-cyber-cyan-200"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+        {pedidosVisibles.length === 0 ? (
+          <p className="mt-3 text-sm text-cyber-cyan-200/70">No hay pedidos en este filtro.</p>
         ) : (
           <ul className="mt-4 space-y-2">
-            {pedidos.map((pedido) => (
+            {pedidosVisibles.map((pedido) => (
               <li
                 key={pedido.id}
                 className="rounded-lg border border-cyber-purple-500/25 bg-oscuro-800/80 px-3 py-2 text-sm"
@@ -176,6 +220,19 @@ export default function AdminPanel() {
                     {formatearPrecio(pedido.totalPesos)}
                   </span>
                 </div>
+                {esMercadoPago(pedido.metodoPago) && (
+                  <p className="mt-1 text-xs text-cyber-cyan-200/70">
+                    MP preferencia:{" "}
+                    <span className="font-mono">
+                      {pedido.mercadopagoPreferenceId ?? "sin crear"}
+                    </span>
+                    {" · "}
+                    pago:{" "}
+                    <span className="font-mono">
+                      {pedido.mercadopagoPaymentId ?? "pendiente"}
+                    </span>
+                  </p>
+                )}
                 {apiConfigurada() && (
                   <div className="mt-2 flex flex-wrap gap-2">
                     <button
@@ -191,6 +248,13 @@ export default function AdminPanel() {
                       className="rounded border border-cyber-cyan-400/50 px-2 py-1 text-xs text-cyber-cyan-300"
                     >
                       Listo para retiro
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void actualizarPedido(pedido.id, "shipped")}
+                      className="rounded border border-cyber-cyan-400/50 px-2 py-1 text-xs text-cyber-cyan-300"
+                    >
+                      Enviado
                     </button>
                     <button
                       type="button"

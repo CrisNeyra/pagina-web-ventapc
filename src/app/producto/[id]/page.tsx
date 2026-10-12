@@ -1,7 +1,9 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ProductDetailView, { type ProductDetailData } from "@/componentes/ProductDetailView";
 import { catalogoCompleto } from "@/datos/productos";
 import { obtenerProductoDesdeApi, usarCatalogoApi } from "@/servicios/catalogoServicio";
+import { urlSitio } from "@/lib/site-url";
 
 interface ProductoPageProps {
   params: Promise<{ id: string }>;
@@ -33,15 +35,19 @@ function construirProductoDetalleEstatico(id: string): ProductDetailData | null 
 }
 
 function jsonLdProducto(producto: ProductDetailData) {
+  const base = urlSitio();
+  const imagen = producto.imagenes[0];
+  const imagenAbsoluta = imagen?.startsWith("http") ? imagen : `${base}${imagen ?? "/logo.jpg"}`;
   return {
     "@context": "https://schema.org",
     "@type": "Product",
     name: producto.nombre,
     description: producto.descripcion,
     sku: producto.sku,
-    image: producto.imagenes[0],
+    image: imagenAbsoluta,
     offers: {
       "@type": "Offer",
+      url: `${base}/producto/${producto.id}`,
       priceCurrency: "ARS",
       price: producto.precio,
       availability: producto.enStock
@@ -51,15 +57,11 @@ function jsonLdProducto(producto: ProductDetailData) {
   };
 }
 
-export default async function ProductoPage({ params }: ProductoPageProps) {
-  const { id } = await params;
-
-  let producto: ProductDetailData | null = null;
-
+async function cargarProducto(id: string): Promise<ProductDetailData | null> {
   if (usarCatalogoApi()) {
     const desdeApi = await obtenerProductoDesdeApi(id);
     if (desdeApi) {
-      producto = {
+      return {
         ...desdeApi,
         sku: `SKU-${desdeApi.id.toUpperCase()}`,
         imagenes:
@@ -69,10 +71,30 @@ export default async function ProductoPage({ params }: ProductoPageProps) {
       };
     }
   }
+  return construirProductoDetalleEstatico(id);
+}
 
-  if (!producto) {
-    producto = construirProductoDetalleEstatico(id);
-  }
+export async function generateMetadata({ params }: ProductoPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const producto = await cargarProducto(id);
+  if (!producto) return { title: "Producto no encontrado" };
+  const descripcion = producto.descripcion.slice(0, 160);
+  return {
+    title: producto.nombre,
+    description: descripcion,
+    openGraph: {
+      title: producto.nombre,
+      description: descripcion,
+      type: "website",
+      images: producto.imagenes[0] ? [{ url: producto.imagenes[0] }] : undefined,
+    },
+    alternates: { canonical: `${urlSitio()}/producto/${producto.id}` },
+  };
+}
+
+export default async function ProductoPage({ params }: ProductoPageProps) {
+  const { id } = await params;
+  const producto = await cargarProducto(id);
 
   if (!producto) {
     notFound();

@@ -11,9 +11,11 @@ import { toast } from "sonner";
 
 interface ProductCardProps {
   producto: Producto;
+  /** Primera pintura (LCP) en home / listados above the fold. */
+  priority?: boolean;
 }
 
-export default function ProductCard({ producto }: ProductCardProps) {
+export default function ProductCard({ producto, priority = false }: ProductCardProps) {
   const addItem = useCartStore((state) => state.addItem);
   const imagenPrincipal = producto.imagenes[0] ?? "/placeholder-producto.svg";
   const rutasFallback = [
@@ -66,7 +68,8 @@ export default function ProductCard({ producto }: ProductCardProps) {
             src={imagenActual}
             alt={producto.nombre}
             fill
-            sizes="(max-width: 768px) 100vw, 25vw"
+            priority={priority}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
             className="object-contain p-3 transition-transform duration-300 group-hover:scale-105"
             onError={() => {
               setIndiceImagen((previo) =>

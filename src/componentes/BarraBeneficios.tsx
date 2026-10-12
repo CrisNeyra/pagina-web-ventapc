@@ -13,8 +13,8 @@ export default function BarraBeneficios() {
   const beneficios = [
     {
       icono: <FiCreditCard size={28} />,
-      titulo: "Hasta 6 cuotas sin interés",
-      detalle: "con todas las tarjetas",
+      titulo: "Pagá con Mercado Pago",
+      detalle: "cuotas según el emisor de tu tarjeta",
     },
     {
       icono: <FiTruck size={28} />,

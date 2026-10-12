@@ -3,12 +3,6 @@ import { prisma } from "@/lib/prisma";
 import { OrderError, restaurarStock } from "@/lib/orders-server";
 import { leerArchivoCv } from "@/lib/cv-storage";
 
-const ESTADOS_PENDIENTES: OrderStatus[] = [
-  OrderStatus.pending_payment,
-  OrderStatus.pending_cash,
-  OrderStatus.pending_transfer,
-];
-
 const ESTADOS_ADMIN_PERMITIDOS: OrderStatus[] = [
   OrderStatus.paid,
   OrderStatus.cancelled,
@@ -18,7 +12,6 @@ const ESTADOS_ADMIN_PERMITIDOS: OrderStatus[] = [
 
 export async function listarPedidosPendientesAdmin() {
   const pedidos = await prisma.order.findMany({
-    where: { estado: { in: ESTADOS_PENDIENTES } },
     include: { items: true },
     orderBy: { createdAt: "desc" },
     take: 100,
@@ -31,6 +24,8 @@ export async function listarPedidosPendientesAdmin() {
     metodoPago: p.metodoPago,
     totalPesos: p.totalPesos,
     createdAt: p.createdAt.toISOString(),
+    mercadopagoPreferenceId: p.mercadopagoPreferenceId,
+    mercadopagoPaymentId: p.mercadopagoPaymentId,
     items: p.items.map((i) => ({
       productId: i.productId,
       nombre: i.nombre,

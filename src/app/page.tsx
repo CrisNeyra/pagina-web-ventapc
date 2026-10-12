@@ -19,7 +19,8 @@ export default async function PaginaInicio() {
         <div className="pointer-events-none absolute inset-x-0 bottom-2 z-20 flex items-center justify-center">
           <a
             href="#productos-destacados"
-            className="pointer-events-auto flex flex-col items-center gap-1 rounded-full border border-cyber-cyan-500/35 bg-oscuro-950/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-cyber-cyan-300 opacity-60 backdrop-blur-sm transition-all duration-200 hover:scale-[1.03] hover:opacity-100 hover:shadow-[0_0_18px_rgba(109,40,217,0.35)]"
+            aria-label="Ir a productos destacados"
+            className="pointer-events-auto flex flex-col items-center gap-1 rounded-full border border-cyber-cyan-500/35 bg-oscuro-950/70 px-4 py-2 text-[11px] font-semibold uppercase tracking-wider text-cyber-cyan-300 opacity-60 backdrop-blur-sm transition-all duration-200 hover:scale-[1.03] hover:opacity-100 hover:shadow-[0_0_18px_rgba(109,40,217,0.35)] focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyber-cyan-400"
           >
             <span>Desliza para explorar</span>
             <FiChevronDown className="animate-bounce text-cyber-cyan-200" size={16} />

@@ -1,14 +1,27 @@
-import Link from "next/link";
+"use client";
 
-export default function CheckoutErrorPage() {
+import { Suspense } from "react";
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+
+function CheckoutErrorContenido() {
+  const searchParams = useSearchParams();
+  const orderId = searchParams.get("orderId");
+
   return (
     <main className="min-h-screen bg-oscuro-950">
       <section className="mx-auto max-w-2xl px-4 py-12 text-center">
         <h1 className="text-3xl font-black text-cyber-pink-400">No se pudo completar el pago</h1>
         <p className="mt-4 text-sm text-cyber-cyan-200/85">
-          Hubo un problema al procesar tu compra. Podés volver al checkout e intentar nuevamente,
-          o contactar soporte si el cargo apareció en tu tarjeta.
+          Mercado Pago no acreditó el cobro. Podés volver al checkout e intentar de nuevo, o elegir
+          efectivo / transferencia. Si ves un cargo pendiente en la tarjeta, esperá unos minutos o
+          escribinos por WhatsApp.
         </p>
+        {orderId && (
+          <p className="mt-2 text-xs text-cyber-cyan-200/70">
+            Pedido: <span className="font-mono text-cyber-cyan-300">{orderId}</span>
+          </p>
+        )}
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           <Link
             href="/checkout"
@@ -25,5 +38,21 @@ export default function CheckoutErrorPage() {
         </div>
       </section>
     </main>
+  );
+}
+
+export default function CheckoutErrorPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-oscuro-950">
+          <section className="mx-auto max-w-2xl px-4 py-12 text-center">
+            <p className="text-sm text-cyber-cyan-200/80">Cargando...</p>
+          </section>
+        </main>
+      }
+    >
+      <CheckoutErrorContenido />
+    </Suspense>
   );
 }

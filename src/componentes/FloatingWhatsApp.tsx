@@ -124,7 +124,14 @@ export default function FloatingWhatsApp() {
           aria-expanded={abierto}
           className="inline-flex h-14 w-14 items-center justify-center rounded-full border border-white/20 bg-[#25D366] shadow-[0_0_20px_rgba(37,211,102,0.55)] transition-transform duration-200 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7DF5AA]"
         >
-          <Image src="/WhatsApp.svg" alt="WhatsApp" width={28} height={28} className="h-7 w-7 object-contain" />
+          <Image
+            src="/WhatsApp.svg"
+            alt=""
+            width={28}
+            height={28}
+            className="h-7 w-7 object-contain"
+            aria-hidden
+          />
         </button>
       </div>
     </div>

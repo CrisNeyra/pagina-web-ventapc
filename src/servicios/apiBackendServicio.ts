@@ -105,6 +105,8 @@ export async function obtenerPedidosAdminApi(token: string) {
       metodoPago: string | null;
       totalPesos: number;
       createdAt: string;
+      mercadopagoPreferenceId?: string | null;
+      mercadopagoPaymentId?: string | null;
     }[]
   >("/admin/orders", { token });
 }

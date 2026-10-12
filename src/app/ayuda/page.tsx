@@ -1,10 +1,16 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Ayuda",
+  description: "Preguntas frecuentes de Aura Pro: pagos, envíos, retiro y garantía.",
+};
 
 const faqs = [
   {
     pregunta: "¿Cuáles son los métodos de pago?",
     respuesta:
-      "Aceptamos efectivo en el local, transferencia bancaria (10% de descuento), tarjeta de débito y crédito en hasta 12 cuotas sin interés.",
+      "Aceptamos efectivo en el local, transferencia bancaria (10% de descuento) y tarjetas de débito o crédito a través de Mercado Pago. Las cuotas las define el emisor.",
   },
   {
     pregunta: "¿Cuánto tarda el envío?",

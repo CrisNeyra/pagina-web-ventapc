@@ -190,6 +190,7 @@ export default function ProductDetailView({ producto }: ProductDetailViewProps) 
               src={imagenActual}
               alt={producto.nombre}
               fill
+              priority
               sizes="(max-width: 1024px) 100vw, 50vw"
               className="rounded-2xl object-contain p-4 sm:p-6"
               onError={() => {
@@ -220,7 +221,7 @@ export default function ProductDetailView({ producto }: ProductDetailViewProps) 
             )}
             <p className="font-mono text-3xl font-black text-ink-cyan sm:text-4xl">{formatearPrecio(producto.precio)}</p>
             <p className="mt-1 text-sm text-ink/80">
-              {CUOTAS_DESTACADAS} cuotas de {formatearPrecio(cuotaDestacada)} sin interés
+              Referencia: {CUOTAS_DESTACADAS} cuotas de {formatearPrecio(cuotaDestacada)} (según el emisor)
             </p>
             <p className="mt-1 font-mono text-xs text-ink-lime">
               10% off con transferencia ({formatearPrecio(producto.precio - ahorroTransferencia)})
@@ -234,7 +235,7 @@ export default function ProductDetailView({ producto }: ProductDetailViewProps) 
               {formatearPrecio(producto.precio)}
             </p>
             <p className="mt-1 hidden text-xs text-cyber-cyan-100/75 lg:block">
-              {CUOTAS_DESTACADAS} cuotas de {formatearPrecio(cuotaDestacada)}
+              Referencia: {CUOTAS_DESTACADAS} cuotas de {formatearPrecio(cuotaDestacada)}
             </p>
 
             <div className="space-y-3 text-sm text-cyber-cyan-100/90 lg:mt-5">

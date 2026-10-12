@@ -53,7 +53,10 @@ export default function HeroVideos() {
   }, [visible, siguiente, reducedMotion]);
 
   return (
-    <section className="flex h-full min-h-0 w-full flex-col bg-oscuro-950 md:flex-row md:items-stretch">
+    <section
+      aria-label="Promoción principal"
+      className="flex h-full min-h-0 w-full flex-col bg-oscuro-950 md:flex-row md:items-stretch"
+    >
       <div
         ref={contenedorRef}
         className="relative h-[270px] min-h-[270px] w-full overflow-hidden bg-oscuro-900 select-none sm:h-[324px] md:h-full md:min-h-0 md:w-[60%]"
@@ -122,7 +125,7 @@ export default function HeroVideos() {
             ELECTROSALE
           </p>
 
-          <h2 className="text-3xl font-black uppercase leading-[1.04] text-ink sm:text-4xl md:text-5xl lg:text-6xl xl:text-[4.2rem]">
+          <h1 className="text-3xl font-black uppercase leading-[1.04] text-ink sm:text-4xl md:text-5xl lg:text-6xl xl:text-[4.2rem]">
             <span className="mb-0.5 inline-block bg-gradient-to-r from-[#4A00E0] via-[#9D174D] to-[#6D28D9] bg-clip-text text-transparent">
               POTENCIÁ
             </span>{" "}
@@ -131,7 +134,7 @@ export default function HeroVideos() {
             FORMA DE
             <br />
             JUGAR.
-          </h2>
+          </h1>
 
           <p className="mt-3 text-sm font-semibold uppercase tracking-wide text-ink-violet sm:text-base">
             SUBÍ DE NIVEL TUS PERIFÉRICOS.

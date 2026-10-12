@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import ProductCard from "@/componentes/ProductCard";
 import { categorias } from "@/datos/navegacion";
@@ -39,6 +40,15 @@ function resolverTituloCategoria(slug: string): string {
 }
 
 export const revalidate = 60;
+
+export async function generateMetadata({ params }: CategoriaPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const titulo = resolverTituloCategoria(slug);
+  return {
+    title: titulo,
+    description: `Comprá ${titulo.toLowerCase()} en Aura Pro. Hardware gamer con envío a todo el país.`,
+  };
+}
 
 export default async function CategoriaPage({ params }: CategoriaPageProps) {
   const { slug } = await params;

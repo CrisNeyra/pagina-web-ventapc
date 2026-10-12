@@ -1,15 +1,10 @@
 import type { MetadataRoute } from "next";
+import { categorias } from "@/datos/navegacion";
 import { databaseUrlConfigurada, prisma } from "@/lib/prisma";
-
-function baseSite(): string {
-  const site = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-  if (site) return site.replace(/\/$/, "");
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL.replace(/\/$/, "")}`;
-  return "https://pagina-web-ventapc.vercel.app";
-}
+import { urlSitio } from "@/lib/site-url";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = baseSite();
+  const base = urlSitio();
   const rutas = [
     "",
     "/productos",
@@ -20,13 +15,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/arrepentimiento",
     "/terminos",
     "/trabaja-con-nosotros",
+    ...categorias.map((c) => c.href),
   ];
 
   const estaticas: MetadataRoute.Sitemap = rutas.map((ruta) => ({
     url: `${base}${ruta}`,
     lastModified: new Date(),
     changeFrequency: ruta === "" ? "daily" : "weekly",
-    priority: ruta === "" ? 1 : 0.7,
+    priority: ruta === "" ? 1 : ruta.startsWith("/categoria") ? 0.65 : 0.7,
   }));
 
   if (!databaseUrlConfigurada()) return estaticas;
