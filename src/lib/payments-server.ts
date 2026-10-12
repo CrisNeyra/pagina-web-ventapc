@@ -1,4 +1,3 @@
-import Stripe from "stripe";
 import { OrderStatus, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { cotizarEnvioPorCp } from "@/lib/shipping-server";
@@ -11,14 +10,58 @@ import {
   restaurarStock,
 } from "@/lib/orders-server";
 
-function obtenerStripe(): Stripe {
-  const key = process.env.STRIPE_SECRET_KEY?.trim();
-  if (!key) throw new OrderError("STRIPE_NO_CONFIGURADO");
-  return new Stripe(key, { apiVersion: "2025-08-27.basil" });
+const MP_API = "https://api.mercadopago.com";
+
+function accessTokenMp(): string {
+  const key = process.env.MERCADOPAGO_ACCESS_TOKEN?.trim();
+  if (!key) throw new OrderError("MERCADOPAGO_NO_CONFIGURADO");
+  return key;
 }
 
-export function stripeSecretConfigurado(): boolean {
-  return Boolean(process.env.STRIPE_SECRET_KEY?.trim());
+export function mercadoPagoSecretConfigurado(): boolean {
+  return Boolean(process.env.MERCADOPAGO_ACCESS_TOKEN?.trim());
+}
+
+function normalizarUrl(url: string): string {
+  const trimmed = url.trim().replace(/\/$/, "");
+  if (!trimmed) return "";
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) return trimmed;
+  return `https://${trimmed}`;
+}
+
+function esUrlPublicaHttps(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== "https:") return false;
+    const host = parsed.hostname.toLowerCase();
+    return host !== "localhost" && host !== "127.0.0.1" && !host.endsWith(".local");
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Mercado Pago rechaza localhost/http en back_urls + auto_return
+ * ("back_url.success must be defined"). En local usamos la URL HTTPS de prod.
+ */
+function urlRetornoMercadoPago(): string {
+  const candidatos = [
+    process.env.MERCADOPAGO_BACK_URL,
+    process.env.NEXT_PUBLIC_SITE_URL,
+    process.env.VERCEL_PROJECT_PRODUCTION_URL
+      ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+      : "",
+    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "",
+    "https://proaurapro.vercel.app",
+  ];
+
+  for (const candidato of candidatos) {
+    if (!candidato?.trim()) continue;
+    const url = normalizarUrl(candidato);
+    if (esUrlPublicaHttps(url)) return url;
+  }
+
+  return "https://proaurapro.vercel.app";
 }
 
 function validarEntrega(entrega: EntregaDto) {
@@ -34,7 +77,46 @@ function validarEntrega(entrega: EntregaDto) {
   }
 }
 
-export async function crearPaymentIntentStripe(opciones: {
+async function mpFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const respuesta = await fetch(`${MP_API}${path}`, {
+    ...init,
+    headers: {
+      Authorization: `Bearer ${accessTokenMp()}`,
+      "Content-Type": "application/json",
+      ...(init.headers ?? {}),
+    },
+    cache: "no-store",
+  });
+
+  const body = (await respuesta.json().catch(() => null)) as T & {
+    message?: string;
+    error?: string;
+  };
+
+  if (!respuesta.ok) {
+    const detalle =
+      (body && typeof body === "object" && ("message" in body || "error" in body)
+        ? String(body.message || body.error)
+        : "") || `HTTP_${respuesta.status}`;
+    throw new OrderError(`MERCADOPAGO_API:${detalle}`);
+  }
+
+  return body;
+}
+
+type PreferenciaMp = {
+  id: string;
+  init_point?: string;
+  sandbox_init_point?: string;
+};
+
+type PagoMp = {
+  id: number;
+  status: string;
+  external_reference?: string | null;
+};
+
+export async function crearPreferenciaMercadoPago(opciones: {
   userId: string;
   email: string;
   items: ItemPedidoDto[];
@@ -42,8 +124,8 @@ export async function crearPaymentIntentStripe(opciones: {
   cuotas?: number;
   entrega: EntregaDto;
 }) {
-  if (!stripeSecretConfigurado()) {
-    throw new OrderError("STRIPE_NO_CONFIGURADO");
+  if (!mercadoPagoSecretConfigurado()) {
+    throw new OrderError("MERCADOPAGO_NO_CONFIGURADO");
   }
 
   if (!["debito", "credito"].includes(opciones.metodoPago)) {
@@ -95,7 +177,6 @@ export async function crearPaymentIntentStripe(opciones: {
   const totalPesos = subtotalPesos + costoEnvio;
   if (totalPesos < 1) throw new OrderError("INVALID_AMOUNT");
 
-  const stripeAmountCents = totalPesos * 100;
   const cuotasPermitidas = [1, 3, 6, 12];
   const cuotas =
     opciones.metodoPago === "credito"
@@ -104,91 +185,139 @@ export async function crearPaymentIntentStripe(opciones: {
         : 1
       : 1;
 
-  const stripe = obtenerStripe();
+  const pedido = await prisma.$transaction(async (tx) => {
+    await reservarStock(
+      tx,
+      itemsValidados.map((i) => ({ productId: i.productId, cantidad: i.cantidad }))
+    );
 
-  const usarCuotasStripe = process.env.STRIPE_INSTALLMENTS === "true" && cuotas > 1;
-
-  const intent = await stripe.paymentIntents.create({
-    amount: stripeAmountCents,
-    currency: "ars",
-    automatic_payment_methods: { enabled: true },
-    metadata: {
-      uid: opciones.userId,
-      metodoPago: opciones.metodoPago,
-      cuotas: String(cuotas),
-    },
-    ...(usarCuotasStripe
-      ? {
-          payment_method_options: {
-            card: {
-              installments: { enabled: true },
-            },
-          },
-        }
-      : {}),
+    return tx.order.create({
+      data: {
+        userId: opciones.userId,
+        email: opciones.email,
+        estado: OrderStatus.pending_payment,
+        metodoPago: opciones.metodoPago,
+        totalPesos,
+        costoEnvio,
+        entrega: opciones.entrega as unknown as Prisma.InputJsonValue,
+        cuotas,
+        items: { create: itemsValidados },
+      },
+    });
   });
 
-  try {
-    const pedido = await prisma.$transaction(async (tx) => {
-      await reservarStock(
-        tx,
-        itemsValidados.map((i) => ({ productId: i.productId, cantidad: i.cantidad }))
-      );
+  const sitio = urlRetornoMercadoPago();
+  const itemsPreferencia = [
+    ...itemsValidados.map((item) => ({
+      id: item.productId,
+      title: item.nombre.slice(0, 250),
+      quantity: item.cantidad,
+      unit_price: item.precioUnitario,
+      currency_id: "ARS",
+    })),
+    ...(costoEnvio > 0
+      ? [
+          {
+            id: "envio",
+            title: "Envío a domicilio",
+            quantity: 1,
+            unit_price: costoEnvio,
+            currency_id: "ARS",
+          },
+        ]
+      : []),
+  ];
 
-      return tx.order.create({
-        data: {
-          userId: opciones.userId,
-          email: opciones.email,
-          estado: OrderStatus.pending_payment,
+  try {
+    const preferencia = await mpFetch<PreferenciaMp>("/checkout/preferences", {
+      method: "POST",
+      body: JSON.stringify({
+        items: itemsPreferencia,
+        payer: { email: opciones.email },
+        external_reference: pedido.id,
+        metadata: {
+          orderId: pedido.id,
+          uid: opciones.userId,
           metodoPago: opciones.metodoPago,
-          totalPesos,
-          costoEnvio,
-          stripeAmountCents,
-          stripePaymentIntentId: intent.id,
-          entrega: opciones.entrega as unknown as Prisma.InputJsonValue,
-          cuotas,
-          items: { create: itemsValidados },
+          cuotas: String(cuotas),
         },
-      });
+        back_urls: {
+          success: `${sitio}/checkout/exito?orderId=${pedido.id}`,
+          failure: `${sitio}/checkout/error?orderId=${pedido.id}`,
+          pending: `${sitio}/checkout/exito?orderId=${pedido.id}&pending=1`,
+        },
+        auto_return: "approved",
+        notification_url: `${sitio}/api/payments/mercadopago/webhook`,
+        statement_descriptor: "AURA PRO",
+      }),
+    });
+
+    const checkoutUrl = preferencia.sandbox_init_point || preferencia.init_point;
+    if (!checkoutUrl) {
+      throw new OrderError("MERCADOPAGO_SIN_CHECKOUT_URL");
+    }
+
+    await prisma.order.update({
+      where: { id: pedido.id },
+      data: { mercadopagoPreferenceId: preferencia.id },
     });
 
     return {
       orderId: pedido.id,
-      paymentIntentId: intent.id,
-      clientSecret: intent.client_secret!,
+      preferenceId: preferencia.id,
+      checkoutUrl,
       totalPesos,
     };
   } catch (error) {
-    try {
-      await stripe.paymentIntents.cancel(intent.id);
-    } catch {
-      // ignore cancel errors
-    }
+    await prisma.$transaction(async (tx) => {
+      await restaurarStock(
+        tx,
+        itemsValidados.map((i) => ({ productId: i.productId, cantidad: i.cantidad }))
+      );
+      await tx.order.update({
+        where: { id: pedido.id },
+        data: { estado: OrderStatus.cancelled },
+      });
+    });
     throw error;
   }
 }
 
-export async function procesarWebhookStripe(
-  rawBody: string | Buffer,
-  signature: string
-) {
-  const secret = process.env.STRIPE_WEBHOOK_SECRET?.trim();
-  if (!secret) throw new OrderError("WEBHOOK_NO_CONFIGURADO");
+export async function procesarWebhookMercadoPago(input: {
+  paymentId?: string | null;
+  topic?: string | null;
+}) {
+  if (!mercadoPagoSecretConfigurado()) {
+    throw new OrderError("MERCADOPAGO_NO_CONFIGURADO");
+  }
 
-  const stripe = obtenerStripe();
-  const event = stripe.webhooks.constructEvent(rawBody, signature, secret);
+  const topic = (input.topic || "payment").toLowerCase();
+  if (topic !== "payment" && topic !== "merchant_order") {
+    return { received: true as const, ignored: true as const };
+  }
 
-  if (event.type === "payment_intent.succeeded") {
-    const pi = event.data.object as Stripe.PaymentIntent;
-    const pedido = await prisma.order.findFirst({
-      where: { stripePaymentIntentId: pi.id },
-    });
+  const paymentId = input.paymentId?.trim();
+  if (!paymentId) {
+    return { received: true as const, ignored: true as const };
+  }
+
+  const pago = await mpFetch<PagoMp>(`/v1/payments/${paymentId}`);
+  const orderId = pago.external_reference?.trim();
+  if (!orderId) {
+    return { received: true as const, ignored: true as const };
+  }
+
+  if (pago.status === "approved") {
+    const pedido = await prisma.order.findUnique({ where: { id: orderId } });
     await prisma.order.updateMany({
       where: {
-        stripePaymentIntentId: pi.id,
+        id: orderId,
         estado: OrderStatus.pending_payment,
       },
-      data: { estado: OrderStatus.paid },
+      data: {
+        estado: OrderStatus.paid,
+        mercadopagoPaymentId: String(pago.id),
+      },
     });
     if (pedido?.email) {
       void notificarPedidoCreado({
@@ -198,13 +327,13 @@ export async function procesarWebhookStripe(
         estado: OrderStatus.paid,
       });
     }
+    return { received: true as const };
   }
 
-  if (event.type === "payment_intent.payment_failed") {
-    const pi = event.data.object as Stripe.PaymentIntent;
+  if (["rejected", "cancelled", "refunded"].includes(pago.status)) {
     const pedido = await prisma.order.findFirst({
       where: {
-        stripePaymentIntentId: pi.id,
+        id: orderId,
         estado: OrderStatus.pending_payment,
       },
       include: { items: true },
@@ -218,7 +347,10 @@ export async function procesarWebhookStripe(
         );
         await tx.order.update({
           where: { id: pedido.id },
-          data: { estado: OrderStatus.payment_failed },
+          data: {
+            estado: OrderStatus.payment_failed,
+            mercadopagoPaymentId: String(pago.id),
+          },
         });
       });
     }

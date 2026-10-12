@@ -22,7 +22,7 @@ export default function PrivacidadPage() {
           <p>
             Utilizamos cookies técnicas para mantener tu sesión y el carrito de compras. No
             vendemos ni compartimos tus datos con terceros, salvo proveedores necesarios para el
-            servicio (pagos con Stripe, hosting y correo transaccional).
+            servicio (pagos con Mercado Pago, hosting y correo transaccional).
           </p>
           <p>
             Podés solicitar acceso, rectificación o eliminación de tus datos escribiendo a

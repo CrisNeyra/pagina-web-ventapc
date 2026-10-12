@@ -1,7 +1,7 @@
 import { validarItemsPagoBasicos } from "@/lib/validarItemsPago";
 import type { DatosEntrega } from "@/lib/entrega";
 import { apiConfigurada } from "@/lib/api-client";
-import { crearPaymentIntentEnApi } from "@/servicios/apiBackendServicio";
+import { crearPreferenciaMercadoPagoEnApi } from "@/servicios/apiBackendServicio";
 
 export interface ItemPago {
   id: string;
@@ -9,19 +9,21 @@ export interface ItemPago {
   cantidad: number;
 }
 
-export interface ResultadoPaymentIntent {
+export interface ResultadoPreferenciaPago {
   ok: true;
   orderId: string;
-  paymentIntentId: string;
-  clientSecret: string;
+  preferenceId: string;
+  checkoutUrl: string;
 }
 
-export interface ErrorPaymentIntent {
+export interface ErrorPreferenciaPago {
   ok: false;
   mensaje: string;
 }
 
-export type RespuestaPaymentIntent = ResultadoPaymentIntent | ErrorPaymentIntent;
+export type RespuestaPreferenciaPago =
+  | ResultadoPreferenciaPago
+  | ErrorPreferenciaPago;
 
 function mapearErrorHttp(status: number, error?: string): string {
   switch (error) {
@@ -37,6 +39,8 @@ function mapearErrorHttp(status: number, error?: string): string {
       return "Los precios del carrito no coinciden con el catálogo. Actualizá la página.";
     case "RATE_LIMITED":
       return "Demasiados intentos de pago. Esperá un minuto e intentá de nuevo.";
+    case "MERCADOPAGO_NO_CONFIGURADO":
+      return "Pagos con tarjeta no configurados. Probá efectivo o transferencia.";
     default:
       if (status === 401) return "Debés iniciar sesión para pagar.";
       if (status >= 500) return "El servidor de pagos no está disponible. Intentá más tarde.";
@@ -44,17 +48,17 @@ function mapearErrorHttp(status: number, error?: string): string {
   }
 }
 
-export interface OpcionesPaymentIntent {
+export interface OpcionesPreferenciaPago {
   metodoPago?: "debito" | "credito";
   cuotas?: number;
   entrega?: DatosEntrega;
 }
 
-export async function crearPaymentIntent(
+export async function crearPreferenciaPago(
   items: ItemPago[],
   _idToken: string,
-  opciones: OpcionesPaymentIntent = {}
-): Promise<RespuestaPaymentIntent> {
+  opciones: OpcionesPreferenciaPago = {}
+): Promise<RespuestaPreferenciaPago> {
   if (items.length === 0) {
     return { ok: false, mensaje: "El carrito está vacío." };
   }
@@ -67,12 +71,12 @@ export async function crearPaymentIntent(
     return {
       ok: false,
       mensaje:
-        "Pagos no configurados. Definí DATABASE_URL (Neon) y NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY.",
+        "Pagos no configurados. Definí DATABASE_URL (Neon) y NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY.",
     };
   }
 
   try {
-    const resultado = await crearPaymentIntentEnApi(items, "", {
+    const resultado = await crearPreferenciaMercadoPagoEnApi(items, "", {
       metodoPago: opciones.metodoPago ?? "debito",
       cuotas: opciones.cuotas,
       entrega: opciones.entrega ?? { tipo: "retiro" },
@@ -81,12 +85,17 @@ export async function crearPaymentIntent(
     return {
       ok: true,
       orderId: resultado.orderId,
-      paymentIntentId: resultado.paymentIntentId,
-      clientSecret: resultado.clientSecret,
+      preferenceId: resultado.preferenceId,
+      checkoutUrl: resultado.checkoutUrl,
     };
   } catch (error) {
     const msg = error instanceof Error ? error.message : "";
-    if (msg.includes("PRICE_MISMATCH") || msg.includes("UNKNOWN_PRODUCT") || msg.includes("SIN_STOCK")) {
+    if (
+      msg.includes("PRICE_MISMATCH") ||
+      msg.includes("UNKNOWN_PRODUCT") ||
+      msg.includes("SIN_STOCK") ||
+      msg.includes("MERCADOPAGO_NO_CONFIGURADO")
+    ) {
       return { ok: false, mensaje: mapearErrorHttp(400, msg) };
     }
     if (msg.includes("API no respondió") || msg.includes("No se pudo conectar")) {

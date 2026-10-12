@@ -32,11 +32,8 @@ export function etiquetaMetodoPago(metodo?: string): string {
   return ETIQUETAS_METODO_PAGO[metodo] ?? metodo;
 }
 
-/** Stripe guarda centavos; pedidos offline guardan pesos. */
+/** Los pedidos de Next/Prisma guardan el total en pesos. */
 export function montoPedidoEnPesos(pedido: Pick<Pedido, "amount" | "paymentIntentId">): number {
-  if (pedido.paymentIntentId) {
-    return Math.round(pedido.amount / 100);
-  }
   return pedido.amount;
 }
 

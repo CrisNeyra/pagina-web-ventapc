@@ -21,7 +21,7 @@ Admin tras seed: el email de `ADMIN_EMAIL` (default `admin@aurapro.com`) con la 
 ## Stack
 
 - **App:** Next.js 16 (App Router), React 19, TypeScript, Tailwind v4, Zustand
-- **API:** Route Handlers en `src/app/api` (auth, catálogo, pedidos, Stripe, admin, PC builds, postulaciones)
+- **API:** Route Handlers en `src/app/api` (auth, catálogo, pedidos, Mercado Pago, admin, PC builds, postulaciones)
 - **DB:** Prisma (raíz `prisma/`) + PostgreSQL en Neon
 - **Legacy:** Nest en `api/` (opcional; no hace falta en el día a día)
 
@@ -62,9 +62,8 @@ DATABASE_URL=postgresql://...@...neon.tech/...?sslmode=require
 JWT_SECRET=secreto-largo-aleatorio
 # Opcional
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
-STRIPE_SECRET_KEY=sk_test_...
-STRIPE_WEBHOOK_SECRET=whsec_...
+NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY=APP_USR-...
+MERCADOPAGO_ACCESS_TOKEN=APP_USR-...
 ```
 
 ### Legacy Nest (opcional)
@@ -87,7 +86,7 @@ La carpeta `api/` quedó como referencia. Solo hace falta si querés correr Nest
 
 ## Funcionalidades
 
-- Catálogo, búsqueda, carrito, checkout (efectivo / transferencia / Stripe)
+- Catálogo, búsqueda, carrito, checkout (efectivo / transferencia / Mercado Pago)
 - Auth JWT, área `/usuario`, panel `/admin`
 - Armá tu PC → builds en Postgres
 - Postulaciones RRHH con CV

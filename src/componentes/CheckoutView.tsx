@@ -3,15 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Elements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
 import { useAuth } from "@/context/AuthContext";
-import {
-  obtenerStripePublishableKey,
-  pagosConfigurados,
-} from "@/configuracion/stripe";
+import { pagosConfigurados } from "@/configuracion/mercadopago";
 import { useCartStore } from "@/store/cartStore";
-import { crearPaymentIntent } from "@/servicios/pagosServicio";
+import { crearPreferenciaPago } from "@/servicios/pagosServicio";
 import { crearPedidoOffline } from "@/servicios/crearPedidoServicio";
 import {
   calcularCuota,
@@ -22,7 +17,6 @@ import {
 import { formatearPrecio } from "@/utils/formato";
 import type { MetodoPago } from "@/tipos/metodoPago";
 import CheckoutMetodosPago from "@/componentes/CheckoutMetodosPago";
-import CheckoutPaymentForm from "@/componentes/CheckoutPaymentForm";
 import CheckoutEntrega from "@/componentes/CheckoutEntrega";
 import {
   costoEntrega,
@@ -51,18 +45,11 @@ export default function CheckoutView() {
   const [metodoPago, setMetodoPago] = useState<MetodoPago | null>(null);
   const [datosEntrega, setDatosEntrega] = useState<DatosEntrega>({ tipo: "retiro" });
   const [cuotas, setCuotas] = useState(1);
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
-  const [orderId, setOrderId] = useState<string | null>(null);
-  const [cargandoPago, setCargandoPago] = useState(false);
   const [confirmandoPedido, setConfirmandoPedido] = useState(false);
+  const [redirigiendoMp, setRedirigiendoMp] = useState(false);
   const [errorPago, setErrorPago] = useState("");
   const [costoEnvioDinamico, setCostoEnvioDinamico] = useState(5000);
   const [datosTransferencia, setDatosTransferencia] = useState(DATOS_TRANSFERENCIA_DEFAULT);
-
-  const stripePromise = useMemo(() => {
-    const key = obtenerStripePublishableKey();
-    return key ? loadStripe(key) : null;
-  }, []);
 
   const itemsPago = useMemo(
     () =>
@@ -109,8 +96,8 @@ export default function CheckoutView() {
     [metodoPago, subtotal]
   );
 
-  const requiereStripe = metodoPago === "debito" || metodoPago === "credito";
-  const stripeDisponible = pagosConfigurados();
+  const requiereMercadoPago = metodoPago === "debito" || metodoPago === "credito";
+  const mpDisponible = pagosConfigurados();
 
   const entregaValida = useMemo(
     () => validarDatosEntrega(datosEntrega).ok,
@@ -118,66 +105,47 @@ export default function CheckoutView() {
   );
 
   useEffect(() => {
-    setClientSecret(null);
-    setOrderId(null);
     setErrorPago("");
+  }, [metodoPago, datosEntrega, cuotas]);
 
-    if (!metodoPago || !requiereStripe || !stripeDisponible) return;
-    if (!entregaValida) {
-      setErrorPago("Completá los datos de entrega para pagar con tarjeta.");
+  const pagarConMercadoPago = async () => {
+    if (!metodoPago || !requiereMercadoPago) return;
+
+    const validacionEntrega = validarDatosEntrega(datosEntrega);
+    if (!validacionEntrega.ok) {
+      setErrorPago(validacionEntrega.error);
       return;
     }
-    if (authLoading || !user || itemsPago.length === 0) return;
 
-    let cancelado = false;
-
-    async function iniciarPago() {
-      setCargandoPago(true);
-      setErrorPago("");
-
-      try {
-        const idToken = await obtenerTokenSesion();
-        const resultado = await crearPaymentIntent(itemsPago, idToken, {
-          metodoPago: metodoPago === "credito" ? "credito" : "debito",
-          cuotas: metodoPago === "credito" ? cuotas : 1,
-          entrega: datosEntrega,
-        });
-
-        if (cancelado) return;
-
-        if (!resultado.ok) {
-          setErrorPago(resultado.mensaje);
-          setCargandoPago(false);
-          return;
-        }
-
-        setClientSecret(resultado.clientSecret);
-        setOrderId(resultado.orderId);
-        setCargandoPago(false);
-      } catch {
-        if (!cancelado) {
-          setErrorPago("No se pudo obtener la sesión del usuario.");
-          setCargandoPago(false);
-        }
-      }
+    if (authLoading || !user || itemsPago.length === 0) {
+      setErrorPago("Iniciá sesión y asegurate de tener productos en el carrito.");
+      return;
     }
 
-    iniciarPago();
+    setRedirigiendoMp(true);
+    setErrorPago("");
 
-    return () => {
-      cancelado = true;
-    };
-  }, [
-    authLoading,
-    user,
-    itemsPago,
-    metodoPago,
-    cuotas,
-    requiereStripe,
-    stripeDisponible,
-    entregaValida,
-    datosEntrega,
-  ]);
+    try {
+      const idToken = await obtenerTokenSesion();
+      const resultado = await crearPreferenciaPago(itemsPago, idToken, {
+        metodoPago: metodoPago === "credito" ? "credito" : "debito",
+        cuotas: metodoPago === "credito" ? cuotas : 1,
+        entrega: datosEntrega,
+      });
+
+      if (!resultado.ok) {
+        setErrorPago(resultado.mensaje);
+        setRedirigiendoMp(false);
+        return;
+      }
+
+      clearCart();
+      window.location.href = resultado.checkoutUrl;
+    } catch {
+      setErrorPago("No se pudo iniciar el pago con Mercado Pago.");
+      setRedirigiendoMp(false);
+    }
+  };
 
   const confirmarPedidoOffline = async () => {
     if (!metodoPago || (metodoPago !== "efectivo" && metodoPago !== "transferencia")) return;
@@ -343,7 +311,7 @@ export default function CheckoutView() {
             <div className="mt-6 rounded-xl border border-cyber-purple-500/30 bg-oscuro-800/70 p-4">
               <label className="block space-y-2">
                 <span className="text-sm font-semibold text-cyber-cyan-200">
-                  Cantidad de cuotas (sin interés)
+                  Preferencia de cuotas (referencia; Mercado Pago muestra las del emisor)
                 </span>
                 <select
                   value={cuotas}
@@ -363,17 +331,37 @@ export default function CheckoutView() {
             </div>
           )}
 
-          {requiereStripe && !stripeDisponible && (
+          {requiereMercadoPago && !mpDisponible && (
             <p className="mt-6 rounded-xl border border-cyber-purple-500/35 bg-oscuro-900/85 p-4 text-sm text-cyber-cyan-200/80">
-              Los pagos con tarjeta requieren configurar Stripe. Mientras tanto, podés elegir
+              Los pagos con tarjeta requieren configurar Mercado Pago. Mientras tanto, podés elegir
               efectivo o transferencia.
             </p>
           )}
 
-          {requiereStripe && stripeDisponible && cargandoPago && (
-            <p className="mt-6 rounded-xl border border-cyber-purple-500/35 bg-oscuro-900/85 p-4 text-sm text-cyber-cyan-200/80">
-              Preparando formulario de pago...
-            </p>
+          {requiereMercadoPago && mpDisponible && (
+            <div className="mt-6 space-y-3 rounded-xl border border-cyber-purple-500/30 bg-oscuro-800/70 p-4">
+              <p className="text-sm text-cyber-cyan-200/85">
+                Te vamos a redirigir a Mercado Pago (Checkout Pro) para completar el pago en pesos
+                argentinos. Usá un usuario y tarjeta de prueba si estás en modo test.
+              </p>
+              {!entregaValida && (
+                <p className="text-sm text-cyber-pink-300">
+                  Completá los datos de entrega (arriba) para continuar.
+                </p>
+              )}
+              <button
+                type="button"
+                onClick={() => void pagarConMercadoPago()}
+                disabled={redirigiendoMp || !entregaValida}
+                className="min-h-12 w-full rounded-md bg-cyber-cyan-500 px-4 py-3 text-sm font-bold text-white hover:bg-cyber-cyan-400 disabled:opacity-60"
+              >
+                {redirigiendoMp
+                  ? "Redirigiendo a Mercado Pago..."
+                  : metodoPago === "credito"
+                    ? "Pagar con Mercado Pago"
+                    : "Pagar con débito (Mercado Pago)"}
+              </button>
+            </div>
           )}
 
           {errorPago && (
@@ -381,39 +369,6 @@ export default function CheckoutView() {
               {errorPago}
             </p>
           )}
-
-          {requiereStripe &&
-            stripeDisponible &&
-            !cargandoPago &&
-            clientSecret &&
-            orderId &&
-            stripePromise && (
-              <div className="mt-6">
-                <Elements
-                  stripe={stripePromise}
-                  options={{
-                    clientSecret,
-                    appearance: {
-                      theme: "night",
-                      variables: {
-                        colorPrimary: "#22d3ee",
-                        colorBackground: "#0f172a",
-                        colorText: "#e0f2fe",
-                      },
-                    },
-                  }}
-                >
-                  <CheckoutPaymentForm
-                    orderId={orderId}
-                    etiquetaBoton={
-                      metodoPago === "credito"
-                        ? `Pagar en ${cuotas} cuota${cuotas > 1 ? "s" : ""}`
-                        : "Pagar con débito"
-                    }
-                  />
-                </Elements>
-              </div>
-            )}
         </div>
 
         <aside className="order-1 h-fit rounded-2xl border border-cyber-purple-500/35 bg-oscuro-900/85 p-4 sm:p-5 lg:order-2 lg:sticky lg:top-24">
@@ -460,7 +415,7 @@ export default function CheckoutView() {
 
           {metodoPago === "credito" && cuotas > 1 && (
             <p className="mt-2 text-xs text-cyber-cyan-200/70">
-              {cuotas} cuotas de {formatearPrecio(calcularCuota(total, cuotas))} sin interés
+              Referencia: {cuotas} cuotas de {formatearPrecio(calcularCuota(total, cuotas))}
             </p>
           )}
         </aside>

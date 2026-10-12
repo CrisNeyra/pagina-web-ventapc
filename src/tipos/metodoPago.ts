@@ -26,17 +26,17 @@ export const METODOS_PAGO: MetodoPagoOpcion[] = [
   {
     id: "debito",
     titulo: "Tarjeta de débito",
-    descripcion: "Pago inmediato con tarjeta de débito.",
+    descripcion: "Pago seguro con Mercado Pago (débito).",
   },
   {
     id: "credito",
     titulo: "Tarjeta de crédito",
-    descripcion: "Hasta 12 cuotas sin interés.",
-    badge: "12 cuotas",
+    descripcion: "Mercado Pago: cuotas según el emisor.",
+    badge: "Mercado Pago",
   },
 ];
 
-export function metodosPagoVisibles(stripeActivo: boolean): MetodoPagoOpcion[] {
-  if (stripeActivo) return METODOS_PAGO;
+export function metodosPagoVisibles(pagosOnlineActivos: boolean): MetodoPagoOpcion[] {
+  if (pagosOnlineActivos) return METODOS_PAGO;
   return METODOS_PAGO.filter((metodo) => metodo.id !== "debito" && metodo.id !== "credito");
 }

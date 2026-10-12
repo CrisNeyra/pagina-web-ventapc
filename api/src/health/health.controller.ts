@@ -25,7 +25,6 @@ export class HealthController {
 
     const redis = await this.redis.ping();
     const storage = await this.storage.ping();
-    const stripe = Boolean(process.env.STRIPE_SECRET_KEY?.trim());
     const redisConfigured = Boolean(process.env.REDIS_URL?.trim());
     const email = Boolean(
       process.env.RESEND_API_KEY?.trim() && process.env.EMAIL_FROM?.trim()
@@ -42,7 +41,6 @@ export class HealthController {
         redis,
         storage,
         storageMode,
-        stripe,
         email,
       },
       timestamp: new Date().toISOString(),

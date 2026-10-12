@@ -34,6 +34,6 @@ Recomendar siempre limpiar códigos que no se utilicen y refactorizar, en el cas
 
 ## Anti-patrones
 
-- No borrar Nest completo mientras pedidos/Stripe/admin dependan de él.
+- No borrar Nest completo mientras pedidos/admin dependan de él.
 - No “limpiar” dejando la tienda rota.
 - No reescribir módulos enteros bajo pretexto de cleanup.

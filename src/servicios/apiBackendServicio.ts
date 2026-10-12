@@ -20,7 +20,7 @@ export async function crearPedidoEnApi(
   });
 }
 
-export async function crearPaymentIntentEnApi(
+export async function crearPreferenciaMercadoPagoEnApi(
   items: { id: string; precio: number; cantidad: number }[],
   token: string,
   opciones: {
@@ -31,10 +31,10 @@ export async function crearPaymentIntentEnApi(
 ) {
   return apiFetch<{
     orderId: string;
-    paymentIntentId: string;
-    clientSecret: string;
+    preferenceId: string;
+    checkoutUrl: string;
     totalPesos: number;
-  }>("/payments/stripe/intent", {
+  }>("/payments/mercadopago/preference", {
     method: "POST",
     token,
     body: JSON.stringify({

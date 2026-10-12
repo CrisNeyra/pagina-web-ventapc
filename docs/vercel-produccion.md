@@ -40,9 +40,9 @@ Project → **Settings → Environment Variables** (Production + Preview):
 | `BLOB_READ_WRITE_TOKEN` | CVs en prod | Vercel Blob; sin esto los PDF no persisten |
 | `REDIS_URL` (o `REDIS_HOST` + `REDIS_PORT` + `REDIS_PASSWORD`) | Rate limit | Preferido: [Redis Cloud](https://app.redislabs.com) free. El CLI suele dar `redis://` (sin TLS); si exige TLS usá `rediss://`. `/api/health` → `rateLimit: "redis"`. Alternativa: Upstash REST |
 | `RESEND_API_KEY` + `EMAIL_FROM` | Emails | Pedidos, restablecer contraseña y postulaciones. Prueba: `Aura Pro <onboarding@resend.dev>` (solo llega al dueño de la cuenta Resend). Clientes reales: dominio verificado en Resend — ver sección «Correo con dominio propio» |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | No | Solo si usás Stripe |
-| `STRIPE_SECRET_KEY` | No | Solo servidor |
-| `STRIPE_WEBHOOK_SECRET` | No | Endpoint: `/api/payments/stripe/webhook` |
+| `NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY` | No | Checkout Pro (tarjeta) |
+| `MERCADOPAGO_ACCESS_TOKEN` | No | Solo servidor |
+
 | `ADMIN_EMAILS` | No | CSV de emails admin extra |
 | `NEXT_PUBLIC_SENTRY_DSN` | No | Observabilidad |
 
@@ -91,7 +91,7 @@ Opcional: apuntá ese dominio a Vercel (CNAME/`A`) para que el sitio deje de ser
 
 1. `https://TU-DOMINIO/api/health` → `ok: true`, `mode: "next-prisma"`.
 2. Login admin / catálogo / un pedido efectivo de prueba.
-3. Stripe webhook (opcional): `https://TU-DOMINIO/api/payments/stripe/webhook`.
+3. Mercado Pago webhook: `https://TU-DOMINIO/api/payments/mercadopago/webhook`.
 
 ## Troubleshooting
 

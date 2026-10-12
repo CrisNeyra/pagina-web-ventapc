@@ -14,8 +14,7 @@
     "redis": true,
     "storage": true,
     "storageMode": "local",
-    "stripe": false,
-    "email": false
+    "email": false,
   },
   "timestamp": "..."
 }

@@ -11,6 +11,6 @@ Al terminar cambios o reviews:
 - Señalar código/archivos/imports/env sin uso
 - Proponer borrado o refactor concreto (paths)
 - No refactor masivo sin necesidad real
-- Con Nest legacy (`api/`): no eliminar lo que aún usa pedidos/Stripe/admin
+- Con Nest legacy (`api/`): no eliminar lo que aún usa pedidos/admin
 
 Detalle: `.cursor/skills/limpiar-y-refactorizar/SKILL.md`

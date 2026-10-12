@@ -6,7 +6,7 @@ import {
   type EntregaDto,
   type ItemPedidoDto,
 } from "@/lib/orders-server";
-import { crearPaymentIntentStripe } from "@/lib/payments-server";
+import { crearPreferenciaMercadoPago } from "@/lib/payments-server";
 
 export const runtime = "nodejs";
 
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const resultado = await crearPaymentIntentStripe({
+    const resultado = await crearPreferenciaMercadoPago({
       userId: user.id,
       email: user.email,
       items: body.items,
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     return NextResponse.json(resultado);
   } catch (error) {
     const mensaje =
-      error instanceof OrderError ? error.message : "ERROR_PAYMENT_INTENT";
+      error instanceof OrderError ? error.message : "ERROR_PREFERENCE";
     const status =
       mensaje === "SIN_STOCK" || mensaje === "PRICE_MISMATCH" ? 409 : 400;
     return NextResponse.json({ message: mensaje }, { status });

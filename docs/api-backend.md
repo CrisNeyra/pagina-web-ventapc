@@ -1,7 +1,7 @@
 # Backend API — Aura Pro (Nest LEGACY)
 
 > **Stack actual:** Next.js + Prisma + Neon. Ver [`stack-next-prisma-neon.md`](stack-next-prisma-neon.md).  
-> La carpeta `api/` es **legacy**. Auth, catálogo, pedidos, Stripe, admin, PC builds y postulaciones ya viven en `src/app/api`.
+> La carpeta `api/` es **legacy**. Auth, catálogo, pedidos, Mercado Pago, admin, PC builds y postulaciones ya viven en `src/app/api`.
 
 Usá Nest solo como referencia o escape hatch con `NEXT_PUBLIC_API_URL`.
 
@@ -30,8 +30,8 @@ Los mismos paths existen hoy en Next bajo `/api/...` (mismo origen). Esta tabla 
 | GET | `/products` | Catálogo |
 | POST | `/orders` | Pedido offline (JWT) |
 | GET | `/orders/me` | Pedidos del usuario |
-| POST | `/payments/stripe/intent` | PaymentIntent |
-| POST | `/payments/stripe/webhook` | Webhook Stripe |
+| POST | `/payments/mercadopago/preference` | Checkout Pro (Next) |
+| POST | `/payments/mercadopago/webhook` | Webhook Mercado Pago (Next) |
 | POST | `/auth/register` | Registro |
 | POST | `/auth/login` | Login |
 | GET | `/auth/me` | Usuario actual |

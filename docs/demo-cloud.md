@@ -10,7 +10,7 @@ Guía: [`stack-next-prisma-neon.md`](stack-next-prisma-neon.md).
 
 1. **Neon** — proyecto → `DATABASE_URL` (`sslmode=require`).
 2. **Local** — `.env.local` con `DATABASE_URL` + `JWT_SECRET` → `npm run db:setup` → `npm run dev`.
-3. **Vercel** — mismas vars + `NEXT_PUBLIC_SITE_URL` (+ Stripe si aplica).
+3. **Vercel** — mismas vars + `NEXT_PUBLIC_SITE_URL` (+ Mercado Pago si aplica).
 
 Checklist:
 
@@ -18,7 +18,7 @@ Checklist:
 - [ ] Login / registro
 - [ ] Catálogo desde DB
 - [ ] Pedido offline / admin
-- [ ] (Opcional) Stripe con keys de test
+- [ ] (Opcional) Mercado Pago con credenciales de prueba
 
 ---
 

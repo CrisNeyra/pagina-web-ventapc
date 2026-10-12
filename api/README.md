@@ -2,7 +2,7 @@
 
 > **Stack de producción:** Next.js + Prisma + Neon. Nest **no** se despliega.
 
-Esta carpeta queda como referencia histórica. Auth, catálogo, pedidos, Stripe, admin, PC builds, postulaciones, redes sociales, stock admin, emails y CVs viven en `src/app/api` y `src/lib`.
+Esta carpeta queda como referencia histórica. Auth, catálogo, pedidos, Mercado Pago, admin, PC builds, postulaciones, redes sociales, stock admin, emails y CVs viven en `src/app/api` y `src/lib`.
 
 No setees `NEXT_PUBLIC_API_URL` en Vercel.
 

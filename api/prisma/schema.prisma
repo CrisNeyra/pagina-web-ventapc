@@ -70,11 +70,11 @@ model Order {
   email                 String?
   estado                OrderStatus @default(pending_payment)
   metodoPago            String?     @map("metodo_pago")
-  totalPesos            Int         @map("total_pesos")
-  costoEnvio            Int         @default(0) @map("costo_envio")
-  stripeAmountCents     Int?        @map("stripe_amount_cents")
-  stripePaymentIntentId String?     @unique @map("stripe_payment_intent_id")
-  entrega               Json?
+  totalPesos                Int         @map("total_pesos")
+  costoEnvio                Int         @default(0) @map("costo_envio")
+  mercadopagoPreferenceId   String?     @unique @map("mercadopago_preference_id")
+  mercadopagoPaymentId      String?     @map("mercadopago_payment_id")
+  entrega                   Json?
   cuotas                Int?
   idempotencyKey        String?     @unique @map("idempotency_key")
   createdAt             DateTime    @default(now()) @map("created_at")

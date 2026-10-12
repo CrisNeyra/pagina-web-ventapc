@@ -25,13 +25,8 @@ describe("etiquetaMetodoPago", () => {
 });
 
 describe("montoPedidoEnPesos", () => {
-  it("convierte centavos de Stripe a pesos", () => {
-    expect(
-      montoPedidoEnPesos({ amount: 25000000, paymentIntentId: "pi_123" })
-    ).toBe(250000);
-  });
-
-  it("mantiene pesos en pedidos offline", () => {
-    expect(montoPedidoEnPesos({ amount: 225000 })).toBe(225000);
+  it("devuelve el total en pesos", () => {
+    expect(montoPedidoEnPesos({ amount: 250000 })).toBe(250000);
+    expect(montoPedidoEnPesos({ amount: 225000, paymentIntentId: "legacy" })).toBe(225000);
   });
 });

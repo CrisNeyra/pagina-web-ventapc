@@ -31,7 +31,7 @@ describe("checkout", () => {
   });
 });
 
-describe("medios visibles sin Stripe", () => {
+describe("medios visibles sin Mercado Pago", () => {
   it("oculta débito y crédito", async () => {
     const { metodosPagoVisibles } = await import("@/tipos/metodoPago");
     const ids = metodosPagoVisibles(false).map((m) => m.id);

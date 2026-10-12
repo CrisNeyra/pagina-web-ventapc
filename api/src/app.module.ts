@@ -7,7 +7,6 @@ import { RedisModule } from "./redis/redis.module";
 import { HealthModule } from "./health/health.module";
 import { ProductsModule } from "./products/products.module";
 import { OrdersModule } from "./orders/orders.module";
-import { PaymentsModule } from "./payments/payments.module";
 import { ShippingModule } from "./shipping/shipping.module";
 import { SiteConfigModule } from "./site-config/site-config.module";
 import { AuthModule } from "./auth/auth.module";
@@ -33,7 +32,6 @@ import { EmailModule } from "./email/email.module";
     HealthModule,
     ProductsModule,
     OrdersModule,
-    PaymentsModule,
     ShippingModule,
     SiteConfigModule,
     AuthModule,

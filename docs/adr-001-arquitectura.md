@@ -20,8 +20,8 @@ Aura Pro es un e-commerce de portfolio. El stack es **Next.js (App Router) + Typ
 - Schema en `prisma/`; cliente en `src/lib/prisma.ts`.
 - Users, products, orders, pc_builds, postulaciones, site_config, shipping.
 
-### Stripe
-- Publishable key en el front; secret/webhook en Route Handlers Next (`/api/payments/stripe/*`).
+### Mercado Pago
+- Public Key en el front; Access Token y webhook en Route Handlers Next (`/api/payments/mercadopago/*`).
 
 ### Sin Firebase / Supabase
 - Eliminados Auth, Firestore, Cloud Functions y carpeta `supabase/`.

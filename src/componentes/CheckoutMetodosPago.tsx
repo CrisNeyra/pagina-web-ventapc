@@ -1,4 +1,4 @@
-import { pagosConfigurados } from "@/configuracion/stripe";
+import { pagosConfigurados } from "@/configuracion/mercadopago";
 import type { MetodoPago } from "@/tipos/metodoPago";
 import { metodosPagoVisibles } from "@/tipos/metodoPago";
 import {

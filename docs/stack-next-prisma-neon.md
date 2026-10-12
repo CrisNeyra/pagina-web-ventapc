@@ -22,7 +22,7 @@ flowchart LR
 | Auth JWT + cookie `aura_token` | `src/lib/auth-server.ts` + `src/app/api/auth/*` |
 | Catálogo | Prisma / `GET /api/products` |
 | Pedidos offline | `POST /api/orders`, `GET /api/orders/me` |
-| Stripe | `POST /api/payments/stripe/intent` + webhook |
+| Mercado Pago | `POST /api/payments/mercadopago/preference` + webhook |
 | Admin | `src/app/api/admin/*` |
 | PC builds | `src/app/api/pc-builds/*` |
 | Postulaciones | `POST /api/postulaciones` + admin CV |
@@ -61,7 +61,7 @@ Admin tras seed: `ADMIN_EMAIL` + `ADMIN_PASSWORD` (política: 10+ caracteres, le
 
 **Opcionales:**
 
-- `NEXT_PUBLIC_SITE_URL`, Stripe, `ADMIN_EMAILS`, `BLOB_READ_WRITE_TOKEN`, Resend, Upstash, Sentry
+- `NEXT_PUBLIC_SITE_URL`, Mercado Pago, `ADMIN_EMAILS`, `BLOB_READ_WRITE_TOKEN`, Resend, Upstash, Sentry
 
 **Legacy:** `NEXT_PUBLIC_API_URL` fuerza al cliente a usar Nest externo. Vacío = `/api` del mismo origen (recomendado).
 
@@ -81,13 +81,13 @@ El build ejecuta `prisma generate` antes de `next build`. Tras el primer deploy:
 |--------|--------|
 | health, products, auth | Next |
 | orders, shipping, site-config | Next |
-| Stripe intent + webhook | Next |
+| Mercado Pago preference + webhook | Next |
 | admin (pedidos + postulaciones/CV) | Next |
 | PC builds, postulaciones públicas | Next |
 | Nest `api/` | Archivado (referencia; no se despliega) |
 
 ## Seguridad
 
-- Secretos solo en servidor (`DATABASE_URL`, `JWT_SECRET`, Stripe secret).
+- Secretos solo en servidor (`DATABASE_URL`, `JWT_SECRET`, `MERCADOPAGO_ACCESS_TOKEN`).
 - Cookie `aura_token` httpOnly; Bearer en cliente para llamadas API.
 - Validar inputs en Route Handlers; no confiar en el body del cliente.
