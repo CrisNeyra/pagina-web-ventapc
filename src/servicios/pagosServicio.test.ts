@@ -22,7 +22,7 @@ describe("crearPreferenciaPago", () => {
   });
 
   it("rechaza carrito vacío sin llamar a la API", async () => {
-    const resultado = await crearPreferenciaPago([], "token-test");
+    const resultado = await crearPreferenciaPago([]);
 
     expect(resultado.ok).toBe(false);
     if (!resultado.ok) {
@@ -33,8 +33,7 @@ describe("crearPreferenciaPago", () => {
 
   it("crea preferencia vía API", async () => {
     const resultado = await crearPreferenciaPago(
-      [{ id: "gpu-001", precio: 100000, cantidad: 1 }],
-      "token-test"
+      [{ id: "gpu-001", precio: 100000, cantidad: 1 }]
     );
 
     expect(resultado.ok).toBe(true);
@@ -48,13 +47,11 @@ describe("crearPreferenciaPago", () => {
   it("pasa metodoPago y cuotas a la API", async () => {
     await crearPreferenciaPago(
       [{ id: "gpu-001", precio: 100000, cantidad: 1 }],
-      "token-test",
       { metodoPago: "credito", cuotas: 6 }
     );
 
     expect(crearPreferenciaMercadoPagoEnApi).toHaveBeenCalledWith(
       expect.any(Array),
-      "",
       expect.objectContaining({ metodoPago: "credito", cuotas: 6 })
     );
   });

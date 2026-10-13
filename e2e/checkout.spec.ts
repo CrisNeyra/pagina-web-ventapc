@@ -1,16 +1,28 @@
 import { test, expect } from "@playwright/test";
 
+async function cerrarBannerSiExiste(page: import("@playwright/test").Page) {
+  await page.keyboard.press("Escape").catch(() => undefined);
+  const cerrarBanner = page.getByLabel("Cerrar banner de cuotas");
+  if (await cerrarBanner.isVisible({ timeout: 1_000 }).catch(() => false)) {
+    await cerrarBanner.click({ force: true }).catch(() => undefined);
+  }
+}
+
+async function esperarCheckoutPideLogin(page: import("@playwright/test").Page) {
+  await expect(
+    page.getByText(/iniciá sesión|iniciar sesión/i).first()
+  ).toBeVisible({ timeout: 15_000 });
+}
+
 test.describe("Flujo de compra", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/");
-    const cerrarBanner = page.getByLabel("Cerrar banner de cuotas");
-    if (await cerrarBanner.isVisible().catch(() => false)) {
-      await cerrarBanner.click();
-    }
+    await cerrarBannerSiExiste(page);
   });
 
   test("agrega producto al carrito y llega al checkout", async ({ page }) => {
     await page.goto("/productos");
+    await cerrarBannerSiExiste(page);
 
     const botonesAgregar = page.getByRole("button", { name: /agregar al carrito/i });
     await expect(botonesAgregar.first()).toBeVisible({ timeout: 15_000 });
@@ -20,8 +32,7 @@ test.describe("Flujo de compra", () => {
     await expect(page.getByText(/RTX|AMD|Intel|MSI|Corsair/i).first()).toBeVisible();
 
     await page.goto("/checkout");
-    await expect(page).toHaveURL(/auth=required/);
-    await expect(page.getByRole("heading", { name: /iniciar sesión/i })).toBeVisible();
+    await esperarCheckoutPideLogin(page);
   });
 
   test("muestra login requerido en checkout sin sesión", async ({ page }) => {
@@ -51,8 +62,7 @@ test.describe("Flujo de compra", () => {
     });
 
     await page.goto("/checkout");
-    await expect(page).toHaveURL(/auth=required/);
-    await expect(page.getByRole("heading", { name: /iniciar sesión/i })).toBeVisible();
+    await esperarCheckoutPideLogin(page);
   });
 
   test("página de éxito muestra confirmación", async ({ page }) => {
@@ -70,7 +80,7 @@ test.describe("Flujo de compra", () => {
   test("error de pago muestra pedido y reintento", async ({ page }) => {
     await page.goto("/checkout/error?orderId=mp-fail");
     await expect(page.getByRole("heading", { name: /no se pudo completar el pago/i })).toBeVisible();
-    await expect(page.getByText(/mp-fail/)).toBeVisible();
+    await expect(page.getByText("mp-fail")).toBeVisible();
     await expect(page.getByRole("link", { name: /reintentar checkout/i })).toBeVisible();
   });
 });

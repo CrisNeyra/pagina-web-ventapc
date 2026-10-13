@@ -27,10 +27,6 @@ import {
 import { apiConfigurada } from "@/lib/api-client";
 import { obtenerTransferenciaApi } from "@/servicios/apiBackendServicio";
 
-async function obtenerTokenSesion(): Promise<string> {
-  return "";
-}
-
 const DATOS_TRANSFERENCIA_DEFAULT = {
   banco: "Banco Galicia",
   titular: "Aura Pro S.A.",
@@ -126,8 +122,7 @@ export default function CheckoutView() {
     setErrorPago("");
 
     try {
-      const idToken = await obtenerTokenSesion();
-      const resultado = await crearPreferenciaPago(itemsPago, idToken, {
+      const resultado = await crearPreferenciaPago(itemsPago, {
         metodoPago: metodoPago === "credito" ? "credito" : "debito",
         cuotas: metodoPago === "credito" ? cuotas : 1,
         entrega: datosEntrega,
@@ -160,8 +155,7 @@ export default function CheckoutView() {
     setErrorPago("");
 
     try {
-      const idToken = await obtenerTokenSesion();
-      const resultado = await crearPedidoOffline(itemsPago, metodoPago, idToken, datosEntrega);
+      const resultado = await crearPedidoOffline(itemsPago, metodoPago, datosEntrega);
 
       if (!resultado.ok) {
         setErrorPago(resultado.mensaje);

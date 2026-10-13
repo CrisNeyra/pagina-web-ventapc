@@ -27,7 +27,7 @@ flowchart LR
 | PC builds | `src/app/api/pc-builds/*` |
 | Postulaciones | `POST /api/postulaciones` + admin CV |
 | Health | `GET /api/health` (`mode: next-prisma`) |
-| Nest legacy | carpeta `api/` (opcional vía `NEXT_PUBLIC_API_URL`) |
+| Nest legacy | carpeta `api/` archivada (no setear `NEXT_PUBLIC_API_URL`) |
 
 ## Setup local (sin Docker)
 
@@ -63,7 +63,7 @@ Admin tras seed: `ADMIN_EMAIL` + `ADMIN_PASSWORD` (política: 10+ caracteres, le
 
 - `NEXT_PUBLIC_SITE_URL`, Mercado Pago, `ADMIN_EMAILS`, `BLOB_READ_WRITE_TOKEN`, Resend, Upstash, Sentry
 
-**Legacy:** `NEXT_PUBLIC_API_URL` fuerza al cliente a usar Nest externo. Vacío = `/api` del mismo origen (recomendado).
+**Legacy:** no setees `NEXT_PUBLIC_API_URL`. Vacío = `/api` del mismo origen. Nest (`api/`) está archivado.
 
 ## Deploy (Vercel + Neon)
 

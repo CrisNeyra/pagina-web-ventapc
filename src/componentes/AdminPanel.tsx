@@ -140,16 +140,21 @@ export default function AdminPanel() {
     );
   }
 
-  const pedidosVisibles = pedidos.filter((pedido) => {
-    if (filtroPedidos === "mercadopago") return esMercadoPago(pedido.metodoPago);
-    if (filtroPedidos === "todos") return true;
-    return [
+  const pedidosPendientes = pedidos.filter((pedido) =>
+    [
       "pending_payment",
       "pending_cash",
       "pending_transfer",
       "payment_failed",
-    ].includes(pedido.estado);
-  });
+    ].includes(pedido.estado)
+  );
+  const pedidosMercadoPago = pedidos.filter((pedido) => esMercadoPago(pedido.metodoPago));
+  const pedidosVisibles =
+    filtroPedidos === "mercadopago"
+      ? pedidosMercadoPago
+      : filtroPedidos === "todos"
+        ? pedidos
+        : pedidosPendientes;
 
   return (
     <div className="space-y-6">
@@ -182,11 +187,11 @@ export default function AdminPanel() {
           <div className="flex flex-wrap gap-2">
             {(
               [
-                ["pendientes", "Pendientes"],
-                ["mercadopago", "Mercado Pago"],
-                ["todos", "Todos"],
+                ["pendientes", "Pendientes", pedidosPendientes.length],
+                ["mercadopago", "Mercado Pago", pedidosMercadoPago.length],
+                ["todos", "Todos", pedidos.length],
               ] as const
-            ).map(([id, label]) => (
+            ).map(([id, label, count]) => (
               <button
                 key={id}
                 type="button"
@@ -197,13 +202,20 @@ export default function AdminPanel() {
                     : "border border-cyber-purple-500/40 text-cyber-cyan-200"
                 }`}
               >
-                {label}
+                {label} ({count})
               </button>
             ))}
           </div>
         </div>
+        <p className="mt-2 text-xs text-cyber-cyan-200/65">
+          Tras un pago test de Mercado Pago, el webhook debe dejar el pedido en Pagado y mostrar el ID de pago.
+        </p>
         {pedidosVisibles.length === 0 ? (
-          <p className="mt-3 text-sm text-cyber-cyan-200/70">No hay pedidos en este filtro.</p>
+          <p className="mt-3 text-sm text-cyber-cyan-200/70">
+            {filtroPedidos === "mercadopago"
+              ? "No hay pedidos con tarjeta Mercado Pago. Completá un checkout de prueba y esperá el webhook."
+              : "No hay pedidos en este filtro."}
+          </p>
         ) : (
           <ul className="mt-4 space-y-2">
             {pedidosVisibles.map((pedido) => (
@@ -214,7 +226,14 @@ export default function AdminPanel() {
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="font-mono text-cyber-cyan-300">{pedido.id.slice(0, 8)}...</span>
                   <span className="text-cyber-cyan-200">{pedido.email ?? "—"}</span>
-                  <span>{etiquetaEstadoPedido(pedido.estado)}</span>
+                  <span className="flex flex-wrap items-center gap-1">
+                    {etiquetaEstadoPedido(pedido.estado)}
+                    {pedido.estado === "paid" && pedido.mercadopagoPaymentId ? (
+                      <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-300">
+                        Pagado en MP
+                      </span>
+                    ) : null}
+                  </span>
                   <span>{etiquetaMetodoPago(pedido.metodoPago ?? undefined)}</span>
                   <span className="font-bold text-foreground">
                     {formatearPrecio(pedido.totalPesos)}
@@ -222,14 +241,20 @@ export default function AdminPanel() {
                 </div>
                 {esMercadoPago(pedido.metodoPago) && (
                   <p className="mt-1 text-xs text-cyber-cyan-200/70">
-                    MP preferencia:{" "}
-                    <span className="font-mono">
+                    Preferencia MP:{" "}
+                    <span
+                      className="font-mono"
+                      title={pedido.mercadopagoPreferenceId ?? undefined}
+                    >
                       {pedido.mercadopagoPreferenceId ?? "sin crear"}
                     </span>
                     {" · "}
-                    pago:{" "}
-                    <span className="font-mono">
-                      {pedido.mercadopagoPaymentId ?? "pendiente"}
+                    ID de pago:{" "}
+                    <span
+                      className="font-mono"
+                      title={pedido.mercadopagoPaymentId ?? undefined}
+                    >
+                      {pedido.mercadopagoPaymentId ?? "pendiente (webhook no llegó)"}
                     </span>
                   </p>
                 )}

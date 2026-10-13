@@ -56,7 +56,6 @@ export interface OpcionesPreferenciaPago {
 
 export async function crearPreferenciaPago(
   items: ItemPago[],
-  _idToken: string,
   opciones: OpcionesPreferenciaPago = {}
 ): Promise<RespuestaPreferenciaPago> {
   if (items.length === 0) {
@@ -76,7 +75,7 @@ export async function crearPreferenciaPago(
   }
 
   try {
-    const resultado = await crearPreferenciaMercadoPagoEnApi(items, "", {
+    const resultado = await crearPreferenciaMercadoPagoEnApi(items, {
       metodoPago: opciones.metodoPago ?? "debito",
       cuotas: opciones.cuotas,
       entrega: opciones.entrega ?? { tipo: "retiro" },

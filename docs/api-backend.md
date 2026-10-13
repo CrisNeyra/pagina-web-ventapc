@@ -3,22 +3,20 @@
 > **Stack actual:** Next.js + Prisma + Neon. Ver [`stack-next-prisma-neon.md`](stack-next-prisma-neon.md).  
 > La carpeta `api/` es **legacy**. Auth, catálogo, pedidos, Mercado Pago, admin, PC builds y postulaciones ya viven en `src/app/api`.
 
-Usá Nest solo como referencia o escape hatch con `NEXT_PUBLIC_API_URL`.
+**No uses Nest en el flujo diario.** No setees `NEXT_PUBLIC_API_URL`. La carpeta `api/` queda como referencia (pedidos/admin viejos). Scripts: `npm run api:legacy:install` / `npm run api:legacy:dev` (solo comparación histórica).
 
-## Arranque legacy (opcional)
+## Arranque legacy (solo si comparás código viejo)
 
 ```bash
 npm run catalogo:export:api
 docker compose up -d postgres redis minio
-cd api
-cp .env.example .env
-npm install
-npx prisma migrate deploy
-npm run prisma:seed
-npm run start:dev
+cp api/.env.example api/.env
+npm run api:legacy:install
+cd api && npx prisma migrate deploy && npm run prisma:seed
+npm run api:legacy:dev
 ```
 
-API: `http://localhost:4000/api`.
+API Nest: `http://localhost:4000/api`. El día a día es `npm run dev` (Next en `:3000`).
 
 ## Endpoints (históricos)
 

@@ -40,8 +40,8 @@ Project → **Settings → Environment Variables** (Production + Preview):
 | `BLOB_READ_WRITE_TOKEN` | CVs en prod | Vercel Blob; sin esto los PDF no persisten |
 | `REDIS_URL` (o `REDIS_HOST` + `REDIS_PORT` + `REDIS_PASSWORD`) | Rate limit | Preferido: [Redis Cloud](https://app.redislabs.com) free. El CLI suele dar `redis://` (sin TLS); si exige TLS usá `rediss://`. `/api/health` → `rateLimit: "redis"`. Alternativa: Upstash REST |
 | `RESEND_API_KEY` + `EMAIL_FROM` | Emails | Pedidos, restablecer contraseña y postulaciones. Prueba: `Aura Pro <onboarding@resend.dev>` (solo llega al dueño de la cuenta Resend). Clientes reales: dominio verificado en Resend — ver sección «Correo con dominio propio» |
-| `NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY` | No | Checkout Pro (tarjeta) |
-| `MERCADOPAGO_ACCESS_TOKEN` | No | Solo servidor |
+| `NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY` | No | Checkout Pro (tarjeta). Ver [mercadopago.md](mercadopago.md) |
+| `MERCADOPAGO_ACCESS_TOKEN` | No | Solo servidor. Rotá si se filtró; no lo pegues en el chat |
 
 | `ADMIN_EMAILS` | No | CSV de emails admin extra |
 | `NEXT_PUBLIC_SENTRY_DSN` | No | Observabilidad |
@@ -101,5 +101,8 @@ Opcional: apuntá ese dominio a Vercel (CNAME/`A`) para que el sitio deje de ser
 | `/api/health` DB fail | `DATABASE_URL` mal pegada; Neon slept |
 | Login 503 | Falta `JWT_SECRET` |
 | CVs desaparecen | Falta `BLOB_READ_WRITE_TOKEN` |
+| Webhook MP “no funciona” al abrir la URL | No se registra así. Panel MP → Webhooks. Guía: [`mercadopago.md`](mercadopago.md) |
+
+Pago con tarjeta (Checkout Pro): [`mercadopago.md`](mercadopago.md).
 
 Más contexto: [`stack-next-prisma-neon.md`](stack-next-prisma-neon.md).

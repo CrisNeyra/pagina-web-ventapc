@@ -1,9 +1,8 @@
 import { test, expect } from "@playwright/test";
 
 /**
- * Flujos legacy Nest vía API externa (login, pedido offline, guardar build).
- * Requiere NEXT_PUBLIC_API_URL apuntando a Nest en marcha; si no, se skippea.
- * El flujo diario ya cubre esto con Route Handlers de Next (/api).
+ * Nest (`api/`) está archivado. Este spec solo corre si hay Nest en marcha
+ * y NEXT_PUBLIC_API_URL. El flujo diario es Next `/api` (ver next-api.spec.ts).
  */
 const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api").replace(
   /\/$/,

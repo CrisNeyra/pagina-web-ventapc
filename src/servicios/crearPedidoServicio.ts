@@ -26,7 +26,6 @@ export type RespuestaCrearPedido = ResultadoCrearPedido | ErrorCrearPedido;
 export async function crearPedidoOffline(
   items: ItemPedidoRequest[],
   metodoPago: MetodoPago,
-  _idToken: string,
   entrega: DatosEntrega
 ): Promise<RespuestaCrearPedido> {
   try {
@@ -37,7 +36,7 @@ export async function crearPedidoOffline(
       };
     }
 
-    const pedido = await crearPedidoEnApi(items, metodoPago, entrega, "");
+    const pedido = await crearPedidoEnApi(items, metodoPago, entrega);
     return {
       ok: true,
       orderId: pedido.id,

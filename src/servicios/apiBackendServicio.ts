@@ -9,12 +9,10 @@ export async function crearPedidoEnApi(
   items: { id: string; precio: number; cantidad: number; nombre?: string }[],
   metodoPago: string,
   entrega: DatosEntrega,
-  token: string,
   idempotencyKey?: string
 ) {
   return apiFetch<{ id: string; totalPesos: number; metodoPago: string }>("/orders", {
     method: "POST",
-    token,
     headers: idempotencyKey ? { "Idempotency-Key": idempotencyKey } : undefined,
     body: JSON.stringify({ items, metodoPago, entrega }),
   });
@@ -22,7 +20,6 @@ export async function crearPedidoEnApi(
 
 export async function crearPreferenciaMercadoPagoEnApi(
   items: { id: string; precio: number; cantidad: number }[],
-  token: string,
   opciones: {
     metodoPago: "debito" | "credito";
     cuotas?: number;
@@ -36,7 +33,6 @@ export async function crearPreferenciaMercadoPagoEnApi(
     totalPesos: number;
   }>("/payments/mercadopago/preference", {
     method: "POST",
-    token,
     body: JSON.stringify({
       items,
       metodoPago: opciones.metodoPago,

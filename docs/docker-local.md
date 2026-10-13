@@ -2,7 +2,7 @@
 
 Docker es **opcional**. El flujo diario recomendado es **Next + Prisma + Neon** (sin Docker ni Nest): ver [`stack-next-prisma-neon.md`](stack-next-prisma-neon.md) y `.env.local.example`.
 
-Usá esta guía solo si querés debuggear Nest (`api/`) o Postgres local.
+Usá esta guía solo si querés debuggear Nest archivado (`api/`) o Postgres local. El flujo diario **no** setea `NEXT_PUBLIC_API_URL`.
 
 ## Requisitos
 

@@ -50,6 +50,15 @@ async function manejar(request: Request) {
 
   const { topic, paymentId } = extraerPago(request, body);
 
+  if (!paymentId) {
+    return NextResponse.json({
+      ok: true,
+      received: true,
+      ignored: true,
+      hint: "Este URL es el receptor de webhooks de Mercado Pago. Configuralo en el panel (Webhooks / Notificaciones); abrir esta página en el navegador no registra el destination.",
+    });
+  }
+
   try {
     const resultado = await procesarWebhookMercadoPago({ topic, paymentId });
     return NextResponse.json(resultado);
