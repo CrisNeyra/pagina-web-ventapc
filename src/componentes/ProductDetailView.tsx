@@ -8,6 +8,8 @@ import { FiCheck, FiMapPin, FiShield, FiTruck } from "react-icons/fi";
 import { calcularDescuento, formatearPrecio } from "@/utils/formato";
 import { calcularCuota, calcularDescuentoTransferencia } from "@/lib/checkout";
 import { useCartStore } from "@/store/cartStore";
+import { useAuth } from "@/context/AuthContext";
+import { pedirInicioSesion } from "@/lib/pedir-sesion";
 import { verificarStockProducto } from "@/servicios/catalogoServicio";
 import { toast } from "sonner";
 
@@ -63,6 +65,7 @@ export default function ProductDetailView({ producto }: ProductDetailViewProps) 
   const [tabActiva, setTabActiva] = useState<"especificaciones" | "preguntas">("especificaciones");
   const [cantidad, setCantidad] = useState(1);
   const [procesando, setProcesando] = useState(false);
+  const { user } = useAuth();
   const addItem = useCartStore((state) => state.addItem);
 
   const imagenVisible = imagenHover ?? imagenSeleccionada;
@@ -108,6 +111,10 @@ export default function ProductDetailView({ producto }: ProductDetailViewProps) 
   };
 
   const agregar = async (irCheckout: boolean) => {
+    if (!user) {
+      pedirInicioSesion();
+      return;
+    }
     if (!producto.enStock) {
       toast.error("Este producto no tiene stock disponible.");
       return;

@@ -1,8 +1,9 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { dirname, isAbsolute, normalize, resolve } from "node:path";
+import { dirname, isAbsolute, join, normalize } from "node:path";
 
 function raizUploads() {
-  return resolve(process.cwd(), process.env.UPLOADS_DIR?.trim() || "uploads");
+  const carpeta = process.env.UPLOADS_DIR?.trim() || "uploads";
+  return join(/*turbopackIgnore: true*/ process.cwd(), carpeta);
 }
 
 export function blobConfigurado(): boolean {
@@ -25,9 +26,9 @@ export async function guardarArchivoCv(
     return blob.url;
   }
 
-  const absoluto = resolve(raizUploads(), pathRelativo);
-  await mkdir(dirname(absoluto), { recursive: true });
-  await writeFile(absoluto, buffer);
+  const absoluto = join(/*turbopackIgnore: true*/ raizUploads(), pathRelativo);
+  await mkdir(/*turbopackIgnore: true*/ dirname(absoluto), { recursive: true });
+  await writeFile(/*turbopackIgnore: true*/ absoluto, buffer);
   return pathRelativo;
 }
 
@@ -42,9 +43,11 @@ export async function leerArchivoCv(cvPath: string): Promise<Buffer> {
   }
 
   const root = raizUploads();
-  const absoluto = isAbsolute(cvPath) ? normalize(cvPath) : resolve(root, cvPath);
+  const absoluto = isAbsolute(cvPath)
+    ? normalize(cvPath)
+    : join(/*turbopackIgnore: true*/ root, cvPath);
   if (!absoluto.startsWith(root)) {
     throw new Error("CV_PATH_INVALIDO");
   }
-  return readFile(absoluto);
+  return readFile(/*turbopackIgnore: true*/ absoluto);
 }

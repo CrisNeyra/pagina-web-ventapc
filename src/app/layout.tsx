@@ -5,9 +5,11 @@ import Navbar from "@/componentes/Navbar";
 import Footer from "@/componentes/Footer";
 import DevConfigBanner from "@/componentes/DevConfigBanner";
 import FloatingWhatsApp from "@/componentes/FloatingWhatsApp";
+import AsesorChat from "@/componentes/AsesorChat";
 import WelcomeBannerModal from "@/componentes/WelcomeBannerModal";
 import { Toaster } from "sonner";
 import { AuthProvider } from "@/context/AuthContext";
+import CartSesion from "@/componentes/CartSesion";
 import { urlSitio } from "@/lib/site-url";
 
 const geistSans = Geist({
@@ -91,6 +93,7 @@ export default function RootLayout({
           }}
         />
         <AuthProvider>
+          <CartSesion />
           <a
             href="#contenido"
             className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[200] focus:rounded-md focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-bold focus:text-ink focus:shadow-lg"
@@ -104,6 +107,7 @@ export default function RootLayout({
           </div>
           <Footer />
           <FloatingWhatsApp />
+          <AsesorChat />
           <WelcomeBannerModal />
           <Toaster position="bottom-center" richColors theme="light" />
         </AuthProvider>

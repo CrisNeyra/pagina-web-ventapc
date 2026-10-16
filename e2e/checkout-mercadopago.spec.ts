@@ -22,30 +22,33 @@ test.describe("Checkout Mercado Pago", () => {
       test.skip(true, "No se pudo iniciar sesión de prueba");
     }
 
-    await page.addInitScript(() => {
+    const cuerpo = (await registro.json()) as { user?: { id: string } };
+    const userId = cuerpo.user?.id;
+    if (!userId) {
+      test.skip(true, "El registro no devolvió el id de usuario");
+    }
+
+    await page.addInitScript((id) => {
       localStorage.setItem(
-        "venta-pc-cart",
+        `venta-pc-cart:${id}`,
         JSON.stringify({
-          state: {
-            items: [
-              {
-                producto: {
-                  id: "gpu-001",
-                  nombre: "RTX 4070 Test",
-                  precio: 100000,
-                  imagen: "/placeholder-producto.svg",
-                  enStock: true,
-                },
-                cantidad: 1,
+          items: [
+            {
+              producto: {
+                id: "gpu-001",
+                nombre: "RTX 4070 Test",
+                precio: 100000,
+                imagen: "/placeholder-producto.svg",
+                enStock: true,
               },
-            ],
-            totalItems: 1,
-            subtotal: 100000,
-          },
-          version: 0,
+              cantidad: 1,
+            },
+          ],
+          totalItems: 1,
+          subtotal: 100000,
         })
       );
-    });
+    }, userId);
 
     await page.route("**/api/payments/mercadopago/preference", async (route) => {
       await route.fulfill({
@@ -66,10 +69,14 @@ test.describe("Checkout Mercado Pago", () => {
       timeout: 15_000,
     });
 
-    const credito = page.getByRole("button", { name: /tarjeta de crédito/i });
-    if (!(await credito.isVisible().catch(() => false))) {
-      test.skip(true, "Mercado Pago no está configurado en este entorno");
+    const config = await page.request.get("/api/payments/mercadopago/config");
+    const { enabled } = (await config.json()) as { enabled?: boolean };
+    if (!enabled) {
+      test.skip(true, "MERCADOPAGO_ACCESS_TOKEN no está en el servidor");
     }
+
+    const credito = page.getByRole("button", { name: /tarjeta de crédito/i });
+    await expect(credito).toBeVisible({ timeout: 15_000 });
     await credito.click();
     await expect(page.getByRole("button", { name: /pagar con mercado pago/i })).toBeVisible();
 

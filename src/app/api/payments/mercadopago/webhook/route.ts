@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { OrderError } from "@/lib/orders-server";
+import { firmaWebhookMercadoPagoValida } from "@/lib/mercadopago-webhook";
 import { procesarWebhookMercadoPago } from "@/lib/payments-server";
 
 export const runtime = "nodejs";
@@ -57,6 +58,21 @@ async function manejar(request: Request) {
       ignored: true,
       hint: "Este URL es el receptor de webhooks de Mercado Pago. Configuralo en el panel (Webhooks / Notificaciones); abrir esta página en el navegador no registra el destination.",
     });
+  }
+
+  const secreto = process.env.MERCADOPAGO_WEBHOOK_SECRET?.trim() ?? "";
+  if (secreto) {
+    const url = new URL(request.url);
+    const dataId = url.searchParams.get("data.id") || paymentId;
+    const valida = firmaWebhookMercadoPagoValida({
+      secret: secreto,
+      signatureHeader: request.headers.get("x-signature"),
+      requestId: request.headers.get("x-request-id"),
+      dataId,
+    });
+    if (!valida) {
+      return NextResponse.json({ message: "FIRMA_INVALIDA" }, { status: 401 });
+    }
   }
 
   try {

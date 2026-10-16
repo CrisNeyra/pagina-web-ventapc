@@ -6,32 +6,27 @@ test.describe("Checkout con API / sesión", () => {
       localStorage.setItem(
         "venta-pc-cart",
         JSON.stringify({
-          state: {
-            items: [
-              {
-                producto: {
-                  id: "gpu-001",
-                  nombre: "RTX 4070 Test",
-                  precio: 100000,
-                  imagen: "/placeholder-producto.svg",
-                  enStock: true,
-                },
-                cantidad: 1,
+          items: [
+            {
+              producto: {
+                id: "gpu-001",
+                nombre: "RTX 4070 Test",
+                precio: 100000,
+                imagen: "/placeholder-producto.svg",
+                enStock: true,
               },
-            ],
-            totalItems: 1,
-            subtotal: 100000,
-          },
-          version: 0,
+              cantidad: 1,
+            },
+          ],
         })
       );
-      localStorage.removeItem("aura-pro-api-token");
     });
 
     await page.goto("/checkout");
     await expect(page.getByText(/iniciá sesión|iniciar sesión/i)).toBeVisible({
       timeout: 15_000,
     });
+    await expect(page.getByLabel(/abrir carrito, \d+ productos/i)).toHaveCount(0);
   });
 
   test("health de Next responde", async ({ request }) => {

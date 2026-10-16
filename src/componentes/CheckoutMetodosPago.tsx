@@ -1,4 +1,3 @@
-import { pagosConfigurados } from "@/configuracion/mercadopago";
 import type { MetodoPago } from "@/tipos/metodoPago";
 import { metodosPagoVisibles } from "@/tipos/metodoPago";
 import {
@@ -19,15 +18,17 @@ const ICONOS: Record<MetodoPago, IconType> = {
 interface CheckoutMetodosPagoProps {
   seleccionado: MetodoPago | null;
   onSeleccionar: (metodo: MetodoPago) => void;
+  pagosOnline: boolean;
 }
 
 export default function CheckoutMetodosPago({
   seleccionado,
   onSeleccionar,
+  pagosOnline,
 }: CheckoutMetodosPagoProps) {
   return (
     <div className="grid gap-3 sm:grid-cols-2">
-      {metodosPagoVisibles(pagosConfigurados()).map((metodo) => {
+      {metodosPagoVisibles(pagosOnline).map((metodo) => {
         const Icono = ICONOS[metodo.id];
         const activo = seleccionado === metodo.id;
 

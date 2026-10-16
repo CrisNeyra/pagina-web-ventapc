@@ -1,6 +1,6 @@
 # Stack: Next.js + TypeScript + Prisma + Neon
 
-Arquitectura de Aura Pro: **un solo runtime** (Next.js App Router), Postgres en **Neon**, ORM **Prisma**. Sin Docker ni Nest en el día a día.
+Arquitectura de Aura Pro: **un solo runtime** (Next.js App Router), Postgres en **Neon**, ORM **Prisma**.
 
 ```mermaid
 flowchart LR
@@ -27,7 +27,6 @@ flowchart LR
 | PC builds | `src/app/api/pc-builds/*` |
 | Postulaciones | `POST /api/postulaciones` + admin CV |
 | Health | `GET /api/health` (`mode: next-prisma`) |
-| Nest legacy | carpeta `api/` archivada (no setear `NEXT_PUBLIC_API_URL`) |
 
 ## Setup local (sin Docker)
 
@@ -61,9 +60,7 @@ Admin tras seed: `ADMIN_EMAIL` + `ADMIN_PASSWORD` (política: 10+ caracteres, le
 
 **Opcionales:**
 
-- `NEXT_PUBLIC_SITE_URL`, Mercado Pago, `ADMIN_EMAILS`, `BLOB_READ_WRITE_TOKEN`, Resend, Upstash, Sentry
-
-**Legacy:** no setees `NEXT_PUBLIC_API_URL`. Vacío = `/api` del mismo origen. Nest (`api/`) está archivado.
+- `NEXT_PUBLIC_SITE_URL`, Mercado Pago (`MERCADOPAGO_ACCESS_TOKEN`, `MERCADOPAGO_WEBHOOK_SECRET`), `ADMIN_EMAILS`, `BLOB_READ_WRITE_TOKEN`, Resend, Redis, Sentry
 
 ## Deploy (Vercel + Neon)
 
@@ -84,7 +81,6 @@ El build ejecuta `prisma generate` antes de `next build`. Tras el primer deploy:
 | Mercado Pago preference + webhook | Next |
 | admin (pedidos + postulaciones/CV) | Next |
 | PC builds, postulaciones públicas | Next |
-| Nest `api/` | Archivado (referencia; no se despliega) |
 
 ## Seguridad
 

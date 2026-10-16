@@ -1,3 +1,10 @@
+vi.mock("@/context/AuthContext", () => ({
+  useAuth: () => ({
+    user: { uid: "user-test", email: "a@b.c", role: "user" },
+    loading: false,
+  }),
+}));
+
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -29,7 +36,8 @@ const productoMock: Producto = {
 
 describe("ProductCard", () => {
   beforeEach(() => {
-    useCartStore.setState({ items: [], totalItems: 0, subtotal: 0 });
+    useCartStore.setState({ usuarioId: null, items: [], totalItems: 0, subtotal: 0 });
+    useCartStore.getState().vincularUsuario("user-test");
     vi.clearAllMocks();
   });
 

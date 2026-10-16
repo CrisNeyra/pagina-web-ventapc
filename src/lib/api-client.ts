@@ -1,6 +1,5 @@
 /**
  * Cliente HTTP hacia las Route Handlers de Next (`/api` del mismo origen).
- * Nest en `api/` queda fuera de este cliente.
  */
 export function obtenerApiUrl(): string {
   if (typeof window !== "undefined") return "/api";
@@ -17,20 +16,11 @@ export function obtenerApiUrl(): string {
 /**
  * True si hay backend usable.
  * En el navegador, `/api` del mismo origen existe aunque DATABASE_URL no llegue al bundle.
- * En el servidor sigue exigiendo DATABASE_URL o una API externa.
+ * En el servidor exige DATABASE_URL.
  */
 export function apiConfigurada(): boolean {
-  if (typeof window !== "undefined" && !process.env.NEXT_PUBLIC_API_URL?.trim()) {
-    return true;
-  }
-  return (
-    Boolean(process.env.DATABASE_URL?.trim()) ||
-    Boolean(process.env.NEXT_PUBLIC_API_URL?.trim())
-  );
-}
-
-export function usaApiExterna(): boolean {
-  return Boolean(process.env.NEXT_PUBLIC_API_URL?.trim());
+  if (typeof window !== "undefined") return true;
+  return Boolean(process.env.DATABASE_URL?.trim());
 }
 
 const TIMEOUT_MS_DEFAULT = 8_000;
@@ -81,7 +71,7 @@ export async function apiFetch<T>(
     }
     if (error instanceof TypeError) {
       throw new Error(
-        "No se pudo conectar con la API. Revisá DATABASE_URL (Neon) o NEXT_PUBLIC_API_URL."
+        "No se pudo conectar con la API. Revisá DATABASE_URL (Neon) y que el servidor esté en marcha."
       );
     }
     throw error;

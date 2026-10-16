@@ -19,8 +19,9 @@ const productoMock2 = {
 
 describe("cartStore", () => {
   beforeEach(() => {
-    useCartStore.setState({ items: [], totalItems: 0, subtotal: 0 });
+    useCartStore.setState({ usuarioId: null, items: [], totalItems: 0, subtotal: 0 });
     localStorage.clear();
+    useCartStore.getState().vincularUsuario("user-test");
   });
 
   it("agrega un producto al carrito vacío", () => {
@@ -97,5 +98,20 @@ describe("cartStore", () => {
     expect(state.items).toHaveLength(0);
     expect(state.totalItems).toBe(0);
     expect(state.subtotal).toBe(0);
+  });
+
+  it("no agrega productos si no hay sesión", () => {
+    useCartStore.getState().vincularUsuario(null);
+    const agregado = useCartStore.getState().addItem(productoMock);
+    expect(agregado).toBe(false);
+    expect(useCartStore.getState().items).toHaveLength(0);
+  });
+
+  it("guarda el carrito por usuario y no lo muestra a otro", () => {
+    useCartStore.getState().addItem(productoMock);
+    useCartStore.getState().vincularUsuario("otro-user");
+    expect(useCartStore.getState().items).toHaveLength(0);
+    useCartStore.getState().vincularUsuario("user-test");
+    expect(useCartStore.getState().items).toHaveLength(1);
   });
 });

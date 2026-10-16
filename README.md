@@ -42,9 +42,8 @@ flowchart LR
 
 **Decisiones:**
 
-- Un runtime: UI y API en Next; no hace falta un backend aparte en el día a día.
+- Un runtime: UI y API en Next.
 - Sesión en cookie httpOnly; el JWT no se guarda en el cliente.
-- Nest (`api/`) está archivado como referencia. En producción **no** se setea `NEXT_PUBLIC_API_URL`.
 
 ---
 
@@ -105,5 +104,3 @@ Si `npm run dev` deja de responder, paralo, borrá `.next` y volvé a levantar.
 ## Licencia
 
 Proyecto educativo / portafolio.
-
-La carpeta `api/` (Nest) queda como referencia histórica. No forma parte del flujo diario ni del deploy en Vercel. Guías: [`docs/api-backend.md`](docs/api-backend.md), [`api/README.md`](api/README.md).

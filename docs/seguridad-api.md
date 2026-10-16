@@ -1,30 +1,29 @@
 # Seguridad API (JWT, Mercado Pago, rate limit)
 
-> **Legacy Nest / stack actual:** el camino diario es Next.js + Route Handlers en `/api` (Prisma + Neon). Nest (`api/`) solo con `NEXT_PUBLIC_API_URL`. Ver [`stack-next-prisma-neon.md`](stack-next-prisma-neon.md).
+El camino diario es Next.js + Route Handlers en `/api` (Prisma + Neon). Ver [`stack-next-prisma-neon.md`](stack-next-prisma-neon.md).
 
 ## JWT
 
-- Login / registro emiten Bearer JWT (`Authorization: Bearer …`).
-- Cookie de sesión front: `aura_token` (misma firma, `JWT_SECRET`).
+- Login / registro setean la cookie httpOnly `aura_token` (`JWT_SECRET`).
 - Rotá `JWT_SECRET` en producción; no reutilices el valor de desarrollo.
-- Rutas admin: `JwtAuthGuard` + `AdminGuard` (`ADMIN_EMAILS`).
+- Rutas admin: sesión válida + rol admin (`ADMIN_EMAIL` / `ADMIN_EMAILS`).
 
 ## Mercado Pago webhook
 
 - Endpoint: `POST /api/payments/mercadopago/webhook` (también admite GET IPN).
 - Access Token solo en servidor (`MERCADOPAGO_ACCESS_TOKEN`).
+- Si definís `MERCADOPAGO_WEBHOOK_SECRET`, el handler exige `x-signature` válida (HMAC). Sin esa variable el aviso se procesa igual.
 - Consulta el pago en la API de MP antes de marcar el pedido.
 
 ## Rate limiting
 
-- Global: `ThrottlerGuard` — **60 req / 60s** por IP (Nest).
-- Adicional por Redis (si hay `REDIS_URL`): pedidos, preferencia Mercado Pago, postulaciones.
-- Health: `@SkipThrottle`.
+- Redis (`REDIS_URL`) en pedidos, preferencia Mercado Pago, auth y postulaciones.
+- Sin Redis, el límite queda en memoria del proceso.
 
 ## Checklist producción
 
 - [ ] `JWT_SECRET` fuerte y único
-- [ ] `CORS_ORIGINS` solo dominios reales
 - [ ] Credenciales de Mercado Pago (prueba) en Vercel
+- [ ] `MERCADOPAGO_WEBHOOK_SECRET` del panel de webhooks
 - [ ] `ADMIN_EMAILS` acotado
-- [ ] HTTPS en Vercel + Railway
+- [ ] HTTPS en Vercel

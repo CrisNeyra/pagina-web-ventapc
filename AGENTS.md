@@ -13,7 +13,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 - Runtime: Next.js 16 (App Router) + TypeScript
 - DB: Prisma (raíz `prisma/`) + PostgreSQL (Neon)
-- API: Route Handlers en `src/app/api` (Nest en `api/` = legacy)
+- API: Route Handlers en `src/app/api`
 - Guía: `docs/stack-next-prisma-neon.md`
 
 ## TABLA DE RUTEO / TRIGGER MATRIX

@@ -92,7 +92,7 @@ export default function Footer() {
           <div className="flex flex-col items-center md:items-end gap-3">
             <Link
               href="/trabaja-con-nosotros"
-              className="bg-gradient-to-r from-azul-400 to-oro-400 bg-clip-text text-transparent hover:from-azul-300 hover:to-oro-300 font-bold text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyber-cyan-400"
+              className="rounded border border-oscuro-700 px-6 py-2 text-sm font-bold text-cyber-cyan-100 transition-colors hover:bg-oscuro-800 hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyber-cyan-400"
             >
               ¡Trabajá con nosotros!
             </Link>

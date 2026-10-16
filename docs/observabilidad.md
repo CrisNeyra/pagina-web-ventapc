@@ -1,26 +1,23 @@
 # Observabilidad
 
-> **Legacy Nest / stack actual:** salud y errores en producción van por Next (`GET /api/health` next-prisma + Sentry). Nest solo si corrés `api/` con `NEXT_PUBLIC_API_URL`. Ver [`stack-next-prisma-neon.md`](stack-next-prisma-neon.md).
+Salud y errores en producción van por Next (`GET /api/health`, `mode: next-prisma`) y Sentry opcional. Ver [`stack-next-prisma-neon.md`](stack-next-prisma-neon.md).
 
 ## Health
 
-`GET /api/health` (Nest legacy; en Vercel/prod usá el Route Handler Next):
+`GET /api/health`:
 
 ```json
 {
   "ok": true,
-  "services": {
-    "postgres": true,
-    "redis": true,
-    "storage": true,
-    "storageMode": "local",
-    "email": false,
-  },
+  "mode": "next-prisma",
+  "databaseOk": true,
+  "rateLimit": "redis",
+  "email": true,
   "timestamp": "..."
 }
 ```
 
-`ok` requiere Postgres; Redis solo si `REDIS_URL` está definida.
+`ok` requiere Postgres. `rateLimit` es `redis` si hay `REDIS_URL`; si no, memoria local.
 
 ## Sentry (Next.js)
 
@@ -36,6 +33,4 @@ NEXT_PUBLIC_SENTRY_DSN=https://...@o....ingest.sentry.io/...
 
 Sin DSN, Sentry queda deshabilitado (sin ruido en local).
 
-## Logs Nest
-
-Usar `Logger` de Nest en servicios (email, storage). En Railway: logs del servicio API.
+Logs del runtime: el panel de Vercel (Functions) para las Route Handlers.

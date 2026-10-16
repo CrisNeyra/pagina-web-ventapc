@@ -25,11 +25,11 @@ jobs:
 
       - name: Guard against Firebase reintroduction
         run: |
-          if grep -RInE 'from ["'\'']firebase|from ["'\'']firebase-admin|firebase-admin' src api/src --include='*.ts' --include='*.tsx' | grep -v node_modules; then
+          if grep -RInE 'from ["'\'']firebase|from ["'\'']firebase-admin|firebase-admin' src --include='*.ts' --include='*.tsx' | grep -v node_modules; then
             echo "Firebase imports found — Next+Prisma stack required"
             exit 1
           fi
-          echo "OK: no Firebase imports in src/ or api/src/"
+          echo "OK: no Firebase imports in src/"
 
       - name: Lint
         run: npm run lint

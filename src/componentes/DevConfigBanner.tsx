@@ -28,9 +28,6 @@ export default function DevConfigBanner() {
               "DATABASE_URL configurada pero no hay conexión a Postgres/Neon."
             );
           }
-          if (datos.mode === "external-nest" && datos.api && !datos.apiOk) {
-            avisos.push("NEXT_PUBLIC_API_URL apunta a Nest pero no responde.");
-          }
           if (avisos.length > 0) setMensaje(avisos.join(" "));
         }
       )

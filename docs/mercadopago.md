@@ -27,9 +27,12 @@ https://pagina-web-ventapc.vercel.app/api/payments/mercadopago/webhook
 ```
 
 4. Eventos: **Pagos** (`payment`). Si aparece, también `merchant_order`.
-5. Guardar. Probar con “Enviar notificación de prueba” si el panel lo ofrece.
+5. Guardar. El panel muestra una **clave secreta**. Copiala a `MERCADOPAGO_WEBHOOK_SECRET` (`.env.local` y Vercel) y redeploy. Sin esa variable el aviso se procesa igual; con ella, una firma inválida responde 401 y no marca el pedido.
+6. Probar con “Enviar notificación de prueba” si el panel lo ofrece.
 
 El código ya pone `notification_url` al crear la preferencia; el panel es el respaldo y lo que MP recomienda.
+
+La firma usa el header `x-signature` (`ts` + `v1`) y `x-request-id`, con el manifest `id:{data.id};request-id:{x-request-id};ts:{ts};`.
 
 Local: ngrok/Cloudflare Tunnel apuntando a `http://localhost:3000` y la misma path `/api/payments/mercadopago/webhook`.
 
@@ -65,7 +68,7 @@ DNI/CUIT: el que pida el formulario de test (a veces `12345678`).
 3. Débito o crédito → Pagar con Mercado Pago.
 4. Login **comprador de prueba** de MP.
 5. Tarjeta de la tabla / doc.
-6. Volvés a `/checkout/exito`. En `/admin` el pedido debería pasar a pagado cuando llegue el webhook (`mercadopagoPaymentId` visible).
+6. Volvés a `/checkout/exito`. En `/admin`, con una cuenta **admin**, el pedido pasa a Pagado y muestra el ID de pago (`mercadopagoPaymentId`) cuando llega el webhook. Si no cambia, revisá que la URL del panel sea la del deploy y que `MERCADOPAGO_WEBHOOK_SECRET` coincida con la clave del panel.
 
 ## Rotar Access Token (si se filtró o caducó)
 
@@ -75,6 +78,7 @@ DNI/CUIT: el que pida el formulario de test (a veces `12345678`).
 ```env
 NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY=APP_USR-...
 MERCADOPAGO_ACCESS_TOKEN=APP_USR-...
+MERCADOPAGO_WEBHOOK_SECRET=
 ```
 
 3. En Vercel → Settings → Environment Variables: reemplazar las mismas dos en Production, Preview y Development. Quitar valores viejos.

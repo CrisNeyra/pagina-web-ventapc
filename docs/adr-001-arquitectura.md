@@ -8,8 +8,7 @@ Aura Pro es un e-commerce de portfolio. El stack es **Next.js (App Router) + Typ
 
 ### Un solo runtime (Next)
 - UI en `src/app`.
-- API en Route Handlers (`src/app/api/...`) o Server Actions.
-- NestJS en `api/` queda como **legacy opcional** (escape hatch / referencia).
+- API en Route Handlers (`src/app/api/...`).
 
 ### Auth JWT en Next
 - Register / login / me en `src/app/api/auth/*`.
@@ -21,7 +20,7 @@ Aura Pro es un e-commerce de portfolio. El stack es **Next.js (App Router) + Typ
 - Users, products, orders, pc_builds, postulaciones, site_config, shipping.
 
 ### Mercado Pago
-- Public Key en el front; Access Token y webhook en Route Handlers Next (`/api/payments/mercadopago/*`).
+- Access Token y webhook en Route Handlers (`/api/payments/mercadopago/*`). El checkout muestra tarjeta si el servidor tiene `MERCADOPAGO_ACCESS_TOKEN`.
 
 ### Sin Firebase / Supabase
 - Eliminados Auth, Firestore, Cloud Functions y carpeta `supabase/`.
@@ -29,5 +28,4 @@ Aura Pro es un e-commerce de portfolio. El stack es **Next.js (App Router) + Typ
 ## Consecuencias
 
 - Día a día: `npm run dev` + Neon (`docs/stack-next-prisma-neon.md`).
-- Deploy: Vercel + Neon. Docker/Railway no son necesarios.
-- Nest (`api/`) se puede retirar cuando no haga falta el escape hatch.
+- Deploy: Vercel + Neon. Docker no forma parte del flujo.

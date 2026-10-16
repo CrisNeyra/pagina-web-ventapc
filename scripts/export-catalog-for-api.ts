@@ -2,10 +2,7 @@ import { writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { catalogoCompleto } from "../src/datos/productos";
 
-const destinos = [
-  resolve("api/prisma/seed-data.json"),
-  resolve("prisma/seed-data.json"),
-];
+const destinos = [resolve("prisma/seed-data.json")];
 
 const datos = catalogoCompleto.map((p) => ({
   id: p.id,

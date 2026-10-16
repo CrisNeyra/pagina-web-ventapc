@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { pagosConfigurados } from "@/configuracion/mercadopago";
 import { useCartStore } from "@/store/cartStore";
 import { crearPreferenciaPago } from "@/servicios/pagosServicio";
 import { crearPedidoOffline } from "@/servicios/crearPedidoServicio";
@@ -46,6 +45,7 @@ export default function CheckoutView() {
   const [errorPago, setErrorPago] = useState("");
   const [costoEnvioDinamico, setCostoEnvioDinamico] = useState(5000);
   const [datosTransferencia, setDatosTransferencia] = useState(DATOS_TRANSFERENCIA_DEFAULT);
+  const [mpDisponible, setMpDisponible] = useState(false);
 
   const itemsPago = useMemo(
     () =>
@@ -77,6 +77,21 @@ export default function CheckoutView() {
   }, []);
 
   useEffect(() => {
+    let cancelado = false;
+    void fetch("/api/payments/mercadopago/config")
+      .then((respuesta) => respuesta.json())
+      .then((datos: { enabled?: boolean }) => {
+        if (!cancelado) setMpDisponible(Boolean(datos.enabled));
+      })
+      .catch(() => {
+        if (!cancelado) setMpDisponible(false);
+      });
+    return () => {
+      cancelado = true;
+    };
+  }, []);
+
+  useEffect(() => {
     if (datosEntrega.tipo !== "envio" || !datosEntrega.envio?.codigoPostal) {
       setCostoEnvioDinamico(5000);
       return;
@@ -93,7 +108,6 @@ export default function CheckoutView() {
   );
 
   const requiereMercadoPago = metodoPago === "debito" || metodoPago === "credito";
-  const mpDisponible = pagosConfigurados();
 
   const entregaValida = useMemo(
     () => validarDatosEntrega(datosEntrega).ok,
@@ -235,7 +249,11 @@ export default function CheckoutView() {
           <h2 className="mb-3 mt-8 text-sm font-bold uppercase tracking-wide text-cyber-cyan-300">
             Forma de pago
           </h2>
-          <CheckoutMetodosPago seleccionado={metodoPago} onSeleccionar={setMetodoPago} />
+          <CheckoutMetodosPago
+            seleccionado={metodoPago}
+            onSeleccionar={setMetodoPago}
+            pagosOnline={mpDisponible}
+          />
 
           {metodoPago === "efectivo" && (
             <div className="mt-6 space-y-4 rounded-xl border border-cyber-purple-500/30 bg-oscuro-800/70 p-4">

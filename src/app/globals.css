@@ -168,6 +168,23 @@ body {
   color: #6b7280;
 }
 
+@keyframes marcas-a-la-derecha {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.marcas-cinta {
+  animation: marcas-a-la-derecha 28s linear infinite;
+}
+
+.marcas-cinta:hover {
+  animation-play-state: paused;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

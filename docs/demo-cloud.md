@@ -20,14 +20,4 @@ Checklist:
 - [ ] Pedido offline / admin
 - [ ] (Opcional) Mercado Pago con credenciales de prueba
 
----
-
-## Legacy: Nest externo
-
-La carpeta `api/` ya no es necesaria para el flujo diario. Solo si querés forzar Nest:
-
-```
-NEXT_PUBLIC_API_URL=https://TU-DOMINIO.up.railway.app/api
-```
-
-Ver [`api-backend.md`](api-backend.md) y [`api/README.md`](../api/README.md).
+Guía de la API: [`api-backend.md`](api-backend.md).

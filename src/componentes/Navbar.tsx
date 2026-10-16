@@ -10,6 +10,7 @@ import NavbarActions from "@/componentes/NavbarActions";
 import NavbarMenu from "@/componentes/NavbarMenu";
 import NavbarSearch from "@/componentes/NavbarSearch";
 import { useAuth } from "@/context/AuthContext";
+import { EVENTO_AUTH_REQUERIDA } from "@/lib/pedir-sesion";
 import { useCartStore } from "@/store/cartStore";
 import { useBusquedaStore } from "@/store/busquedaStore";
 import { toast } from "sonner";
@@ -82,6 +83,12 @@ export default function Navbar() {
       document.removeEventListener("mousedown", manejarClickFuera);
       document.removeEventListener("keydown", manejarEscape);
     };
+  }, []);
+
+  useEffect(() => {
+    const abrir = () => setAuthModalAbierto(true);
+    window.addEventListener(EVENTO_AUTH_REQUERIDA, abrir);
+    return () => window.removeEventListener(EVENTO_AUTH_REQUERIDA, abrir);
   }, []);
 
   useEffect(() => {

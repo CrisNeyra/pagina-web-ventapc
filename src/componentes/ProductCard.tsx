@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Producto } from "@/tipos/producto";
 import { formatearPrecio } from "@/utils/formato";
+import { useAuth } from "@/context/AuthContext";
+import { pedirInicioSesion } from "@/lib/pedir-sesion";
 import { useCartStore } from "@/store/cartStore";
 import { verificarStockProducto } from "@/servicios/catalogoServicio";
 import { toast } from "sonner";
@@ -16,6 +18,7 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ producto, priority = false }: ProductCardProps) {
+  const { user } = useAuth();
   const addItem = useCartStore((state) => state.addItem);
   const imagenPrincipal = producto.imagenes[0] ?? "/placeholder-producto.svg";
   const rutasFallback = [
@@ -30,6 +33,10 @@ export default function ProductCard({ producto, priority = false }: ProductCardP
   const [validandoStock, setValidandoStock] = useState(false);
 
   const agregarAlCarrito = async () => {
+    if (!user) {
+      pedirInicioSesion();
+      return;
+    }
     if (!producto.enStock) {
       toast.error("Este producto no tiene stock disponible.");
       return;

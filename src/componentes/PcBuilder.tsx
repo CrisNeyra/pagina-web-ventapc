@@ -10,6 +10,7 @@ import { formatearPrecio } from "@/utils/formato";
 import { calcularSubtotalBuilder, useBuilderStore } from "@/store/builderStore";
 import { guardarBuildConReintentos } from "@/servicios/buildsPcServicio";
 import { useAuth } from "@/context/AuthContext";
+import { pedirInicioSesion } from "@/lib/pedir-sesion";
 import { useCartStore } from "@/store/cartStore";
 
 export default function PcBuilder({
@@ -194,6 +195,10 @@ export default function PcBuilder({
               type="button"
               disabled={choques.length > 0}
               onClick={() => {
+                if (!user) {
+                  pedirInicioSesion();
+                  return;
+                }
                 for (const categoria of builderCategories) {
                   const pieza = seleccion[categoria.id];
                   if (!pieza) continue;

@@ -21,10 +21,6 @@
     "db:migrate:dev": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
     "db:setup": "prisma migrate deploy && tsx prisma/seed.ts",
-    "docker:up": "docker compose up -d",
-    "docker:down": "docker compose down",
-    "api:legacy:install": "npm install --prefix api",
-    "api:legacy:dev": "npm run start:dev --prefix api",
     "prepare": "husky"
   },
   "prisma": {

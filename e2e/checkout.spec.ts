@@ -28,8 +28,9 @@ test.describe("Flujo de compra", () => {
     await expect(botonesAgregar.first()).toBeVisible({ timeout: 15_000 });
     await botonesAgregar.first().click();
 
-    await page.getByLabel("Abrir carrito").click();
-    await expect(page.getByText(/RTX|AMD|Intel|MSI|Corsair/i).first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: /iniciar sesión/i })).toBeVisible();
+    await expect(page.getByLabel("Abrir carrito")).toBeVisible();
+    await expect(page.getByLabel(/abrir carrito, \d+ productos/i)).toHaveCount(0);
 
     await page.goto("/checkout");
     await esperarCheckoutPideLogin(page);
@@ -80,7 +81,7 @@ test.describe("Flujo de compra", () => {
   test("error de pago muestra pedido y reintento", async ({ page }) => {
     await page.goto("/checkout/error?orderId=mp-fail");
     await expect(page.getByRole("heading", { name: /no se pudo completar el pago/i })).toBeVisible();
-    await expect(page.getByText("mp-fail")).toBeVisible();
+    await expect(page.getByRole("main").getByText(/pedido:\s*mp-fail/i)).toBeVisible();
     await expect(page.getByRole("link", { name: /reintentar checkout/i })).toBeVisible();
   });
 });

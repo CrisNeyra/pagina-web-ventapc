@@ -74,3 +74,8 @@ export const esquemaPedido = z.object({
     z.object({ tipo: z.literal("envio"), envio }),
   ]),
 });
+
+export const esquemaAsistente = z.object({
+  mensaje: z.string().trim().min(1).max(1000),
+});
+

@@ -13,7 +13,7 @@ import { crearPreferenciaMercadoPagoEnApi } from "@/servicios/apiBackendServicio
 
 describe("crearPreferenciaPago", () => {
   beforeEach(() => {
-    vi.stubEnv("NEXT_PUBLIC_API_URL", "http://localhost:4000/api");
+    vi.stubEnv("DATABASE_URL", "postgresql://test@localhost/aurapro");
     vi.clearAllMocks();
   });
 

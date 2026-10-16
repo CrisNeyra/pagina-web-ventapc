@@ -42,11 +42,12 @@ Project → **Settings → Environment Variables** (Production + Preview):
 | `RESEND_API_KEY` + `EMAIL_FROM` | Emails | Pedidos, restablecer contraseña y postulaciones. Prueba: `Aura Pro <onboarding@resend.dev>` (solo llega al dueño de la cuenta Resend). Clientes reales: dominio verificado en Resend — ver sección «Correo con dominio propio» |
 | `NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY` | No | Checkout Pro (tarjeta). Ver [mercadopago.md](mercadopago.md) |
 | `MERCADOPAGO_ACCESS_TOKEN` | No | Solo servidor. Rotá si se filtró; no lo pegues en el chat |
-
+| `MERCADOPAGO_WEBHOOK_SECRET` | No | Clave del webhook en el panel MP. Si está, se exige `x-signature` |
 | `ADMIN_EMAILS` | No | CSV de emails admin extra |
 | `NEXT_PUBLIC_SENTRY_DSN` | No | Observabilidad |
+| `GEMINI_API_KEY` | No | Asesor de catálogo. Solo servidor. Modelo opcional: `GEMINI_MODEL` |
 
-**No** setees `NEXT_PUBLIC_API_URL` (el cliente debe usar `/api` del mismo origen).
+El cliente usa `/api` del mismo origen.
 
 Login con Google: en [Google Cloud](https://console.cloud.google.com/) → Credenciales → cliente OAuth web, registrá estos redirect exactos:
 
