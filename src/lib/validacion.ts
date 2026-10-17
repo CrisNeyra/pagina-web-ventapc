@@ -8,7 +8,7 @@ export const esquemaLogin = z.object({
 
 export const esquemaRegistro = z.object({
   email: z.string().trim().email(),
-  password: z.string().min(1).max(72),
+  password: z.string().min(6).max(10),
 });
 
 export const esquemaOlvido = z.object({
@@ -17,12 +17,12 @@ export const esquemaOlvido = z.object({
 
 export const esquemaReset = z.object({
   token: z.string().min(10),
-  password: z.string().min(10).max(72),
+  password: z.string().min(6).max(10),
 });
 
 export const esquemaCambioPassword = z.object({
   actual: z.string().min(1).max(72),
-  nueva: z.string().min(10).max(72),
+  nueva: z.string().min(6).max(10),
 });
 
 export const esquemaEstadoPedido = z.object({

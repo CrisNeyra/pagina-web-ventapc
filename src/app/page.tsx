@@ -6,10 +6,33 @@ import HomeProductos from "@/componentes/HomeProductos";
 import BannerArmaTuPC from "@/componentes/BannerArmaTuPC";
 import GrillaCategorias from "@/componentes/GrillaCategorias";
 import { obtenerCatalogo } from "@/servicios/catalogoServicio";
+import type { Producto } from "@/tipos/producto";
+
+function elegirDestacados(productos: Producto[]): Producto[] {
+  const grupos: Array<(producto: Producto) => boolean> = [
+    (producto) => producto.categoria === "Placas de Video",
+    (producto) => producto.categoria === "Procesadores",
+    (producto) => producto.categoria === "Memorias RAM",
+    (producto) => producto.nombre.toLowerCase().includes("gabinete"),
+  ];
+  const usados = new Set<string>();
+
+  return grupos.flatMap((coincide) => {
+    const conStock = productos.find(
+      (producto) => !usados.has(producto.id) && producto.enStock && coincide(producto)
+    );
+    const elegido =
+      conStock ??
+      productos.find((producto) => !usados.has(producto.id) && coincide(producto));
+    if (!elegido) return [];
+    usados.add(elegido.id);
+    return [elegido];
+  });
+}
 
 export default async function PaginaInicio() {
   const productosUnicos = await obtenerCatalogo();
-  const productosDestacados = productosUnicos.slice(0, 4);
+  const productosDestacados = elegirDestacados(productosUnicos);
 
   return (
     <main className="flex-1 bg-background">

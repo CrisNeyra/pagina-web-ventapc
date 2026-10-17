@@ -22,6 +22,7 @@ export function modeloGemini(): string {
 }
 
 interface FilaCatalogo {
+  id: string;
   nombre: string;
   precio: number;
   stock: number;
@@ -50,7 +51,7 @@ export function armarTextoCatalogo(filas: FilaCatalogo[], mensaje: string): stri
   const indice = filas
     .map(
       (producto) =>
-        `- ${producto.nombre} | ${producto.categoria} | $${producto.precio} | stock ${producto.enStock ? producto.stock : 0}`
+        `- ${producto.nombre} | ${producto.categoria} | $${producto.precio} | stock ${producto.enStock ? producto.stock : 0} | /producto/${producto.id}`
     )
     .join("\n");
 
@@ -63,7 +64,7 @@ export function armarTextoCatalogo(filas: FilaCatalogo[], mensaje: string): stri
     .map((producto) => {
       const specs = resumenSpecs(producto.specs);
       const descripcion = producto.descripcion.replace(/\s+/g, " ").slice(0, 100);
-      return `- ${producto.nombre}: ${[specs, descripcion].filter(Boolean).join(". ")}`;
+      return `- ${producto.nombre} (/producto/${producto.id}): ${[specs, descripcion].filter(Boolean).join(". ")}`;
     })
     .join("\n");
 
@@ -77,6 +78,7 @@ export async function textoCatalogo(mensaje: string): Promise<string> {
       orderBy: { nombre: "asc" },
       take: 120,
       select: {
+        id: true,
         nombre: true,
         precio: true,
         stock: true,
@@ -123,6 +125,7 @@ export async function consultarGemini(mensaje: string, catalogo: string): Promis
                 "Sos el asesor de Aura Pro, una tienda de hardware gamer en Argentina.",
                 "Respondé en español, breve y claro.",
                 "Usá solo el catálogo de abajo para stock, precios y fichas. Si el producto no está, decilo. No inventes stock ni precios.",
+                "Cuando nombres un producto del catálogo, incluí una sola vez el enlace markdown [nombre](/producto/id) con el id de esa línea.",
                 "Los precios están en pesos argentinos.",
                 REGLAS_COMPATIBILIDAD,
                 "Catálogo:",

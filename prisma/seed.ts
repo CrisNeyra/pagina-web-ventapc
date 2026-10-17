@@ -3,7 +3,6 @@ import { resolve } from "node:path";
 import { Prisma, PrismaClient, UserRole } from "@prisma/client";
 import { especificacionesPc } from "../src/datos/especificacionesPc";
 import bcrypt from "bcryptjs";
-import { validarPassword } from "../src/lib/auth";
 
 /** Prisma CLI carga .env solo; tsx no. Cargamos DATABASE_URL antes del client. */
 function cargarEnv() {
@@ -104,12 +103,15 @@ async function main() {
       throw new Error("ADMIN_PASSWORD es obligatorio al hacer seed en producción.");
     }
     throw new Error(
-      "Definí ADMIN_PASSWORD en .env.local (mín. 10 caracteres, letra y número). Ya no se usa 1234ab."
+      "Definí ADMIN_PASSWORD en .env.local (letra y número, entre 6 y 72 caracteres)."
     );
   }
 
-  if (!validarPassword(adminPassword)) {
-    throw new Error("ADMIN_PASSWORD no cumple la política (10+ chars, letra y número).");
+  const adminValida = /^(?=.*[A-Za-z])(?=.*\d).{6,72}$/.test(adminPassword);
+  if (!adminValida) {
+    throw new Error(
+      "ADMIN_PASSWORD debe tener entre 6 y 72 caracteres, con letra y número. Las cuentas nuevas de clientes usan de 6 a 10."
+    );
   }
 
   const passwordHash = await bcrypt.hash(adminPassword, 10);

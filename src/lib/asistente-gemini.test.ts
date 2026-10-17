@@ -19,6 +19,7 @@ describe("extraerTextoGemini", () => {
 describe("armarTextoCatalogo", () => {
   const filas = [
     {
+      id: "fuente-001",
       nombre: "Fuente Corsair 750W",
       precio: 120000,
       stock: 4,
@@ -28,6 +29,7 @@ describe("armarTextoCatalogo", () => {
       specs: { watts: 750 },
     },
     {
+      id: "gpu-009",
       nombre: "RTX 4070",
       precio: 800000,
       stock: 2,
@@ -41,6 +43,7 @@ describe("armarTextoCatalogo", () => {
   it("lista todo el catálogo y detalla solo lo que nombra la consulta", () => {
     const texto = armarTextoCatalogo(filas, "¿Hay fuentes en stock?");
     expect(texto).toContain("Fuente Corsair 750W");
+    expect(texto).toContain("/producto/fuente-001");
     expect(texto).toContain("watts=750");
     expect(texto).not.toContain("consumoGpu=200");
   });

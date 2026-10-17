@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-const password = "AuraPro2026x";
+const password = "Aura2026x";
 
 test.describe("Checkout Mercado Pago", () => {
   test("usuario logueado ve Checkout Pro y redirige con preferencia mock", async ({

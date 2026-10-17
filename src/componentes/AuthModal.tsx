@@ -226,12 +226,12 @@ export default function AuthModal({
                 type={mostrarPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                minLength={modo === "registro" ? 10 : 1}
-                maxLength={72}
+                minLength={modo === "registro" ? 6 : 1}
+                maxLength={modo === "registro" ? 10 : 72}
                 required
                 autoComplete={modo === "login" ? "current-password" : "new-password"}
                 className="min-h-11 w-full rounded-md border border-cyber-purple-500/45 bg-oscuro-950 px-3 py-2 pr-10 text-sm text-cyber-cyan-100 outline-none focus:border-cyber-cyan-400 focus:ring-2 focus:ring-cyber-cyan-500/40"
-                placeholder="Mínimo 10 caracteres"
+                placeholder={modo === "registro" ? "Entre 6 y 10 caracteres" : "Tu contraseña"}
               />
               <button
                 type="button"

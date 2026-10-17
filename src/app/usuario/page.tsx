@@ -275,7 +275,8 @@ function CambiarPasswordForm() {
           value={nueva}
           onChange={(e) => setNueva(e.target.value)}
           required
-          minLength={10}
+          minLength={6}
+          maxLength={10}
           className={campo}
         />
       </label>
@@ -287,7 +288,8 @@ function CambiarPasswordForm() {
           value={confirmacion}
           onChange={(e) => setConfirmacion(e.target.value)}
           required
-          minLength={10}
+          minLength={6}
+          maxLength={10}
           className={campo}
         />
       </label>

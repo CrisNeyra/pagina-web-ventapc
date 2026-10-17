@@ -1,12 +1,41 @@
 "use client";
 
-import { FormEvent, useEffect, useId, useState } from "react";
+import { FormEvent, useEffect, useId, useRef, useState, type ReactNode } from "react";
+import Link from "next/link";
 import { FiX } from "react-icons/fi";
 import AIAssistantButton from "@/componentes/AIAssistantButton";
 
 interface Mensaje {
   rol: "user" | "asesor";
   texto: string;
+}
+
+function ContenidoMensaje({ texto, propio }: { texto: string; propio: boolean }) {
+  const nodos: ReactNode[] = [];
+  const enlaces = /\[([^\]]+)\]\((\/producto\/[A-Za-z0-9-]+)\)/g;
+  let cursor = 0;
+
+  for (const match of texto.matchAll(enlaces)) {
+    const inicio = match.index ?? 0;
+    if (inicio > cursor) nodos.push(texto.slice(cursor, inicio));
+    nodos.push(
+      <Link
+        key={`${match[2]}-${inicio}`}
+        href={match[2]}
+        className={
+          propio
+            ? "underline underline-offset-2"
+            : "font-semibold text-cyber-cyan-300 underline underline-offset-2"
+        }
+      >
+        {match[1]}
+      </Link>
+    );
+    cursor = inicio + match[0].length;
+  }
+
+  if (cursor < texto.length) nodos.push(texto.slice(cursor));
+  return <>{nodos}</>;
 }
 
 export default function AsesorChat() {
@@ -16,6 +45,7 @@ export default function AsesorChat() {
   const [texto, setTexto] = useState("");
   const [mensajes, setMensajes] = useState<Mensaje[]>([]);
   const [enviando, setEnviando] = useState(false);
+  const finalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let cancelado = false;
@@ -31,6 +61,11 @@ export default function AsesorChat() {
       cancelado = true;
     };
   }, []);
+
+  useEffect(() => {
+    if (!abierto) return;
+    finalRef.current?.scrollIntoView({ block: "end" });
+  }, [abierto, mensajes, enviando]);
 
   useEffect(() => {
     if (!abierto) return;
@@ -75,7 +110,7 @@ export default function AsesorChat() {
   };
 
   return (
-    <div className="fixed bottom-24 right-6 z-[101] flex flex-col items-end">
+    <div className="fixed bottom-28 right-6 z-[101] flex flex-col items-end">
       <section
         id={panelId}
         aria-label="Asesor de Aura Pro"
@@ -116,16 +151,17 @@ export default function AsesorChat() {
           {mensajes.map((mensaje, indice) => (
             <p
               key={`${mensaje.rol}-${indice}`}
-              className={`rounded-lg px-3 py-2 ${
+              className={`burbuja-asesor rounded-lg px-3 py-2 ${
                 mensaje.rol === "user"
                   ? "ml-6 bg-ink-cyan text-white"
                   : "mr-6 bg-oscuro-800 text-foreground"
               }`}
             >
-              {mensaje.texto}
+              <ContenidoMensaje texto={mensaje.texto} propio={mensaje.rol === "user"} />
             </p>
           ))}
           {enviando && <p className="text-xs text-muted">Consultando el catálogo...</p>}
+          <div ref={finalRef} />
         </div>
         <form
           onSubmit={(evento) => void enviar(evento)}

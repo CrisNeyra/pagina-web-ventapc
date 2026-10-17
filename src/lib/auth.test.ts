@@ -2,19 +2,19 @@ import { describe, it, expect } from "vitest";
 import { validarPassword } from "./auth";
 
 describe("validarPassword", () => {
-  it("acepta contraseña de 10+ con letra y número", () => {
-    expect(validarPassword("AuraPro2026")).toBe(true);
-    expect(validarPassword("segura1234")).toBe(true);
+  it("acepta entre 6 y 10 caracteres con letra y número", () => {
+    expect(validarPassword("abc123")).toBe(true);
+    expect(validarPassword("segura123")).toBe(true);
   });
 
-  it("rechaza contraseñas cortas o el patrón demo viejo", () => {
-    expect(validarPassword("1234ab")).toBe(false);
-    expect(validarPassword("12ab34")).toBe(false);
+  it("rechaza fuera de 6 a 10 caracteres", () => {
+    expect(validarPassword("ab12")).toBe(false);
+    expect(validarPassword("segura12345")).toBe(false);
     expect(validarPassword("")).toBe(false);
   });
 
   it("exige letra y número", () => {
-    expect(validarPassword("abcdefghij")).toBe(false);
-    expect(validarPassword("1234567890")).toBe(false);
+    expect(validarPassword("abcdef")).toBe(false);
+    expect(validarPassword("123456")).toBe(false);
   });
 });

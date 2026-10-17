@@ -84,8 +84,8 @@ export default function RestablecerForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                minLength={10}
-                maxLength={72}
+                minLength={6}
+                maxLength={10}
                 autoComplete="new-password"
                 className="min-h-11 w-full rounded-md border border-cyber-purple-500/45 bg-oscuro-950 px-3 py-2 pr-10 text-sm text-cyber-cyan-100 outline-none focus:border-cyber-cyan-400"
               />
@@ -108,8 +108,8 @@ export default function RestablecerForm() {
               value={repetir}
               onChange={(e) => setRepetir(e.target.value)}
               required
-              minLength={10}
-              maxLength={72}
+              minLength={6}
+              maxLength={10}
               autoComplete="new-password"
               className="min-h-11 w-full rounded-md border border-cyber-purple-500/45 bg-oscuro-950 px-3 py-2 text-sm text-cyber-cyan-100 outline-none focus:border-cyber-cyan-400"
             />

@@ -21,7 +21,7 @@ test.describe("API Next: health + productos + auth", () => {
     expect(Array.isArray(listaJson.productos)).toBeTruthy();
 
     const email = `e2e_${Date.now()}@aurapro.test`;
-    const password = "AuraPro2026x";
+    const password = "Aura2026x";
 
     const registro = await request.post("/api/auth/register", {
       data: { email, password },
