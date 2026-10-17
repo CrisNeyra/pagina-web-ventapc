@@ -7,7 +7,8 @@ vi.mock("next/image", () => ({
   default: function MockImage(
     props: React.ImgHTMLAttributes<HTMLImageElement> & { fill?: boolean }
   ) {
-    const { fill: _fill, ...rest } = props;
+    const { fill, ...rest } = props;
+    void fill;
     return React.createElement("img", rest);
   },
 }));

@@ -27,6 +27,7 @@ function construirProductoDetalleEstatico(id: string): ProductDetailData | null 
   return {
     ...productoCatalogo,
     sku: `SKU-${productoCatalogo.id.toUpperCase()}`,
+    specs: productoCatalogo.specs ?? null,
     imagenes:
       productoCatalogo.imagenes.length > 0
         ? productoCatalogo.imagenes
@@ -64,6 +65,7 @@ async function cargarProducto(id: string): Promise<ProductDetailData | null> {
       return {
         ...desdeApi,
         sku: `SKU-${desdeApi.id.toUpperCase()}`,
+        specs: desdeApi.specs ?? null,
         imagenes:
           desdeApi.imagenes.length > 0
             ? desdeApi.imagenes

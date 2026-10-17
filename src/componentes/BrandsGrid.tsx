@@ -1,33 +1,5 @@
-import Image from "next/image";
 import { marcas } from "@/datos/navegacion";
-
-function LogoMarca({
-  nombre,
-  logo,
-  decorativa = false,
-}: {
-  nombre: string;
-  logo: string;
-  decorativa?: boolean;
-}) {
-  return (
-    <article
-      className="flex h-24 w-36 shrink-0 items-center justify-center rounded-xl border border-cyber-purple-500/25 bg-white p-3"
-      aria-hidden={decorativa || undefined}
-      aria-label={decorativa ? undefined : `Marca ${nombre}`}
-    >
-      <div className="relative h-12 w-24">
-        <Image
-          src={logo}
-          alt=""
-          fill
-          sizes="96px"
-          className="object-contain"
-        />
-      </div>
-    </article>
-  );
-}
+import TarjetaMarca from "@/componentes/marcas/TarjetaMarca";
 
 export default function BrandsGrid() {
   const cinta = [...marcas, ...marcas];
@@ -44,10 +16,9 @@ export default function BrandsGrid() {
       <div className="overflow-hidden rounded-2xl border border-cyber-purple-500/30 bg-oscuro-900/70 p-4 backdrop-blur-sm">
         <div className="marcas-cinta flex w-max gap-4">
           {cinta.map((marca, indice) => (
-            <LogoMarca
+            <TarjetaMarca
               key={`${marca.nombre}-${indice}`}
-              nombre={indice < marcas.length ? marca.nombre : ""}
-              logo={marca.logo}
+              marca={marca}
               decorativa={indice >= marcas.length}
             />
           ))}

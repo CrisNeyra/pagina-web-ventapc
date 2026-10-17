@@ -42,8 +42,22 @@ export default function CheckoutView() {
   const [cuotas, setCuotas] = useState(1);
   const [confirmandoPedido, setConfirmandoPedido] = useState(false);
   const [redirigiendoMp, setRedirigiendoMp] = useState(false);
-  const [errorPago, setErrorPago] = useState("");
-  const [costoEnvioDinamico, setCostoEnvioDinamico] = useState(5000);
+  const pagoContextKey = `${metodoPago ?? ""}|${cuotas}|${datosEntrega.tipo}|${datosEntrega.envio?.codigoPostal ?? ""}`;
+  const [errorPagoState, setErrorPagoState] = useState({ key: "", message: "" });
+  const errorPago = errorPagoState.key === pagoContextKey ? errorPagoState.message : "";
+  const setErrorPago = (message: string) => {
+    setErrorPagoState({ key: pagoContextKey, message });
+  };
+  const codigoPostalEnvio =
+    datosEntrega.tipo === "envio" ? datosEntrega.envio?.codigoPostal : undefined;
+  const [cotizacionEnvio, setCotizacionEnvio] = useState<{ cp: string; costo: number } | null>(
+    null
+  );
+  const costoEnvioDinamico = useMemo(() => {
+    if (datosEntrega.tipo !== "envio" || !codigoPostalEnvio) return 5000;
+    if (cotizacionEnvio?.cp === codigoPostalEnvio) return cotizacionEnvio.costo;
+    return 5000;
+  }, [codigoPostalEnvio, cotizacionEnvio, datosEntrega.tipo]);
   const [datosTransferencia, setDatosTransferencia] = useState(DATOS_TRANSFERENCIA_DEFAULT);
   const [mpDisponible, setMpDisponible] = useState(false);
 
@@ -92,13 +106,16 @@ export default function CheckoutView() {
   }, []);
 
   useEffect(() => {
-    if (datosEntrega.tipo !== "envio" || !datosEntrega.envio?.codigoPostal) {
-      setCostoEnvioDinamico(5000);
-      return;
-    }
+    if (datosEntrega.tipo !== "envio" || !codigoPostalEnvio) return;
 
-    void cotizarEnvio(datosEntrega.envio.codigoPostal).then(setCostoEnvioDinamico);
-  }, [datosEntrega.tipo, datosEntrega.envio?.codigoPostal]);
+    let cancelado = false;
+    void cotizarEnvio(codigoPostalEnvio).then((costo) => {
+      if (!cancelado) setCotizacionEnvio({ cp: codigoPostalEnvio, costo });
+    });
+    return () => {
+      cancelado = true;
+    };
+  }, [codigoPostalEnvio, datosEntrega.tipo]);
 
   const total = totalProductos + costoEnvio;
 
@@ -113,10 +130,6 @@ export default function CheckoutView() {
     () => validarDatosEntrega(datosEntrega).ok,
     [datosEntrega]
   );
-
-  useEffect(() => {
-    setErrorPago("");
-  }, [metodoPago, datosEntrega, cuotas]);
 
   const pagarConMercadoPago = async () => {
     if (!metodoPago || !requiereMercadoPago) return;

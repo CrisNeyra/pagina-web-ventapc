@@ -3,6 +3,9 @@ import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   serverExternalPackages: ["@prisma/client", "prisma"],
+  images: {
+    formats: ["image/avif", "image/webp"],
+  },
 };
 
 const sentryAuth = Boolean(process.env.SENTRY_AUTH_TOKEN?.trim());

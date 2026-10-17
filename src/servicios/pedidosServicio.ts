@@ -52,7 +52,8 @@ export function etiquetaEstadoPedido(estado: string): string {
   return ETIQUETAS_ESTADO[estado] ?? estado;
 }
 
-export async function obtenerPedidosUsuario(_userId: string): Promise<Pedido[]> {
+export async function obtenerPedidosUsuario(userId: string): Promise<Pedido[]> {
+  void userId;
   if (!apiConfigurada()) return [];
 
   try {

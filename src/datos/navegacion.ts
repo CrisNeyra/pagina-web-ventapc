@@ -20,14 +20,36 @@ export const categorias = [
   { nombre: "Almacenamiento", href: "/categoria/almacenamiento", imagen: "/categorias/almacenamiento.jpg" },
 ];
 
+export type MarcaDestacada = {
+  nombre: string;
+  logo: string;
+  officialUrl: string;
+};
+
 // Marcas destacadas
-export const marcas = [
-  { nombre: "ASUS", logo: "/marcas/asus.svg" },
-  { nombre: "AMD", logo: "/marcas/amd.svg" },
-  { nombre: "Intel", logo: "/marcas/intel.svg" },
-  { nombre: "Corsair", logo: "/marcas/corsair.svg" },
-  { nombre: "ASRock", logo: "/marcas/asrock.svg" },
-  { nombre: "MSI", logo: "/marcas/msi.svg" },
-  { nombre: "Gigabyte", logo: "/marcas/gigabyte.svg" },
-  { nombre: "Kingston", logo: "/marcas/kingston.svg" },
+export const marcas: MarcaDestacada[] = [
+  { nombre: "ASUS", logo: "/marcas/asus.svg", officialUrl: "https://www.asus.com/" },
+  { nombre: "AMD", logo: "/marcas/amd.svg", officialUrl: "https://www.amd.com/" },
+  { nombre: "Intel", logo: "/marcas/intel.svg", officialUrl: "https://www.intel.com/" },
+  {
+    nombre: "Corsair",
+    logo: "/marcas/corsair.svg",
+    officialUrl: "https://www.corsair.com/",
+  },
+  {
+    nombre: "ASRock",
+    logo: "/marcas/asrock.svg",
+    officialUrl: "https://www.asrock.com/",
+  },
+  { nombre: "MSI", logo: "/marcas/msi.svg", officialUrl: "https://www.msi.com/" },
+  {
+    nombre: "Gigabyte",
+    logo: "/marcas/gigabyte.svg",
+    officialUrl: "https://www.gigabyte.com/",
+  },
+  {
+    nombre: "Kingston",
+    logo: "/marcas/kingston.svg",
+    officialUrl: "https://www.kingston.com/",
+  },
 ];

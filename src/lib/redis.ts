@@ -1,7 +1,6 @@
 import { createClient, type RedisClientType } from "redis";
 
 declare global {
-  // eslint-disable-next-line no-var
   var __auraRedis: RedisClientType | undefined;
 }
 

@@ -32,6 +32,23 @@ function esRedirectInterno(valor: string | null): valor is string {
   return Boolean(valor && valor.startsWith("/") && !valor.startsWith("//"));
 }
 
+function leerQueryAuthCliente(): {
+  abrirModal: boolean;
+  errorInicial: string;
+  redirect: string | null;
+} {
+  if (typeof window === "undefined") {
+    return { abrirModal: false, errorInicial: "", redirect: null };
+  }
+  const url = new URL(window.location.href);
+  const abrirModal = url.searchParams.get("auth") === "required";
+  const redirectParam = url.searchParams.get("redirect");
+  const redirect = esRedirectInterno(redirectParam) ? redirectParam : null;
+  const authError = url.searchParams.get("authError");
+  const errorInicial = authError ? mensajeAuthError(authError) : "";
+  return { abrirModal: abrirModal || Boolean(authError), errorInicial, redirect };
+}
+
 export default function Navbar() {
   const router = useRouter();
   const [menuAbierto, setMenuAbierto] = useState(false);
@@ -92,25 +109,20 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
+    const datos = leerQueryAuthCliente();
+    redirectTrasAuthRef.current = datos.redirect;
+
     const url = new URL(window.location.href);
     let limpio = false;
 
     if (url.searchParams.get("auth") === "required") {
-      const redirect = url.searchParams.get("redirect");
-      if (esRedirectInterno(redirect)) {
-        redirectTrasAuthRef.current = redirect;
-      }
-      setAuthModalAbierto(true);
       toast.error("Iniciá sesión para continuar.");
       url.searchParams.delete("auth");
       url.searchParams.delete("redirect");
       limpio = true;
     }
 
-    const authError = url.searchParams.get("authError");
-    if (authError) {
-      setAuthModalAbierto(true);
-      setAuthErrorInicial(mensajeAuthError(authError));
+    if (url.searchParams.get("authError")) {
       url.searchParams.delete("authError");
       limpio = true;
     }
@@ -118,6 +130,11 @@ export default function Navbar() {
     if (limpio) {
       window.history.replaceState({}, "", url.pathname + url.search);
     }
+
+    queueMicrotask(() => {
+      if (datos.abrirModal) setAuthModalAbierto(true);
+      if (datos.errorInicial) setAuthErrorInicial(datos.errorInicial);
+    });
   }, []);
 
   const alAutenticarse = () => {

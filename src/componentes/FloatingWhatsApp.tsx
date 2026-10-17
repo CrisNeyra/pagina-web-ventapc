@@ -71,7 +71,7 @@ export default function FloatingWhatsApp() {
   };
 
   return (
-    <div ref={contenedorRef} className="fixed bottom-5 right-5 z-[100]">
+    <div ref={contenedorRef} className="fixed bottom-6 right-6 z-[100]">
       <div className="relative">
         <div
           role="dialog"
