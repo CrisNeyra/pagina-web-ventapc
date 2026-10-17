@@ -42,7 +42,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const catalogo = await textoCatalogo();
+    const catalogo = await textoCatalogo(body.data.mensaje);
     const respuesta = await consultarGemini(body.data.mensaje, catalogo);
     return NextResponse.json({ respuesta });
   } catch {

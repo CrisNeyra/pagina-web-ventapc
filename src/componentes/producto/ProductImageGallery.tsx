@@ -6,7 +6,6 @@ import ProductGalleryLightbox from "@/componentes/producto/ProductGalleryLightbo
 
 const PLACEHOLDER = "/placeholder-producto.svg";
 const ZOOM = 2.2;
-const LENTE = 112;
 
 interface ProductImageGalleryProps {
   nombre: string;
@@ -20,7 +19,7 @@ export default function ProductImageGallery({ nombre, imagenes }: ProductImageGa
   const [imagenFallida, setImagenFallida] = useState<string | null>(null);
   const [lightbox, setLightbox] = useState(false);
   const [zoomActivo, setZoomActivo] = useState(false);
-  const [lente, setLente] = useState({ x: 50, y: 50, left: 0, top: 0 });
+  const [origenZoom, setOrigenZoom] = useState({ x: 50, y: 50 });
   const [zoomFinePointer, setZoomFinePointer] = useState(false);
   const visorRef = useRef<HTMLButtonElement>(null);
 
@@ -43,14 +42,9 @@ export default function ProductImageGallery({ nombre, imagenes }: ProductImageGa
       const rect = nodo.getBoundingClientRect();
       const px = Math.max(0, Math.min(clientX - rect.left, rect.width));
       const py = Math.max(0, Math.min(clientY - rect.top, rect.height));
-      const x = (px / rect.width) * 100;
-      const y = (py / rect.height) * 100;
-      const mitad = LENTE / 2;
-      setLente({
-        x,
-        y,
-        left: Math.max(0, Math.min(px - mitad, rect.width - LENTE)),
-        top: Math.max(0, Math.min(py - mitad, rect.height - LENTE)),
+      setOrigenZoom({
+        x: (px / rect.width) * 100,
+        y: (py / rect.height) * 100,
       });
     },
     [zoomFinePointer]
@@ -116,32 +110,16 @@ export default function ProductImageGallery({ nombre, imagenes }: ProductImageGa
               priority
               sizes="(max-width: 1024px) 90vw, 520px"
               className="object-contain p-4"
+              style={
+                zoomActivo
+                  ? {
+                      transform: `scale(${ZOOM})`,
+                      transformOrigin: `${origenZoom.x}% ${origenZoom.y}%`,
+                    }
+                  : undefined
+              }
               onError={() => setImagenFallida(imagenSrc)}
             />
-
-            {zoomActivo && zoomFinePointer && (
-              <>
-                <span
-                  aria-hidden
-                  className="pointer-events-none absolute left-0 top-0 hidden border-2 border-cyber-cyan-400/80 bg-cyber-cyan-400/10 will-change-transform lg:block"
-                  style={{
-                    width: LENTE,
-                    height: LENTE,
-                    transform: `translate(${lente.left}px, ${lente.top}px)`,
-                  }}
-                />
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute left-full top-0 z-20 ml-3 hidden h-[520px] w-[min(420px,calc(50vw-2rem))] overflow-hidden rounded-xl border border-oscuro-700 bg-white shadow-xl xl:block"
-                  style={{
-                    backgroundImage: `url(${imagenActual})`,
-                    backgroundRepeat: "no-repeat",
-                    backgroundSize: `${ZOOM * 100}%`,
-                    backgroundPosition: `${lente.x}% ${lente.y}%`,
-                  }}
-                />
-              </>
-            )}
           </button>
           <p className="mt-2 text-center text-xs text-muted lg:text-left">
             {zoomFinePointer

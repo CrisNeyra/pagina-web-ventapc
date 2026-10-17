@@ -78,7 +78,7 @@ export default function FloatingWhatsApp() {
           aria-label="Confirmar apertura de WhatsApp"
           onMouseEnter={abrirPanel}
           onMouseLeave={programarCierre}
-          className={`absolute bottom-full right-0 mb-3 w-[292px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-[#128C7E]/55 bg-[#1F2C34] shadow-[0_0_25px_rgba(18,140,126,0.35)] transition-all duration-200 ${
+          className={`absolute bottom-0 right-full mr-3 w-[min(292px,calc(100vw-6.5rem))] overflow-hidden rounded-2xl border border-[#128C7E]/55 bg-[#1F2C34] shadow-[0_0_25px_rgba(18,140,126,0.35)] transition-all duration-200 ${
             abierto
               ? "pointer-events-auto translate-y-0 opacity-100"
               : "pointer-events-none invisible translate-y-2 opacity-0"

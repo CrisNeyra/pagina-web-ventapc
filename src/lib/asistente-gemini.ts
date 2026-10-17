@@ -14,41 +14,82 @@ export function asistenteConfigurado(): boolean {
   return Boolean(process.env.GEMINI_API_KEY?.trim());
 }
 
+const MODELO_DEFECTO = "gemini-3.5-flash";
+const CACHE_CATALOGO_MS = 60_000;
+
 export function modeloGemini(): string {
-  return process.env.GEMINI_MODEL?.trim() || "gemini-2.5-flash";
+  return process.env.GEMINI_MODEL?.trim() || MODELO_DEFECTO;
 }
 
-export async function textoCatalogo(): Promise<string> {
-  const productos = await prisma.product.findMany({
-    orderBy: { nombre: "asc" },
-    take: 120,
-    select: {
-      nombre: true,
-      precio: true,
-      stock: true,
-      enStock: true,
-      categoria: true,
-      descripcion: true,
-      specs: true,
-    },
-  });
+interface FilaCatalogo {
+  nombre: string;
+  precio: number;
+  stock: number;
+  enStock: boolean;
+  categoria: string;
+  descripcion: string;
+  specs: unknown;
+}
 
-  return productos
-    .map((producto) => {
-      const detalle = producto.descripcion.replace(/\s+/g, " ").slice(0, 180);
-      const specs = producto.specs ? JSON.stringify(producto.specs) : "{}";
-      return [
-        `- ${producto.nombre}`,
-        `categoria=${producto.categoria}`,
-        `precioARS=${producto.precio}`,
-        `stock=${producto.stock}`,
-        `enStock=${producto.enStock}`,
-        `detalle=${detalle}`,
-        `specs=${specs}`,
-      ].join(" | ");
+let cacheCatalogo: { hasta: number; filas: FilaCatalogo[] } | null = null;
+
+function resumenSpecs(specs: unknown): string {
+  if (!specs || typeof specs !== "object") return "";
+  return Object.entries(specs as Record<string, unknown>)
+    .slice(0, 6)
+    .map(([clave, valor]) => `${clave}=${Array.isArray(valor) ? valor.join("/") : String(valor)}`)
+    .join(", ");
+}
+
+export function armarTextoCatalogo(filas: FilaCatalogo[], mensaje: string): string {
+  const tokens = mensaje
+    .toLowerCase()
+    .split(/[^a-záéíóúñ0-9]+/i)
+    .filter((token) => token.length > 2);
+
+  const indice = filas
+    .map(
+      (producto) =>
+        `- ${producto.nombre} | ${producto.categoria} | $${producto.precio} | stock ${producto.enStock ? producto.stock : 0}`
+    )
+    .join("\n");
+
+  const detalle = filas
+    .filter((producto) => {
+      const texto = `${producto.nombre} ${producto.categoria}`.toLowerCase();
+      return tokens.some((token) => texto.includes(token));
     })
-    .join("\n")
-    .slice(0, 14_000);
+    .slice(0, 8)
+    .map((producto) => {
+      const specs = resumenSpecs(producto.specs);
+      const descripcion = producto.descripcion.replace(/\s+/g, " ").slice(0, 100);
+      return `- ${producto.nombre}: ${[specs, descripcion].filter(Boolean).join(". ")}`;
+    })
+    .join("\n");
+
+  return [indice, detalle ? `Fichas relacionadas:\n${detalle}` : ""].filter(Boolean).join("\n").slice(0, 8_000);
+}
+
+export async function textoCatalogo(mensaje: string): Promise<string> {
+  const ahora = Date.now();
+  if (!cacheCatalogo || cacheCatalogo.hasta < ahora) {
+    const filas = await prisma.product.findMany({
+      orderBy: { nombre: "asc" },
+      take: 120,
+      select: {
+        nombre: true,
+        precio: true,
+        stock: true,
+        enStock: true,
+        categoria: true,
+        descripcion: true,
+        specs: true,
+      },
+    });
+    cacheCatalogo = { hasta: ahora + CACHE_CATALOGO_MS, filas };
+  }
+
+  return armarTextoCatalogo(cacheCatalogo.filas, mensaje);
 }
 
 export function extraerTextoGemini(body: unknown): string | null {
@@ -91,7 +132,11 @@ export async function consultarGemini(mensaje: string, catalogo: string): Promis
           ],
         },
         contents: [{ role: "user", parts: [{ text: mensaje }] }],
-        generationConfig: { temperature: 0.2, maxOutputTokens: 700 },
+        generationConfig: {
+          temperature: 0.2,
+          maxOutputTokens: 350,
+          thinkingConfig: { thinkingBudget: 0 },
+        },
       }),
       cache: "no-store",
     }
@@ -99,6 +144,11 @@ export async function consultarGemini(mensaje: string, catalogo: string): Promis
 
   const body = (await respuesta.json().catch(() => null)) as unknown;
   if (!respuesta.ok) {
+    const mensajeError =
+      body && typeof body === "object" && "error" in body
+        ? String((body as { error?: { message?: string } }).error?.message ?? "").slice(0, 180)
+        : "";
+    console.error("Gemini", respuesta.status, mensajeError);
     throw new Error("ASISTENTE_ERROR");
   }
   const texto = extraerTextoGemini(body);

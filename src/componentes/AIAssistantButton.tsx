@@ -1,7 +1,5 @@
 "use client";
 
-import { FiCpu } from "react-icons/fi";
-
 interface AIAssistantButtonProps {
   abierto: boolean;
   onToggle: () => void;
@@ -34,7 +32,27 @@ export default function AIAssistantButton({
           aria-hidden
           className="absolute inset-0 rounded-full bg-gradient-to-br from-ink-violet to-ink-cyan opacity-40 blur-md"
         />
-        <FiCpu className="relative z-[1] h-7 w-7" strokeWidth={2.2} />
+        <svg
+          viewBox="0 0 32 32"
+          aria-hidden
+          className="relative z-[1] h-8 w-8"
+          fill="none"
+        >
+          <path d="M16 3.2v2.2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          <circle cx="16" cy="2.4" r="1.3" fill="currentColor" />
+          <rect x="7" y="8" width="18" height="14" rx="6" fill="currentColor" />
+          <circle cx="12.2" cy="14.2" r="1.5" fill="#1e1038" />
+          <circle cx="19.8" cy="14.2" r="1.5" fill="#1e1038" />
+          <path
+            d="M12.4 17.6c.9 1.1 2.1 1.6 3.6 1.6s2.7-.5 3.6-1.6"
+            stroke="#1e1038"
+            strokeWidth="1.4"
+            strokeLinecap="round"
+          />
+          <path d="M7 14H5.2M26.8 14H25" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          <path d="M12 22.2v2.2M20 22.2v2.2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          <path d="M10.5 24.6h3.2M18.3 24.6h3.2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+        </svg>
         <span
           aria-hidden
           className="absolute -right-0.5 -top-0.5 z-[2] flex h-3.5 w-3.5 items-center justify-center motion-reduce:hidden"
