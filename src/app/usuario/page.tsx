@@ -11,6 +11,7 @@ import {
   FiRepeat,
   FiShoppingBag,
 } from "react-icons/fi";
+import type { IconType } from "react-icons";
 import { useAuth } from "@/context/AuthContext";
 import { formatearPrecio } from "@/utils/formato";
 import { METODOS_PAGO, type MetodoPago } from "@/tipos/metodoPago";
@@ -27,7 +28,7 @@ import { MENSAJE_REQUISITOS_PASSWORD, validarPassword } from "@/lib/auth";
 const WHATSAPP_AYUDA =
   "https://wa.me/5491168883430?text=Hola,%20necesito%20ayuda%20con%20mi%20cuenta%20de%20Aura%20Pro.";
 
-const ICONO_PAGO: Record<MetodoPago, typeof FiDollarSign> = {
+const ICONO_PAGO: Record<MetodoPago, IconType> = {
   efectivo: FiMapPin,
   transferencia: FiRepeat,
   debito: FiCreditCard,

@@ -45,17 +45,24 @@ function specsDe(producto: BuilderProduct): EspecificacionPc {
   return producto.specs ?? especificacionesPc[producto.id] ?? {};
 }
 
+function chipsDefinidos(chips: ReadonlyArray<string | undefined>): string[] {
+  const salida: string[] = [];
+  for (const chip of chips) {
+    if (chip) salida.push(chip);
+  }
+  return salida;
+}
+
 function chipsDeProducto(producto: BuilderProduct): string[] {
   const specs = specsDe(producto);
   switch (producto.categoria) {
     case "procesador":
-      return [specs.socket, specs.tdp != null ? `${specs.tdp} W` : undefined].filter(
-        (chip): chip is string => Boolean(chip)
-      );
+      return chipsDefinidos([
+        specs.socket,
+        specs.tdp != null ? `${specs.tdp} W` : undefined,
+      ]);
     case "motherboard":
-      return [specs.socket, specs.ddr, specs.factor].filter(
-        (chip): chip is string => Boolean(chip)
-      );
+      return chipsDefinidos([specs.socket, specs.ddr, specs.factor]);
     case "cooler":
       return specs.socketsCooler ?? [];
     case "ram":
