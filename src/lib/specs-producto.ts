@@ -37,3 +37,34 @@ export function filasSpecsTecnicas(
     })
     .filter((fila): fila is { clave: string; valor: string } => fila !== null);
 }
+
+const RELLENO_DESCRIPCION = [
+  /con enfoque en rendimiento y calidad/i,
+  /componentes y terminaciones seleccionadas/i,
+  /incluye garantía oficial y soporte postventa/i,
+];
+
+/** Datos cortos para el bloque "Lo que tenés que saber", sin el relleno genérico del catálogo. */
+export function datosClaveProducto(input: {
+  descripcion: string;
+  categoria: string;
+  specs?: EspecificacionPc | null;
+}): string[] {
+  const tecnicos = filasSpecsTecnicas(input.specs).map(
+    (fila) => `${fila.clave}: ${fila.valor}`
+  );
+  const lineas = input.descripcion
+    .split(/\n+|(?<=\.)\s+/)
+    .map((linea) => linea.trim().replace(/\.$/, ""))
+    .filter((linea) => linea && !RELLENO_DESCRIPCION.some((regla) => regla.test(linea)));
+
+  const vistos = new Set<string>();
+  const datos: string[] = [];
+  for (const item of [`Categoría: ${input.categoria}`, ...tecnicos, ...lineas]) {
+    const clave = item.toLowerCase();
+    if (vistos.has(clave)) continue;
+    vistos.add(clave);
+    datos.push(item);
+  }
+  return datos.slice(0, 12);
+}

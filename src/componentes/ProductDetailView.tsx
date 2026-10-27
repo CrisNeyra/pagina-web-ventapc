@@ -3,10 +3,10 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FiCheck, FiMapPin, FiShield, FiStar, FiTruck } from "react-icons/fi";
+import { FiCheck, FiClock, FiMapPin, FiRotateCcw, FiShield, FiStar, FiTruck } from "react-icons/fi";
 import { calcularDescuento, formatearPrecio } from "@/utils/formato";
 import { calcularCuota, calcularDescuentoTransferencia } from "@/lib/checkout";
-import { filasSpecsTecnicas } from "@/lib/specs-producto";
+import { datosClaveProducto, filasSpecsTecnicas } from "@/lib/specs-producto";
 import type { EspecificacionPc } from "@/datos/especificacionesPc";
 import ProductImageGallery from "@/componentes/producto/ProductImageGallery";
 import { useCartStore } from "@/store/cartStore";
@@ -35,6 +35,7 @@ interface ProductDetailViewProps {
 
 const PLACEHOLDER = "/placeholder-producto.svg";
 const CUOTAS_DESTACADAS = 6;
+const DATOS_CLAVE_VISIBLES = 5;
 
 function extraerBullets(descripcion: string): string[] {
   const lineas = descripcion
@@ -63,6 +64,7 @@ export default function ProductDetailView({ producto }: ProductDetailViewProps) 
   const router = useRouter();
   const [cantidad, setCantidad] = useState(1);
   const [procesando, setProcesando] = useState(false);
+  const [verMasDatos, setVerMasDatos] = useState(false);
   const { user } = useAuth();
   const addItem = useCartStore((state) => state.addItem);
 
@@ -84,6 +86,17 @@ export default function ProductDetailView({ producto }: ProductDetailViewProps) 
   const bullets = useMemo(() => extraerBullets(producto.descripcion), [producto.descripcion]);
 
   const filasTecnicas = useMemo(() => filasSpecsTecnicas(producto.specs), [producto.specs]);
+  const datosClave = useMemo(
+    () =>
+      datosClaveProducto({
+        descripcion: producto.descripcion,
+        categoria: producto.categoria,
+        specs: producto.specs,
+      }),
+    [producto.categoria, producto.descripcion, producto.specs]
+  );
+  const datosVisibles = verMasDatos ? datosClave : datosClave.slice(0, DATOS_CLAVE_VISIBLES);
+  const datosOcultos = Math.max(0, datosClave.length - DATOS_CLAVE_VISIBLES);
 
   const especificacionesTienda: { clave: string; valor: string }[] = [
     { clave: "Categoría", valor: producto.categoria },
@@ -151,11 +164,11 @@ export default function ProductDetailView({ producto }: ProductDetailViewProps) 
       </nav>
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(320px,380px)] lg:items-start">
-        <div className="min-w-0">
+        <div className="min-w-0 lg:col-start-1 lg:row-start-1">
           <ProductImageGallery nombre={producto.nombre} imagenes={producto.imagenes} />
         </div>
 
-        <aside className="rounded-2xl border border-oscuro-700 bg-white p-4 shadow-sm sm:p-5 lg:sticky lg:top-24">
+        <aside className="rounded-2xl border border-oscuro-700 bg-white p-4 shadow-sm sm:p-5 lg:sticky lg:top-24 lg:col-start-2 lg:row-span-2 lg:row-start-1">
           <p className="text-xs font-medium text-muted">Nuevo | +50 vendidos</p>
           <h1 className="mt-1 text-xl font-normal leading-snug text-foreground sm:text-2xl">
             {producto.nombre}
@@ -223,11 +236,32 @@ export default function ProductDetailView({ producto }: ProductDetailViewProps) 
                 <span className="block text-xs text-muted">Av. Corrientes 1234</span>
               </span>
             </p>
-            <p className="flex items-center gap-2">
-              <FiShield className="shrink-0 text-ink-cyan" aria-hidden />
-              Garantía oficial 12 meses
-            </p>
           </div>
+
+          <ul className="mt-4 space-y-3 border-t border-oscuro-700/40 pt-4 text-sm text-foreground/90">
+            <li className="flex items-start gap-2">
+              <FiRotateCcw className="mt-0.5 shrink-0 text-ink-cyan" aria-hidden />
+              <span>
+                <Link href="/arrepentimiento" className="font-semibold text-[#3483fa] hover:underline">
+                  Devolución.
+                </Link>{" "}
+                Tenés 10 días desde que lo recibís.
+              </span>
+            </li>
+            <li className="flex items-start gap-2">
+              <FiShield className="mt-0.5 shrink-0 text-ink-cyan" aria-hidden />
+              <span>
+                <Link href="/terminos" className="font-semibold text-[#3483fa] hover:underline">
+                  Compra protegida.
+                </Link>{" "}
+                Recibí el producto que esperabas o te devolvemos tu dinero.
+              </span>
+            </li>
+            <li className="flex items-start gap-2">
+              <FiClock className="mt-0.5 shrink-0 text-ink-cyan" aria-hidden />
+              <span>12 meses de garantía de fábrica.</span>
+            </li>
+          </ul>
 
           <label className="mt-5 block text-sm">
             <span className="mb-1 block text-xs font-semibold text-muted">Cantidad</span>
@@ -262,6 +296,32 @@ export default function ProductDetailView({ producto }: ProductDetailViewProps) 
             Agregar al carrito
           </button>
         </aside>
+        <section className="min-w-0 lg:col-start-1 lg:row-start-2" aria-labelledby="saber-producto">
+          <h2 id="saber-producto" className="text-lg font-semibold text-foreground">
+            Lo que tenés que saber de este producto
+          </h2>
+          <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm leading-relaxed text-foreground/90">
+            {datosVisibles.map((dato) => (
+              <li key={dato}>{dato}</li>
+            ))}
+          </ul>
+          {datosOcultos > 0 && (
+            <button
+              type="button"
+              onClick={() => setVerMasDatos((abierto) => !abierto)}
+              className="mt-3 block text-sm font-semibold text-[#3483fa] hover:underline"
+              aria-expanded={verMasDatos}
+            >
+              {verMasDatos ? "Ver menos" : `Ver ${datosOcultos} más`}
+            </button>
+          )}
+          <a
+            href="#especificaciones-producto"
+            className="mt-2 block text-sm font-semibold text-[#3483fa] hover:underline"
+          >
+            Ver características
+          </a>
+        </section>
       </div>
 
       <div className="mt-10 space-y-8 border-t border-oscuro-700/30 pt-8">
@@ -286,7 +346,7 @@ export default function ProductDetailView({ producto }: ProductDetailViewProps) 
         </section>
 
         <section aria-labelledby="especificaciones-producto">
-          <h2 id="especificaciones-producto" className="text-lg font-semibold text-foreground">
+          <h2 id="especificaciones-producto" className="scroll-mt-24 text-lg font-semibold text-foreground">
             Características principales
           </h2>
           <div className="mt-4 overflow-hidden rounded-xl border border-oscuro-700/40">
