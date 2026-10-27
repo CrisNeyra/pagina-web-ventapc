@@ -43,6 +43,20 @@ describe("PcBuilder", () => {
     vi.mocked(useAuth).mockReturnValue({ ...authMock });
   });
 
+  it("al agregar un procesador pasa a motherboard", async () => {
+    const user = userEvent.setup();
+    render(<PcBuilder />);
+
+    expect(screen.getByRole("button", { name: /vaciar armado/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /ir al checkout/i })).toBeDisabled();
+
+    await user.click(screen.getAllByRole("button", { name: /^agregar$/i })[0]);
+
+    expect(useBuilderStore.getState().seleccion.procesador?.id).toBe(productoCpu.id);
+    expect(useBuilderStore.getState().categoriaActiva).toBe("motherboard");
+    expect(screen.getByRole("heading", { name: /elegí motherboard/i })).toBeInTheDocument();
+  });
+
   it("quita el componente seleccionado", async () => {
     const user = userEvent.setup();
     useBuilderStore.setState({
