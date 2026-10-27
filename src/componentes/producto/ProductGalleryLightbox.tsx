@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback, useRef } from "react";
+import { useEffect, useCallback, useRef, useState, type MouseEvent } from "react";
 import Image from "next/image";
 import { FiChevronLeft, FiChevronRight, FiX } from "react-icons/fi";
 
@@ -13,6 +13,8 @@ interface ProductGalleryLightboxProps {
   onIndice: (indice: number) => void;
 }
 
+const ZOOM = 2.2;
+
 export default function ProductGalleryLightbox({
   abierto,
   nombre,
@@ -24,6 +26,7 @@ export default function ProductGalleryLightbox({
   const dialogoRef = useRef<HTMLDivElement>(null);
   const cerrarRef = useRef<HTMLButtonElement>(null);
   const focoPrevioRef = useRef<HTMLElement | null>(null);
+  const [zoom, setZoom] = useState<{ x: number; y: number } | null>(null);
 
   const anterior = useCallback(() => {
     onIndice((indice - 1 + imagenes.length) % imagenes.length);
@@ -32,6 +35,25 @@ export default function ProductGalleryLightbox({
   const siguiente = useCallback(() => {
     onIndice((indice + 1) % imagenes.length);
   }, [imagenes.length, indice, onIndice]);
+
+  const ampliarEn = (evento: MouseEvent<HTMLButtonElement>) => {
+    evento.stopPropagation();
+    if (zoom) {
+      setZoom(null);
+      return;
+    }
+    const rect = evento.currentTarget.getBoundingClientRect();
+    const x = ((evento.clientX - rect.left) / rect.width) * 100;
+    const y = ((evento.clientY - rect.top) / rect.height) * 100;
+    setZoom({
+      x: Math.max(0, Math.min(100, x)),
+      y: Math.max(0, Math.min(100, y)),
+    });
+  };
+
+  useEffect(() => {
+    setZoom(null);
+  }, [indice, abierto]);
 
   useEffect(() => {
     if (!abierto) return;
@@ -143,15 +165,31 @@ export default function ProductGalleryLightbox({
         className="relative flex max-h-[90vh] w-full max-w-[90vw] flex-col items-center gap-4"
         onClick={(evento) => evento.stopPropagation()}
       >
-        <div className="relative h-[min(70vh,720px)] w-full max-w-[min(90vw,960px)]">
+        <button
+          type="button"
+          onClick={ampliarEn}
+          aria-pressed={Boolean(zoom)}
+          aria-label={zoom ? "Volver al tamaño de la foto" : "Ampliar esta zona de la foto"}
+          className={`relative h-[min(70vh,720px)] w-full max-w-[min(90vw,960px)] overflow-hidden ${
+            zoom ? "cursor-zoom-out" : "cursor-zoom-in"
+          }`}
+        >
           <Image
             src={imagen}
             alt={`${nombre} — foto ${indice + 1}`}
             fill
             sizes="90vw"
-            className="object-contain"
+            className="object-contain transition-transform duration-300 ease-out motion-reduce:transition-none"
+            style={
+              zoom
+                ? {
+                    transform: `scale(${ZOOM})`,
+                    transformOrigin: `${zoom.x}% ${zoom.y}%`,
+                  }
+                : undefined
+            }
           />
-        </div>
+        </button>
 
         {imagenes.length > 1 && (
           <div className="flex max-w-full gap-2 overflow-x-auto pb-1">
@@ -159,7 +197,10 @@ export default function ProductGalleryLightbox({
               <button
                 key={`${mini}-${i}`}
                 type="button"
-                onClick={() => onIndice(i)}
+                onClick={() => {
+                  setZoom(null);
+                  onIndice(i);
+                }}
                 aria-label={`Ver foto ${i + 1}`}
                 aria-current={i === indice ? "true" : undefined}
                 className={`relative h-14 w-14 shrink-0 overflow-hidden rounded-lg border-2 bg-white/5 ${

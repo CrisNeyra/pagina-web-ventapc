@@ -1,11 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import Image from "next/image";
 import ProductGalleryLightbox from "@/componentes/producto/ProductGalleryLightbox";
 
 const PLACEHOLDER = "/placeholder-producto.svg";
-const ZOOM = 2.2;
 
 interface ProductImageGalleryProps {
   nombre: string;
@@ -18,42 +17,14 @@ export default function ProductImageGallery({ nombre, imagenes }: ProductImageGa
   /** Si falla la carga, guardamos la URL que falló para mostrar placeholder sin effect. */
   const [imagenFallida, setImagenFallida] = useState<string | null>(null);
   const [lightbox, setLightbox] = useState(false);
-  const [zoomActivo, setZoomActivo] = useState(false);
-  const [origenZoom, setOrigenZoom] = useState({ x: 50, y: 50 });
-  const [zoomFinePointer, setZoomFinePointer] = useState(false);
-  const visorRef = useRef<HTMLButtonElement>(null);
 
   const imagenSrc = lista[indice] ?? PLACEHOLDER;
   const imagenActual =
     imagenFallida === imagenSrc && imagenSrc !== PLACEHOLDER ? PLACEHOLDER : imagenSrc;
 
-  useEffect(() => {
-    const mq = window.matchMedia("(pointer: fine)");
-    const actualizar = () => setZoomFinePointer(mq.matches);
-    actualizar();
-    mq.addEventListener("change", actualizar);
-    return () => mq.removeEventListener("change", actualizar);
-  }, []);
-
-  const moverZoom = useCallback(
-    (clientX: number, clientY: number) => {
-      const nodo = visorRef.current;
-      if (!nodo || !zoomFinePointer) return;
-      const rect = nodo.getBoundingClientRect();
-      const px = Math.max(0, Math.min(clientX - rect.left, rect.width));
-      const py = Math.max(0, Math.min(clientY - rect.top, rect.height));
-      setOrigenZoom({
-        x: (px / rect.width) * 100,
-        y: (py / rect.height) * 100,
-      });
-    },
-    [zoomFinePointer]
-  );
-
   const seleccionar = useCallback((nuevo: number) => {
     setIndice(nuevo);
     setImagenFallida(null);
-    setZoomActivo(false);
   }, []);
 
   const cerrarLightbox = useCallback(() => setLightbox(false), []);
@@ -91,15 +62,8 @@ export default function ProductImageGallery({ nombre, imagenes }: ProductImageGa
 
         <div className="relative order-1 flex-1 overflow-visible lg:order-2">
           <button
-            ref={visorRef}
             type="button"
             onClick={() => setLightbox(true)}
-            onMouseEnter={() => zoomFinePointer && setZoomActivo(true)}
-            onMouseLeave={() => setZoomActivo(false)}
-            onMouseMove={(evento) => {
-              if (!zoomActivo && zoomFinePointer) setZoomActivo(true);
-              moverZoom(evento.clientX, evento.clientY);
-            }}
             className="relative mx-auto block h-[min(72vw,420px)] w-full max-w-[520px] cursor-zoom-in overflow-hidden rounded-xl border border-oscuro-700 bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyber-cyan-400 lg:mx-0 lg:h-[520px] lg:max-w-none"
             aria-label={`Ampliar imagen de ${nombre}`}
           >
@@ -110,22 +74,10 @@ export default function ProductImageGallery({ nombre, imagenes }: ProductImageGa
               priority
               sizes="(max-width: 1024px) 90vw, 520px"
               className="object-contain p-4"
-              style={
-                zoomActivo
-                  ? {
-                      transform: `scale(${ZOOM})`,
-                      transformOrigin: `${origenZoom.x}% ${origenZoom.y}%`,
-                    }
-                  : undefined
-              }
               onError={() => setImagenFallida(imagenSrc)}
             />
           </button>
-          <p className="mt-2 text-center text-xs text-muted lg:text-left">
-            {zoomFinePointer
-              ? "Pasá el cursor para ampliar · Clic para pantalla completa"
-              : "Tocá la imagen para verla en grande"}
-          </p>
+          <p className="mt-2 text-center text-xs text-muted lg:text-left">Clic para ampliar</p>
         </div>
       </div>
 

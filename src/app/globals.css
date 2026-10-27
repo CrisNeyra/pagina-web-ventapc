@@ -199,26 +199,84 @@ body {
 
 @keyframes asesor-globo {
   0%,
-  62% {
+  10% {
     opacity: 0;
     transform: translateY(6px);
   }
-  70%,
-  100% {
+  22%,
+  68% {
     opacity: 1;
     transform: translateY(0);
+  }
+  86%,
+  100% {
+    opacity: 0;
+    transform: translateY(4px);
   }
 }
 
 .asesor-globo {
   animation: asesor-globo 4s ease-in-out infinite;
+  transition: opacity 0.45s ease, transform 0.45s ease;
 }
 
-.group:hover .asesor-globo,
-.group:focus-within .asesor-globo {
+.asesor-globo.asesor-globo-fijo {
   animation: none;
   opacity: 1;
-  transform: none;
+  transform: translateY(0);
+}
+
+.asesor-globo.asesor-globo-sale {
+  animation: none;
+  opacity: 0;
+  transform: translateY(4px);
+}
+
+@keyframes robot-balanceo {
+  0%,
+  100% {
+    transform: rotate(-5deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+}
+
+.robot-cuerpo {
+  transform-origin: 50% 78%;
+  animation: robot-balanceo 2.8s ease-in-out infinite;
+}
+
+@keyframes robot-parpadeo {
+  0%,
+  42%,
+  48%,
+  100% {
+    transform: scaleY(1);
+  }
+  45% {
+    transform: scaleY(0.08);
+  }
+}
+
+.robot-ojos {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: robot-parpadeo 3.6s ease-in-out infinite;
+}
+
+@keyframes robot-luz {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.robot-luz {
+  animation: robot-luz 1.6s ease-in-out infinite;
 }
 
 @keyframes fab-pulso {
